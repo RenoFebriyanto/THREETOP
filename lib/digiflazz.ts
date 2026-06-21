@@ -4,6 +4,7 @@ const BASE_URL = 'https://api.digiflazz.com/v1'
 const USERNAME = process.env.DIGIFLAZZ_USERNAME ?? ''
 const API_KEY = process.env.DIGIFLAZZ_API_KEY ?? ''
 
+// Gunakan mock hanya jika KEDUA env belum di-set
 const IS_MOCK = !USERNAME || !API_KEY
 
 function createSignature(suffix: string): string {
@@ -100,7 +101,7 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
   if (!res.ok) throw new Error(`Digiflazz API error: ${res.status}`)
 
   const data = await res.json()
-  return data.data as DigiflazzProduct[]
+  return (data.data ?? []) as DigiflazzProduct[]
 }
 
 export async function checkBalance(): Promise<number> {
@@ -135,7 +136,6 @@ export async function createTransaction({
   refId: string
 }): Promise<DigiflazzTransaction> {
   if (IS_MOCK) {
-    // Simulasi delay seperti API asli
     await new Promise((r) => setTimeout(r, 800))
     return {
       ref_id: refId,
