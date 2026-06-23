@@ -2,6 +2,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import Image from 'next/image'
 import ChangePasswordForm from '@/components/dashboard/ChangePasswordForm'
+import EditNameForm from '@/components/dashboard/EditNameForm'
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('id-ID', {
@@ -36,10 +37,18 @@ export default async function ProfilePage() {
   const successRate = totalOrders > 0 ? Math.round((successOrders / totalOrders) * 100) : 0
 
   const stats = [
-    { label: 'Total Transaksi', value: String(totalOrders), icon: '📋' },
-    { label: 'Berhasil', value: String(successOrders), icon: '✅' },
-    { label: 'Success Rate', value: `${successRate}%`, icon: '📈' },
-    { label: 'Total Pengeluaran', value: formatCurrency(totalSpent), icon: '💰' },
+    { label: 'Total Transaksi', value: String(totalOrders), icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+    )},
+    { label: 'Berhasil', value: String(successOrders), icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    )},
+    { label: 'Success Rate', value: `${successRate}%`, icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+    )},
+    { label: 'Total Pengeluaran', value: formatCurrency(totalSpent), icon: (
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+    )},
   ]
 
   return (
@@ -78,6 +87,7 @@ export default async function ProfilePage() {
                 Member sejak {formatDate(memberSince.createdAt)}
               </p>
             )}
+            <EditNameForm currentName={user.name ?? ''} />
           </div>
         </div>
       </div>
@@ -86,7 +96,9 @@ export default async function ProfilePage() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-2xl border border-slate-700/50 p-4 text-center" style={{ background: 'rgba(15,20,35,0.8)' }}>
-            <div className="text-2xl mb-2">{s.icon}</div>
+            <div className="w-10 h-10 rounded-xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mx-auto mb-2 text-sky-400">
+              {s.icon}
+            </div>
             <p className="text-white font-bold text-lg leading-tight">{s.value}</p>
             <p className="text-slate-500 text-xs mt-1">{s.label}</p>
           </div>

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* TopUpGG — selalu dark mode */
+/* ThreeTop — selalu dark mode */
 :root {
   --background: #080C14;
   --foreground: #f1f5f9;
@@ -45,3 +45,23 @@ body {
   background: rgba(14, 165, 233, 0.3);
   color: #fff;
 }
+
+/* Carousel progress bar animation */
+@keyframes carousel-progress {
+  from { width: 0% }
+  to   { width: 100% }
+}
+
+/* Slide-in animation untuk toast */
+@keyframes slide-in-from-right-5 {
+  from { transform: translateX(1.25rem); opacity: 0; }
+  to   { transform: translateX(0);       opacity: 1; }
+}
+.animate-in { animation-fill-mode: both; }
+.slide-in-from-right-5 { animation-name: slide-in-from-right-5; }
+.fade-in { animation-name: fade-in; }
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.duration-200 { animation-duration: 200ms; }

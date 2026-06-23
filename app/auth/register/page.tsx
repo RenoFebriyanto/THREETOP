@@ -90,7 +90,7 @@ export default function RegisterPage() {
             className="text-2xl font-black tracking-tight text-white"
             style={{ fontFamily: "'Rajdhani', 'Bebas Neue', sans-serif", letterSpacing: '-0.02em' }}
           >
-            TOP<span className="text-sky-400">UP</span>GG
+            THREE<span className="text-sky-400">TOP</span>
           </span>
         </div>
         <h1 className="text-2xl font-bold text-white mb-1">Buat Akun Baru</h1>
@@ -337,7 +337,15 @@ export default function RegisterPage() {
 
       {/* Footer note */}
       <p className="text-center text-xs text-slate-600 mt-6">
-        Dengan mendaftar, kamu menyetujui syarat & ketentuan TopUpGG
+        Dengan mendaftar, kamu menyetujui{' '}
+        <a href="/terms" target="_blank" className="text-slate-500 hover:text-slate-400 underline transition-colors">
+          syarat &amp; ketentuan
+        </a>
+        {' '}dan{' '}
+        <a href="/privacy" target="_blank" className="text-slate-500 hover:text-slate-400 underline transition-colors">
+          kebijakan privasi
+        </a>
+        {' '}ThreeTop
       </p>
     </div>
   )

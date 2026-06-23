@@ -109,12 +109,16 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
+    // Halaman yang butuh proteksi auth
     '/dashboard/:path*',
     '/admin/:path*',
+    // Halaman auth (redirect jika sudah login)
     '/auth/login',
     '/auth/register',
+    // Legacy aliases
     '/login',
     '/register',
+    // API yang butuh rate limiting
     '/api/auth/callback/credentials',
     '/api/auth/signin',
     '/api/auth/register',

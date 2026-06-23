@@ -1,4 +1,5 @@
 import { getProducts, groupProductsByGame, SUPPORTED_GAMES, IS_STAGING } from '@/lib/digiflazz'
+import GameIcon from '@/components/ui/GameIcon'
 
 function formatCurrency(n: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n)
@@ -37,8 +38,11 @@ export default async function AdminProductsPage() {
       </div>
 
       {fetchError && (
-        <div className="rounded-2xl border border-red-500/20 p-4 bg-red-500/5 text-red-400 text-sm">
-          ⚠️ {fetchError}
+        <div className="rounded-2xl border border-red-500/20 p-4 bg-red-500/5 flex items-center gap-3 text-red-400 text-sm">
+          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+          {fetchError}
         </div>
       )}
 
@@ -48,7 +52,9 @@ export default async function AdminProductsPage() {
           <div key={gameKey} className="rounded-2xl border border-slate-700/50 overflow-hidden" style={{ background: 'rgba(15,20,35,0.8)' }}>
             {/* Game header */}
             <div className="flex items-center gap-3 px-5 py-4 border-b border-slate-800/60">
-              <span className="text-2xl">{gameInfo.icon}</span>
+              <div className="w-9 h-9 rounded-xl overflow-hidden bg-slate-800 shrink-0 flex items-center justify-center">
+                <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={36} />
+              </div>
               <div>
                 <h2 className="text-white font-semibold">{gameInfo.label}</h2>
                 <p className="text-slate-500 text-xs">{gameProducts.length} produk tersedia · {gameInfo.tag}</p>

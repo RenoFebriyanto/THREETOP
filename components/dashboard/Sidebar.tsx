@@ -88,7 +88,7 @@ export default function DashboardSidebar({ user }: { user: User }) {
             </svg>
           </div>
           <span className="text-xl font-black text-white tracking-tight">
-            TOP<span className="text-sky-400">UP</span>GG
+            THREE<span className="text-sky-400">TOP</span>
           </span>
         </div>
 
@@ -139,6 +139,15 @@ export default function DashboardSidebar({ user }: { user: User }) {
 
         {/* User Profile + Logout */}
         <div className="p-3 border-t border-slate-800/60">
+          <div className="px-3 pb-2 flex items-center gap-3">
+            <a href="/terms" target="_blank" className="text-slate-600 hover:text-slate-400 text-xs transition-colors">
+              Syarat &amp; Ketentuan
+            </a>
+            <span className="text-slate-700">·</span>
+            <a href="/privacy" target="_blank" className="text-slate-600 hover:text-slate-400 text-xs transition-colors">
+              Privasi
+            </a>
+          </div>
           <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/40">
             {/* Avatar */}
             <div className="w-8 h-8 rounded-full overflow-hidden bg-slate-700 shrink-0 flex items-center justify-center">

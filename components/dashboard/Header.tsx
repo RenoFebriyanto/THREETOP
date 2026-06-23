@@ -64,7 +64,7 @@ export default function DashboardHeader({ user }: { user: User }) {
                 <path d="M5 8H11M8 5V11" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round"/>
               </svg>
             </div>
-            <span className="text-base font-black text-white">TOP<span className="text-sky-400">UP</span>GG</span>
+            <span className="text-base font-black text-white">THREE<span className="text-sky-400">TOP</span></span>
           </div>
 
           {/* Desktop page title */}
@@ -127,7 +127,7 @@ export default function DashboardHeader({ user }: { user: User }) {
                     <path d="M5 8H11M8 5V11" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <span className="text-lg font-black text-white">TOP<span className="text-sky-400">UP</span>GG</span>
+                <span className="text-lg font-black text-white">THREE<span className="text-sky-400">TOP</span></span>
               </div>
               <button onClick={() => setMobileMenuOpen(false)} className="text-slate-500 hover:text-white">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

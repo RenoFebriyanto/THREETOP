@@ -24,12 +24,37 @@ export async function GET(req: NextRequest) {
   }
 
   const { searchParams } = new URL(req.url)
-  const type = searchParams.get('type') ?? 'orders' // orders | users
-  const status = searchParams.get('status') // filter opsional
-  const from = searchParams.get('from')    // YYYY-MM-DD
-  const to = searchParams.get('to')        // YYYY-MM-DD
+  const type = searchParams.get('type') ?? 'orders' // orders | users | revenue-by-game
+  const status = searchParams.get('status')
+  const from = searchParams.get('from')
+  const to = searchParams.get('to')
 
   try {
+    if (type === 'revenue-by-game') {
+      const where: Record<string, unknown> = { status: 'SUCCESS' }
+      if (from || to) {
+        where.createdAt = {
+          ...(from ? { gte: new Date(from) } : {}),
+          ...(to ? { lte: new Date(`${to}T23:59:59`) } : {}),
+        }
+      }
+      const data = await prisma.order.groupBy({
+        by: ['game'],
+        where,
+        _sum: { amount: true },
+        _count: { id: true },
+        orderBy: { _sum: { amount: 'desc' } },
+      })
+      const headers = ['Game', 'Total Order', 'Total Revenue (Rp)']
+      const rows = data.map((d) => [d.game, d._count.id, d._sum.amount ?? 0].map(escapeCSV).join(','))
+      const csv = [headers.join(','), ...rows].join('\n')
+      return new NextResponse('\uFEFF' + csv, {
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="threetop-revenue-by-game-${Date.now()}.csv"`,
+        },
+      })
+    }
     if (type === 'users') {
       const users = await prisma.user.findMany({
         orderBy: { createdAt: 'desc' },
@@ -57,7 +82,7 @@ export async function GET(req: NextRequest) {
       return new NextResponse(csv, {
         headers: {
           'Content-Type': 'text/csv; charset=utf-8',
-          'Content-Disposition': `attachment; filename="topupgg-users-${Date.now()}.csv"`,
+          'Content-Disposition': `attachment; filename="threetop-users-${Date.now()}.csv"`,
         },
       })
     }
@@ -99,7 +124,7 @@ export async function GET(req: NextRequest) {
     ].map(escapeCSV).join(','))
 
     const csv = [headers.join(','), ...rows].join('\n')
-    const filename = `topupgg-orders${status ? `-${status.toLowerCase()}` : ''}-${Date.now()}.csv`
+    const filename = `threetop-orders${status ? `-${status.toLowerCase()}` : ''}-${Date.now()}.csv`
 
     return new NextResponse('\uFEFF' + csv, { // BOM untuk Excel
       headers: {

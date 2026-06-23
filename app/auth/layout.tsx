@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'TopUpGG — Masuk / Daftar',
-  description: 'Platform top up game terpercaya Indonesia',
+  title: 'Masuk / Daftar',
+  description: 'Login atau daftar akun ThreeTop untuk mulai top up game favoritmu.',
 }
 
 export default function AuthLayout({

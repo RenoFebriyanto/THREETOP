@@ -5,7 +5,7 @@ import AdminSidebar from '@/components/admin/Sidebar'
 import AdminHeader from '@/components/admin/Header'
 
 export const metadata: Metadata = {
-  title: 'Admin Panel — TopUpGG',
+  title: 'Admin Panel',
 }
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {

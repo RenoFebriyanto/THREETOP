@@ -54,7 +54,7 @@ export default function AdminOrderActions({
             {others.map((s) => (
               <button key={s} onClick={() => updateStatus(s)}
                 className="w-full text-left px-3 py-2.5 text-xs text-slate-300 hover:bg-slate-800/80 hover:text-white transition-colors">
-                → {s === 'SUCCESS' ? '✅ Sukses' : s === 'FAILED' ? '❌ Gagal' : s === 'PROCESSING' ? '⏳ Diproses' : '🕐 Pending'}
+                → {s === 'SUCCESS' ? 'Sukses' : s === 'FAILED' ? 'Gagal' : s === 'PROCESSING' ? 'Diproses' : 'Pending'}
               </button>
             ))}
           </div>

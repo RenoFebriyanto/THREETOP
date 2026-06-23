@@ -1,6 +1,8 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
+import { SUPPORTED_GAMES } from '@/lib/digiflazz'
+import GameIcon from '@/components/ui/GameIcon'
 
 // Tipe manual untuk Order agar tidak bergantung pada Prisma generate
 type OrderStatus = 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED'
@@ -71,14 +73,14 @@ function formatDate(date: Date) {
   }).format(new Date(date))
 }
 
-const POPULAR_GAMES = [
-  { id: 'ml', name: 'Mobile Legends', icon: '⚔️', color: 'from-blue-600 to-blue-800', tag: 'MOBA' },
-  { id: 'ff', name: 'Free Fire', icon: '🔥', color: 'from-orange-500 to-red-700', tag: 'Battle Royale' },
-  { id: 'pubg', name: 'PUBG Mobile', icon: '🎯', color: 'from-yellow-600 to-amber-800', tag: 'Battle Royale' },
-  { id: 'genshin', name: 'Genshin Impact', icon: '✨', color: 'from-sky-500 to-indigo-700', tag: 'RPG' },
-  { id: 'hok', name: 'Honor of Kings', icon: '👑', color: 'from-purple-600 to-purple-900', tag: 'MOBA' },
-  { id: 'valorant', name: 'Valorant', icon: '💥', color: 'from-red-600 to-rose-900', tag: 'FPS' },
-]
+const POPULAR_GAMES = Object.entries(SUPPORTED_GAMES).map(([key, g]) => ({
+  key,
+  name: g.label,
+  image: g.image,
+  icon: g.icon,
+  color: g.color,
+  tag: g.tag,
+}))
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -155,7 +157,7 @@ export default async function DashboardPage() {
 
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <p className="text-slate-400 text-sm mb-1">Selamat datang kembali 👋</p>
+            <p className="text-slate-400 text-sm mb-1">Selamat datang kembali</p>
             <h1 className="text-2xl lg:text-3xl font-bold text-white">
               Halo, <span className="text-sky-400">{firstName}!</span>
             </h1>
@@ -220,13 +222,13 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {POPULAR_GAMES.map((game) => (
               <Link
-                key={game.id}
-                href={`/dashboard/topup?game=${game.id}`}
+                key={game.key}
+                href={`/dashboard/topup/${game.key}`}
                 className="group relative rounded-xl overflow-hidden border border-slate-700/50 hover:border-slate-500/50 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg"
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-20 group-hover:opacity-30 transition-opacity`} />
                 <div className="relative p-4 flex flex-col items-center text-center gap-2">
-                  <span className="text-2xl">{game.icon}</span>
+                  <GameIcon image={game.image} fallback={game.icon} label={game.name} size={40} className="rounded-lg" />
                   <div>
                     <p className="text-white text-xs font-semibold leading-tight">{game.name}</p>
                     <p className="text-slate-500 text-xs mt-0.5">{game.tag}</p>
@@ -266,13 +268,17 @@ export default async function DashboardPage() {
             <div className="space-y-3">
               {stats.recentOrders.map((order: Order) => {
                 const status = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG]
+                const gameInfo = SUPPORTED_GAMES[order.game]
                 return (
                   <div
                     key={order.id}
                     className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30"
                   >
-                    <div className="w-8 h-8 rounded-lg bg-slate-700/60 flex items-center justify-center shrink-0 text-sm">
-                      🎮
+                    <div className="w-8 h-8 rounded-lg bg-slate-700/60 flex items-center justify-center shrink-0 overflow-hidden">
+                      {gameInfo
+                        ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
+                        : <span className="text-sm">🎮</span>
+                      }
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-xs font-medium truncate">{order.productName}</p>

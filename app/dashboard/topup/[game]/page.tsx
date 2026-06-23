@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { SUPPORTED_GAMES, type DigiflazzProduct } from '@/lib/digiflazz'
+import GameIcon from '@/components/ui/GameIcon'
 
 type Step = 'select' | 'input' | 'confirm' | 'payment' | 'waiting' | 'result'
 
@@ -312,8 +313,8 @@ export default function GameTopUpPage() {
 
       {/* Game header */}
       <div className="rounded-2xl border border-slate-700/50 p-6 flex items-center gap-4" style={{ background: 'rgba(15,20,35,0.8)' }}>
-        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gameInfo.color} flex items-center justify-center text-2xl shrink-0`}>
-          {gameInfo.icon}
+        <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gameInfo.color} flex items-center justify-center shrink-0 overflow-hidden`}>
+          <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={48} className="rounded-xl" />
         </div>
         <div>
           <h1 className="text-white font-bold text-xl">{gameInfo.label}</h1>

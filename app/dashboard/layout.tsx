@@ -5,8 +5,8 @@ import DashboardSidebar from '@/components/dashboard/Sidebar'
 import DashboardHeader from '@/components/dashboard/Header'
 
 export const metadata: Metadata = {
-  title: 'Dashboard — TopUpGG',
-  description: 'Dashboard pengguna TopUpGG',
+  title: 'Dashboard',
+  description: 'Dashboard pengguna ThreeTop',
 }
 
 export default async function DashboardLayout({

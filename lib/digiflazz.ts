@@ -218,7 +218,8 @@ export async function checkTransactionStatus(
 
 export const SUPPORTED_GAMES: Record<string, {
   label: string
-  icon: string
+  image: string   // path ke /public/icons/games/
+  icon: string    // fallback emoji (dipakai jika image gagal load)
   color: string
   tag: string
   brands: string[]
@@ -229,7 +230,8 @@ export const SUPPORTED_GAMES: Record<string, {
 }> = {
   mobile_legends: {
     label: 'Mobile Legends',
-    icon: '⚔️',
+    image: '/icons/games/mobile-legends.png',
+    icon: 'ML',
     color: 'from-blue-600 to-blue-800',
     tag: 'MOBA',
     brands: ['Mobile Legends', 'MOBILE LEGEND'],
@@ -240,7 +242,8 @@ export const SUPPORTED_GAMES: Record<string, {
   },
   free_fire: {
     label: 'Free Fire',
-    icon: '🔥',
+    image: '/icons/games/free-fire.png',
+    icon: 'FF',
     color: 'from-orange-500 to-red-700',
     tag: 'Battle Royale',
     brands: ['Free Fire', 'FREE FIRE', 'Garena Free Fire'],
@@ -250,7 +253,8 @@ export const SUPPORTED_GAMES: Record<string, {
   },
   pubg_mobile: {
     label: 'PUBG Mobile',
-    icon: '🎯',
+    image: '/icons/games/pubg-mobile.png',
+    icon: 'PUBG',
     color: 'from-yellow-600 to-amber-800',
     tag: 'Battle Royale',
     brands: ['PUBG Mobile', 'PUBG MOBILE', 'Pubg Mobile'],
@@ -260,7 +264,8 @@ export const SUPPORTED_GAMES: Record<string, {
   },
   genshin_impact: {
     label: 'Genshin Impact',
-    icon: '✨',
+    image: '/icons/games/genshin-impact.png',
+    icon: 'GI',
     color: 'from-sky-500 to-indigo-700',
     tag: 'RPG',
     brands: ['Genshin Impact', 'GENSHIN IMPACT'],
@@ -270,7 +275,8 @@ export const SUPPORTED_GAMES: Record<string, {
   },
   honor_of_kings: {
     label: 'Honor of Kings',
-    icon: '👑',
+    image: '/icons/games/honor-of-kings.png',
+    icon: 'HOK',
     color: 'from-purple-600 to-purple-900',
     tag: 'MOBA',
     brands: ['Honor of Kings', 'HONOR OF KINGS'],
@@ -280,7 +286,8 @@ export const SUPPORTED_GAMES: Record<string, {
   },
   valorant: {
     label: 'Valorant',
-    icon: '💥',
+    image: '/icons/games/valorant.png',
+    icon: 'VAL',
     color: 'from-red-600 to-rose-900',
     tag: 'FPS',
     brands: ['Valorant', 'VALORANT'],

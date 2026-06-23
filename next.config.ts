@@ -7,39 +7,50 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
-          // Cegah clickjacking
-          { key: 'X-Frame-Options', value: 'DENY' },
-          // Cegah MIME sniffing
-          { key: 'X-Content-Type-Options', value: 'nosniff' },
-          // Referrer policy
-          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          // Permissions policy — nonaktifkan fitur browser yang tidak dipakai
-          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-          // XSS protection (legacy browsers)
-          { key: 'X-XSS-Protection', value: '1; mode=block' },
+          { key: 'X-Frame-Options',           value: 'DENY' },
+          { key: 'X-Content-Type-Options',     value: 'nosniff' },
+          { key: 'Referrer-Policy',            value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy',         value: 'camera=(), microphone=(), geolocation=()' },
+          { key: 'X-XSS-Protection',           value: '1; mode=block' },
         ],
       },
       {
-        // Tambahan header untuk API routes
         source: '/api/(.*)',
         headers: [
           { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' },
         ],
       },
+      {
+        // Cache static assets aggressively
+        source: '/icons/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
+        source: '/banners/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=86400' },
+        ],
+      },
     ]
   },
 
-  // Izinkan gambar dari domain eksternal (Google OAuth avatar, dll)
+  // Redirect /home ke /
+  async redirects() {
+    return [
+      { source: '/home', destination: '/', permanent: true },
+    ]
+  },
+
+  // Domain gambar yang diizinkan
   images: {
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'lh3.googleusercontent.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.googleusercontent.com',
-      },
+      // Google OAuth avatar
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: '*.googleusercontent.com' },
+      // Untuk nanti jika pakai CDN
+      { protocol: 'https', hostname: 'threetop.id' },
     ],
   },
 }

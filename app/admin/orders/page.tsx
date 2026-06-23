@@ -2,6 +2,8 @@ import { prisma } from '@/lib/db'
 import Link from 'next/link'
 import AdminOrderActions from '@/components/admin/OrderActions'
 import AdminExportButton from '@/components/admin/ExportButton'
+import GameIcon from '@/components/ui/GameIcon'
+import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
 type OrderStatus = 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED'
 
@@ -17,11 +19,6 @@ function formatCurrency(n: number) {
 }
 function formatDate(d: Date) {
   return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(d))
-}
-
-const GAME_ICONS: Record<string, string> = {
-  mobile_legends: '⚔️', free_fire: '🔥', pubg_mobile: '🎯',
-  genshin_impact: '✨', honor_of_kings: '👑', valorant: '💥',
 }
 
 export default async function AdminOrdersPage({
@@ -78,19 +75,14 @@ export default async function AdminOrdersPage({
         <AdminExportButton />
       </div>
 
-      {/* Filter bar */}
+      {/* Filter */}
       <div className="flex flex-col sm:flex-row gap-3">
-        {/* Search */}
         <form className="flex-1">
-          <input
-            type="text"
-            name="q"
-            defaultValue={q}
+          <input type="text" name="q" defaultValue={q}
             placeholder="Cari email, nama, produk, atau game ID..."
             className="w-full px-4 py-2.5 rounded-xl bg-slate-800/60 border border-slate-700/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500 transition-colors"
           />
         </form>
-        {/* Status tabs */}
         <div className="flex gap-1.5 flex-wrap">
           {TABS.map((tab) => (
             <Link key={tab.value}
@@ -99,8 +91,7 @@ export default async function AdminOrdersPage({
                 (status ?? '') === tab.value
                   ? 'bg-violet-500/20 border border-violet-500/40 text-violet-400'
                   : 'bg-slate-800/60 border border-slate-700/50 text-slate-400 hover:text-white'
-              }`}
-            >
+              }`}>
               {tab.label}
             </Link>
           ))}
@@ -126,10 +117,17 @@ export default async function AdminOrdersPage({
               <tbody className="divide-y divide-slate-800/40">
                 {orders.map((order) => {
                   const status = STATUS_CONFIG[order.status as OrderStatus]
-                  const icon = GAME_ICONS[order.game] ?? '🎮'
+                  const gameInfo = SUPPORTED_GAMES[order.game]
                   return (
                     <tr key={order.id} className="hover:bg-slate-800/20 transition-colors">
-                      <td className="px-4 py-3 text-lg">{icon}</td>
+                      <td className="px-4 py-3">
+                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-slate-800 flex items-center justify-center">
+                          {gameInfo
+                            ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
+                            : <span className="text-sm">🎮</span>
+                          }
+                        </div>
+                      </td>
                       <td className="px-4 py-3">
                         <p className="text-white font-medium whitespace-nowrap">{order.productName}</p>
                         {order.sn && <p className="text-emerald-400 text-xs font-mono mt-0.5">SN: {order.sn}</p>}

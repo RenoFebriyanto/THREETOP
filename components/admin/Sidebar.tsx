@@ -48,7 +48,7 @@ export default function AdminSidebar({ user }: { user: User }) {
           </svg>
         </div>
         <div>
-          <span className="text-base font-black text-white">TOP<span className="text-violet-400">UP</span>GG</span>
+          <span className="text-base font-black text-white">THREE<span className="text-violet-400">TOP</span></span>
           <p className="text-violet-400 text-xs font-medium -mt-0.5">Admin Panel</p>
         </div>
       </div>

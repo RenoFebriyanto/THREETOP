@@ -1,8 +1,9 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
-import { checkBalance } from '@/lib/digiflazz'
+import { checkBalance, SUPPORTED_GAMES } from '@/lib/digiflazz'
 import AdminExportButton from '@/components/admin/ExportButton'
+import GameIcon from '@/components/ui/GameIcon'
 
 // Threshold peringatan saldo Digiflazz (Rp 50.000)
 const LOW_BALANCE_THRESHOLD = 50_000
@@ -35,6 +36,7 @@ export default async function AdminDashboardPage() {
     recentOrders,
     todayOrders,
     digiflazzBalance,
+    revenueByGame,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.order.count(),
@@ -51,6 +53,15 @@ export default async function AdminDashboardPage() {
       where: { createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
     }),
     checkBalance().catch(() => null),
+    // Revenue per game (top 6)
+    prisma.order.groupBy({
+      by: ['game'],
+      where: { status: 'SUCCESS' },
+      _sum: { amount: true },
+      _count: { id: true },
+      orderBy: { _sum: { amount: 'desc' } },
+      take: 6,
+    }),
   ])
 
   const totalRevenue = revenueResult._sum.amount ?? 0
@@ -76,8 +87,8 @@ export default async function AdminDashboardPage() {
       {/* Welcome */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold text-white">Selamat datang, {session!.user.name?.split(' ')[0]} 👋</h1>
-          <p className="text-slate-400 text-sm mt-1">Ini ringkasan platform TopUpGG hari ini.</p>
+          <h1 className="text-2xl font-bold text-white">Selamat datang, {session!.user.name?.split(' ')[0]}</h1>
+          <p className="text-slate-400 text-sm mt-1">Ini ringkasan platform ThreeTop hari ini.</p>
         </div>
         <AdminExportButton />
       </div>
@@ -179,20 +190,63 @@ export default async function AdminDashboardPage() {
       {/* Quick links */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: 'Kelola Transaksi', href: '/admin/orders', icon: '📋', color: 'border-violet-500/20 hover:border-violet-500/40' },
-          { label: 'Kelola User', href: '/admin/users', icon: '👥', color: 'border-sky-500/20 hover:border-sky-500/40' },
-          { label: 'Daftar Produk', href: '/admin/products', icon: '🎮', color: 'border-emerald-500/20 hover:border-emerald-500/40' },
-          { label: 'Dashboard User', href: '/dashboard', icon: '🏠', color: 'border-slate-700/40 hover:border-slate-600/60' },
+          { label: 'Kelola Transaksi', href: '/admin/orders',   color: 'border-violet-500/20 hover:border-violet-500/40',
+            icon: <svg className="w-6 h-6 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> },
+          { label: 'Kelola User',       href: '/admin/users',    color: 'border-sky-500/20 hover:border-sky-500/40',
+            icon: <svg className="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
+          { label: 'Daftar Produk',     href: '/admin/products', color: 'border-emerald-500/20 hover:border-emerald-500/40',
+            icon: <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg> },
+          { label: 'Dashboard User',    href: '/dashboard',      color: 'border-slate-700/40 hover:border-slate-600/60',
+            icon: <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg> },
         ].map((item) => (
           <Link key={item.href} href={item.href}
             className={`rounded-2xl border p-4 flex flex-col items-center gap-2 text-center transition-all duration-200 hover:-translate-y-0.5 ${item.color}`}
             style={{ background: 'rgba(15,20,35,0.8)' }}
           >
-            <span className="text-2xl">{item.icon}</span>
+            {item.icon}
             <span className="text-slate-300 text-xs font-medium">{item.label}</span>
           </Link>
         ))}
       </div>
+      {/* Revenue per game */}
+      {revenueByGame.length > 0 && (
+        <div className="rounded-2xl border border-slate-700/50 p-6" style={{ background: 'rgba(15,20,35,0.8)' }}>
+          <h2 className="text-white font-semibold mb-5">Revenue per Game</h2>
+          <div className="space-y-4">
+            {revenueByGame.map((item) => {
+              const gameInfo = SUPPORTED_GAMES[item.game]
+              const revenue = item._sum.amount ?? 0
+              const maxRevenue = revenueByGame[0]._sum.amount ?? 1
+              const pct = Math.round((revenue / maxRevenue) * 100)
+              return (
+                <div key={item.game} className="flex items-center gap-4">
+                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-slate-800 shrink-0 flex items-center justify-center">
+                    {gameInfo
+                      ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
+                      : <span className="text-xs text-slate-500">?</span>
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-slate-300 text-xs font-medium">{gameInfo?.label ?? item.game}</span>
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-slate-500 text-xs">{item._count.id} order</span>
+                        <span className="text-white text-xs font-semibold">{formatCurrency(revenue)}</span>
+                      </div>
+                    </div>
+                    <div className="h-1.5 rounded-full bg-slate-800">
+                      <div
+                        className="h-1.5 rounded-full bg-gradient-to-r from-sky-500 to-violet-500 transition-all"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
