@@ -88,7 +88,11 @@ export default function GameTopUpPage() {
   const [paymentUrl, setPaymentUrl] = useState('')
   const [currentOrderId, setCurrentOrderId] = useState('')
   const [creating, setCreating] = useState(false)
-
+  // Nickname check
+  const [nickname, setNickname] = useState<string | null>(null)
+  const [nickLoading, setNickLoading] = useState(false)
+  const [nickError, setNickError] = useState('')
+  const [nickChecked, setNickChecked] = useState(false)
   const fetchProducts = useCallback(async () => {
     setLoading(true)
     setError('')
@@ -116,6 +120,37 @@ export default function GameTopUpPage() {
     setInputError('')
   }
 
+  async function checkNickname() {
+    const uid = gameUserId.trim()
+    const sid = serverId.trim()
+    if (!uid) { setInputError(`${gameInfo.userIdLabel} wajib diisi.`); return }
+    if (gameInfo.requireServer && !sid) { setInputError('Server ID wajib diisi.'); return }
+
+    setNickLoading(true)
+    setNickError('')
+    setNickname(null)
+    setNickChecked(false)
+
+    try {
+      const res = await fetch('/api/digiflazz/check-nickname', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gameKey, userId: uid, serverId: sid || undefined }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setNickError(data.error ?? 'ID tidak ditemukan.')
+      } else {
+        setNickname(data.nickname ?? 'Ditemukan')
+        setNickChecked(true)
+      }
+    } catch {
+      setNickError('Gagal terhubung ke server.')
+    } finally {
+      setNickLoading(false)
+    }
+  }
+
   function handleInputSubmit() {
     setInputError('')
     if (!gameUserId.trim()) {
@@ -124,6 +159,10 @@ export default function GameTopUpPage() {
     }
     if (gameInfo.requireServer && !serverId.trim()) {
       setInputError('Server ID wajib diisi.')
+      return
+    }
+    if (!nickChecked) {
+      setInputError('Harap verifikasi ID terlebih dahulu.')
       return
     }
     setStep('confirm')
@@ -187,6 +226,9 @@ export default function GameTopUpPage() {
     setOrderResult(null)
     setPaymentUrl('')
     setCurrentOrderId('')
+    setNickname(null)
+    setNickChecked(false)
+    setNickError('')
   }
 
   if (!gameInfo) return null
@@ -392,7 +434,7 @@ export default function GameTopUpPage() {
                 <input
                   type="text"
                   value={gameUserId}
-                  onChange={(e) => { setGameUserId(e.target.value); setInputError('') }}
+                  onChange={(e) => { setGameUserId(e.target.value); setInputError(''); setNickname(null); setNickChecked(false); setNickError('') }}
                   placeholder={gameInfo.userIdPlaceholder}
                   className="w-full px-4 py-3 rounded-xl bg-slate-800/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all"
                 />
@@ -403,7 +445,7 @@ export default function GameTopUpPage() {
                   <input
                     type="text"
                     value={serverId}
-                    onChange={(e) => { setServerId(e.target.value); setInputError('') }}
+                    onChange={(e) => { setServerId(e.target.value); setInputError(''); setNickname(null); setNickChecked(false); setNickError('') }}
                     placeholder="1234"
                     className="w-full px-4 py-3 rounded-xl bg-slate-800/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all"
                   />
@@ -415,9 +457,60 @@ export default function GameTopUpPage() {
                 </svg>
                 {gameInfo.userIdHint}
               </p>
+
+              {/* Tombol Cek Nickname */}
+              <button
+                type="button"
+                onClick={checkNickname}
+                disabled={nickLoading || !gameUserId.trim()}
+                className="w-full py-2.5 rounded-xl text-sm font-medium border border-sky-500/30 text-sky-400 bg-sky-500/10 hover:bg-sky-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {nickLoading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+                    </svg>
+                    Memeriksa ID...
+                  </span>
+                ) : 'Cek Nickname'}
+              </button>
+
+              {/* Hasil cek nickname */}
+              {nickChecked && nickname && (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
+                  <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                  <div>
+                    <p className="text-emerald-400 text-xs font-medium">ID Ditemukan</p>
+                    <p className="text-white text-sm font-bold">{nickname}</p>
+                  </div>
+                </div>
+              )}
+
+              {nickError && (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30">
+                  <svg className="w-4 h-4 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd"/>
+                  </svg>
+                  <p className="text-red-400 text-sm">{nickError}</p>
+                </div>
+              )}
+
               {inputError && <p className="text-red-400 text-sm">{inputError}</p>}
-              <button onClick={handleInputSubmit} className="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all"
-                style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', boxShadow: '0 0 20px rgba(14,165,233,0.3)' }}>
+
+              <button
+                onClick={handleInputSubmit}
+                disabled={!nickChecked}
+                className="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{
+                  background: nickChecked
+                    ? 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)'
+                    : 'rgba(14,165,233,0.2)',
+                  boxShadow: nickChecked ? '0 0 20px rgba(14,165,233,0.3)' : 'none',
+                }}
+              >
                 Lanjutkan
               </button>
             </div>
@@ -426,7 +519,10 @@ export default function GameTopUpPage() {
               <svg className="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
-              <span className="text-white text-sm">{customerNoDisplay}</span>
+              <div>
+                <span className="text-white text-sm">{customerNoDisplay}</span>
+                {nickname && <span className="text-emerald-400 text-xs ml-2">({nickname})</span>}
+              </div>
             </div>
           )}
         </div>
@@ -444,6 +540,7 @@ export default function GameTopUpPage() {
               { label: 'Game', value: gameInfo.label },
               { label: 'Produk', value: selectedProduct.product_name },
               { label: gameInfo.userIdLabel, value: customerNoDisplay },
+              ...(nickname ? [{ label: 'Nickname', value: nickname }] : []),
               { label: 'Total Bayar', value: formatCurrency(selectedProduct.price), highlight: true },
             ].map((item) => (
               <div key={item.label} className={`flex justify-between items-center px-4 py-3 border-b border-slate-800/60 last:border-0 ${item.highlight ? 'bg-sky-500/5' : ''}`}>
