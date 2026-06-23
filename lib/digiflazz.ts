@@ -50,11 +50,14 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ cmd: 'prepaid', username: USERNAME, sign: signature }),
-    next: { revalidate: 300 },
+    cache: 'no-store',
   })
   if (!res.ok) throw new Error(`Digiflazz API error: ${res.status}`)
   const data = await res.json()
-  return (data.data ?? []) as DigiflazzProduct[]
+  // Handle berbagai format response Digiflazz
+  const products = data.data ?? data ?? []
+  if (!Array.isArray(products)) throw new Error('Format response Digiflazz tidak valid')
+  return products as DigiflazzProduct[]
 }
 
 export async function checkBalance(): Promise<number> {
