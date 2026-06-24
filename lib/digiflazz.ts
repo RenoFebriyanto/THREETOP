@@ -44,7 +44,16 @@ export type DigiflazzTransaction = {
   wa: string
 }
 
+// Cache produk di memory — TTL 5 menit
+// Mencegah rate limit Digiflazz (rc: 83) akibat request terlalu sering
+let productsCache: { data: DigiflazzProduct[]; expiresAt: number } | null = null
+
 export async function getProducts(): Promise<DigiflazzProduct[]> {
+  // Return cache jika masih valid
+  if (productsCache && Date.now() < productsCache.expiresAt) {
+    return productsCache.data
+  }
+
   const signature = createSignature('pricelist')
   const res = await fetch(`${BASE_URL}/price-list`, {
     method: 'POST',
@@ -52,12 +61,40 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
     body: JSON.stringify({ cmd: 'prepaid', username: USERNAME, sign: signature }),
     cache: 'no-store',
   })
+
   if (!res.ok) throw new Error(`Digiflazz API error: ${res.status}`)
   const data = await res.json()
-  // Handle berbagai format response Digiflazz
+
+  // Log untuk debugging
+  if (!Array.isArray(data.data)) {
+    console.log('[DIGIFLAZZ_RAW]', JSON.stringify(data).substring(0, 300))
+  }
+
+  // Handle rate limit
+  if (data?.data?.rc === '83') {
+    // Jika ada cache lama meski sudah expired, pakai daripada error
+    if (productsCache) {
+      console.warn('[DIGIFLAZZ] Rate limited, using stale cache')
+      return productsCache.data
+    }
+    throw new Error('Rate limit Digiflazz: terlalu banyak request. Coba lagi sebentar.')
+  }
+
+  // Handle error response lain
+  if (data?.data?.rc && !Array.isArray(data.data)) {
+    if (productsCache) return productsCache.data
+    throw new Error(`Digiflazz error rc=${data.data.rc}: ${data.data.message ?? ''}`)
+  }
+
   const products = data.data ?? data ?? []
-  if (!Array.isArray(products)) throw new Error('Format response Digiflazz tidak valid')
-  return products as DigiflazzProduct[]
+  if (!Array.isArray(products)) {
+    if (productsCache) return productsCache.data
+    throw new Error(`Format response tidak valid: ${JSON.stringify(data).substring(0, 200)}`)
+  }
+
+  // Simpan ke cache dengan TTL 5 menit
+  productsCache = { data: products as DigiflazzProduct[], expiresAt: Date.now() + 5 * 60 * 1000 }
+  return productsCache.data
 }
 
 export async function checkBalance(): Promise<number> {

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getProducts, groupProductsByGame } from '@/lib/digiflazz'
 
-// Disable Next.js route cache — selalu ambil data fresh dari Digiflazz
+// Tidak cache di CDN — data dikelola oleh in-memory cache di lib/digiflazz.ts
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
@@ -14,17 +14,21 @@ export async function GET() {
       data: grouped,
       total: products.length,
     }, {
-      headers: {
-        // Tidak cache di browser/CDN
-        'Cache-Control': 'no-store, no-cache, must-revalidate',
-      },
+      headers: { 'Cache-Control': 'no-store' },
     })
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Unknown error'
     console.error('[DIGIFLAZZ_PRODUCTS_ERROR]', msg)
+
+    const isRateLimit = msg.includes('Rate limit') || msg.includes('rc=83')
     return NextResponse.json(
-      { success: false, error: 'Gagal mengambil daftar produk.', detail: msg },
-      { status: 500 }
+      {
+        success: false,
+        error: isRateLimit
+          ? 'Layanan sedang sibuk. Coba lagi sebentar.'
+          : 'Gagal mengambil daftar produk.',
+      },
+      { status: isRateLimit ? 429 : 500 }
     )
   }
 }

@@ -152,7 +152,7 @@ export default function GameTopUpPage() {
       setProducts(gameProducts)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Gagal memuat produk')
-    } finally {
+    }
       setLoading(false)
     }
   }, [gameKey])
@@ -231,21 +231,6 @@ export default function GameTopUpPage() {
   }
 
   function handleInputSubmit() {
-    setInputError('')
-    if (!gameUserId.trim()) {
-      setInputError(`${gameInfo.userIdLabel} wajib diisi.`)
-      return
-    }
-    if (gameInfo.requireServer && !serverId.trim()) {
-      setInputError('Server ID wajib diisi.')
-      return
-    }
-    if (!nickChecked) {
-      setInputError('Harap verifikasi ID terlebih dahulu.')
-      return
-    }
-    setStep('confirm')
-  }
 
   async function handleConfirm() {
     if (!selectedProduct) return
