@@ -113,9 +113,9 @@ export default async function HomePage() {
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-6 max-w-sm mx-auto mt-16">
+          <div className="flex flex-wrap justify-center gap-4 max-w-2xl mx-auto mt-16">
             {[{ value: '50+', label: 'Game' }, { value: '< 1 menit', label: 'Proses' }, { value: '24/7', label: 'Layanan' }].map((s) => (
-              <div key={s.label} className="text-center">
+              <div key={s.label} className="min-w-[120px] flex-1 max-w-[180px] text-center">
                 <p className="text-2xl font-black" style={{ color: theme.foreground }}>{s.value}</p>
                 <p className="text-xs mt-1" style={{ color: theme.mutedStrong }}>{s.label}</p>
               </div>
@@ -131,11 +131,11 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold mb-3" style={{ color: theme.foreground }}>Game yang Tersedia</h2>
             <p style={{ color: theme.muted }}>Top up game favoritmu dengan harga kompetitif dan proses instan</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             {games.map(([key, game]) => (
               <Link key={key} href="/auth/register"
-                className="group relative rounded-lg overflow-hidden transition-all duration-200 hover:-translate-y-1 text-center"
-                style={{ border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
+                className="group relative rounded-xl overflow-hidden transition-all duration-200 hover:-translate-y-1 text-center"
+                style={{ flex: '1 1 140px', minWidth: '140px', maxWidth: '220px', border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
                 <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
                 <div className="relative p-5">
                   <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3 overflow-hidden"
@@ -161,14 +161,14 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold mb-3" style={{ color: theme.foreground }}>Cara Top Up</h2>
             <p style={{ color: theme.muted }}>Proses mudah, cepat, dan aman hanya dalam 3 langkah</p>
           </div>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="flex flex-wrap justify-center gap-4">
             {[
               { step: '01', title: 'Pilih Game & Nominal', desc: 'Pilih game favoritmu dan nominal dari katalog lengkap ThreeTop.' },
               { step: '02', title: 'Masukkan ID & Bayar', desc: 'Masukkan User ID, pilih metode pembayaran, dan selesaikan pembayaran.' },
               { step: '03', title: 'Item Langsung Masuk', desc: 'Diamond, UC, VP langsung masuk ke akun game kamu dalam hitungan detik.' },
             ].map((item) => (
-              <div key={item.step} className="rounded-lg p-6 relative overflow-hidden"
-                style={{ border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
+              <div key={item.step} className="rounded-xl p-6 relative overflow-hidden"
+                style={{ flex: '1 1 220px', minWidth: '220px', maxWidth: '320px', border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
                 <div className="absolute top-4 right-4 text-5xl font-black" style={{ color: 'var(--color-overlay-watermark)' }}>{item.step}</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
                   style={{ background: 'var(--color-surface-strong)', border: '1px solid var(--color-border-subtle)' }}>
@@ -189,7 +189,7 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold mb-3" style={{ color: theme.foreground }}>Kenapa ThreeTop?</h2>
             <p style={{ color: theme.muted }}>Dipercaya oleh ribuan gamer Indonesia</p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="flex flex-wrap justify-center gap-4">
             {[
               { title: 'Proses Instan', desc: 'Transaksi diproses otomatis. Item langsung masuk tanpa menunggu.' },
               { title: 'Harga Terbaik', desc: 'Harga kompetitif dari supplier resmi tanpa biaya tersembunyi.' },
@@ -198,8 +198,8 @@ export default async function HomePage() {
               { title: 'Riwayat Lengkap', desc: 'Pantau seluruh transaksi dari dashboard kapan saja.' },
               { title: 'Support 24/7', desc: 'Tim siap membantu setiap hari, kapanpun kamu butuhkan.' },
             ].map((item) => (
-              <div key={item.title} className="rounded-lg p-6"
-                style={{ border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
+              <div key={item.title} className="rounded-xl p-6"
+                style={{ flex: '1 1 220px', minWidth: '220px', maxWidth: '300px', border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
                   style={{ background: 'var(--color-surface-strong)', border: '1px solid var(--color-border-subtle)' }}>
                   <div className="w-4 h-4 rounded-full" style={{ background: theme.foreground }} />
