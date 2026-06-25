@@ -105,6 +105,19 @@ export default function AdminHeader({ user }: { user: User }) {
               ))}
             </nav>
 
+            {/* User area link (mobile) */}
+            <div className="pt-4 pb-2 px-3">
+              <p className="text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-widest mb-3">User Area</p>
+              <Link
+                href="/dashboard"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:bg-[var(--color-surface)] transition-all"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+                Kembali ke Dashboard
+              </Link>
+            </div>
+
             {/* Logout */}
             <div className="p-3 border-t border-[var(--color-border)]/60">
               <button
