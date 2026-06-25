@@ -15,6 +15,7 @@ model User {
   image         String?
   role          Role      @default(USER)
   createdAt     DateTime  @default(now())
+  suspendedUntil DateTime?
   updatedAt     DateTime  @updatedAt
   accounts      Account[]
   sessions      Session[]

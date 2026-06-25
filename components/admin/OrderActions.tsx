@@ -41,7 +41,7 @@ export default function AdminOrderActions({
       <button
         onClick={() => setOpen(!open)}
         disabled={loading}
-        className="px-2.5 py-1.5 rounded-lg text-xs bg-[var(--color-surface-strong)] border border-[var(--color-border)] text-[var(--color-frost)] hover:text-[var(--color-frost)] hover:bg-[var(--color-surface)] transition-colors disabled:opacity-50 whitespace-nowrap"
+        className="px-2.5 py-1.5 rounded-lg text-xs bg-[var(--color-surface-strong)] border border-[var(--color-border)] text-white hover:text-white hover:bg-[var(--color-surface)] transition-colors disabled:opacity-50 whitespace-nowrap"
       >
         {loading ? '...' : 'Ubah Status'}
       </button>
@@ -53,7 +53,7 @@ export default function AdminOrderActions({
             style={{ background: 'var(--color-surface-strong)' }}>
             {others.map((s) => (
               <button key={s} onClick={() => updateStatus(s)}
-                className="w-full text-left px-3 py-2.5 text-xs text-[var(--color-frost)] hover:bg-[var(--color-surface-dark)] hover:text-[var(--color-frost)] transition-colors">
+                className="w-full text-left px-3 py-2.5 text-xs text-white hover:bg-[var(--color-surface-dark)] hover:text-white transition-colors">
                 → {s === 'SUCCESS' ? 'Sukses' : s === 'FAILED' ? 'Gagal' : s === 'PROCESSING' ? 'Diproses' : 'Pending'}
               </button>
             ))}

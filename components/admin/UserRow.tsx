@@ -7,6 +7,7 @@ type User = {
   email?: string | null
   role?: string
   createdAt: string | Date
+  suspendedUntil?: string | Date | null
   _count: { orders: number }
   orders: { amount: number }[]
 }
@@ -34,19 +35,26 @@ export default function UserRow({ user }: { user: User }) {
       </div>
 
       <div className="w-28">
-        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border ${
+        <div className="flex items-center gap-2">
+          <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border ${
           user.role === 'ADMIN'
             ? 'bg-[var(--color-violet-bg)] border-[var(--color-violet-border)] text-[var(--color-violet)]'
             : 'bg-[var(--color-surface-dark)]/40 border-[var(--color-border)]/30 text-[var(--color-muted)]'
         }`}>{user.role}</span>
+          {user.suspendedUntil && (
+            <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-[var(--color-error-bg)] border border-[var(--color-error-border)] text-[var(--color-error)]">
+              BANNED
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="w-20 text-white text-xs font-medium">{user._count.orders}</div>
       <div className="w-32 text-[var(--color-success)] text-xs font-medium whitespace-nowrap">{formatCurrency(totalSpend)}</div>
       <div className="w-40 text-[var(--color-muted-strong)] text-xs whitespace-nowrap">{formatDate(user.createdAt)}</div>
-      <div className="w-36 pl-3">
-        <AdminUserActions userId={user.id} currentRole={user.role as 'USER' | 'ADMIN'} />
-      </div>
+          <div className="w-48">
+            <AdminUserActions userId={user.id} currentRole={user.role as 'USER' | 'ADMIN'} suspendedUntil={user.suspendedUntil ?? null} />
+          </div>
     </div>
   )
 }

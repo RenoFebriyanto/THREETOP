@@ -37,6 +37,7 @@ export default async function AdminUsersPage({
         name: true,
         email: true,
         role: true,
+          suspendedUntil: true,
         createdAt: true,
         _count: { select: { orders: true } },
         orders: {
@@ -115,7 +116,7 @@ export default async function AdminUsersPage({
               <div className="w-20">Total Order</div>
               <div className="w-32">Total Spend</div>
               <div className="w-40">Bergabung</div>
-              <div className="w-36">Aksi</div>
+              <div className="w-48">Aksi</div>
             </div>
 
             <div className="divide-y divide-slate-800/40">
