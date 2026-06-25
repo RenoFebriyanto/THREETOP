@@ -92,10 +92,10 @@ export default async function ProfilePage() {
         </div>
       </div>
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Stats cards */}
+      <div className="flex flex-wrap gap-4 justify-center">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-lg border border-[var(--color-border)] p-4 text-center" style={{ background: 'var(--color-surface-dark)' }}>
+          <div key={s.label} className="rounded-lg border border-[var(--color-border)] p-4 text-center" style={{ background: 'var(--color-surface-dark)', flex: '1 1 180px', minWidth: '180px', maxWidth: '260px' }}>
             <div className="w-10 h-10 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center mx-auto mb-2 text-[var(--color-frost)]">
               {s.icon}
             </div>

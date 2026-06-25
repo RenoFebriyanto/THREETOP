@@ -181,7 +181,7 @@ export default async function AdminOrdersPage({
                         </span>
                       </div>
                     </div>
-                    <div className="grid gap-2 text-xs text-[var(--color-muted-strong)]">
+                    <div className="flex flex-col gap-2 text-xs text-[var(--color-muted-strong)]">
                       <div className="flex justify-between gap-2">
                         <span>Game</span>
                         <span className="font-medium text-white truncate text-right">{gameInfo?.label ?? order.game}</span>

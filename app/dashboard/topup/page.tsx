@@ -56,7 +56,6 @@ export default function TopUpPage() {
         </div>
       </div>
 
-      {/* Grid */}
       {filtered.length === 0 ? (
         <div className="rounded-lg border border-[var(--color-border)] p-12 text-center" style={{ background: 'var(--color-surface-dark)' }}>
           <p className="text-[var(--color-muted)] text-sm">Game &quot;{query}&quot; tidak ditemukan.</p>

@@ -28,7 +28,7 @@
   --color-surface-hover: rgba(228,240,246,0.14);
   --color-separator: rgba(228,240,246,0.25);
   --color-shadow: rgba(228,240,246,0.12);
-  --color-grid-bg: rgba(228,240,246,0.16);
+  --color-pattern-bg: rgba(228,240,246,0.16);
   
   /* States */
   --color-disabled-bg: rgba(228,240,246,0.35);

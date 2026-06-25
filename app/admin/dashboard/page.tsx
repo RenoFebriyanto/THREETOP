@@ -109,11 +109,11 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="flex flex-wrap gap-4 justify-center">
         {statCards.map((card) => {
           const colors = accentMap[card.accent]
           return (
-            <div key={card.label} className={`rounded-lg border ${colors.border} p-5`} style={{ background: 'var(--color-surface-dark)' }}>
+            <div key={card.label} className={`rounded-lg border ${colors.border} p-5`} style={{ background: 'var(--color-surface-dark)', flex: '1 1 220px', minWidth: '220px', maxWidth: '300px' }}>
               <div className="flex items-start justify-between mb-3">
                 <p className="text-[var(--color-muted)] text-xs font-medium">{card.label}</p>
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${colors.icon}`}>{card.icon}</div>
@@ -126,7 +126,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Status breakdown + Recent orders */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-6">
 
         {/* Status breakdown */}
         <div className="rounded-lg border border-[var(--color-border)] p-6 space-y-4" style={{ background: 'var(--color-surface-dark)' }}>
@@ -155,7 +155,7 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Recent orders */}
-        <div className="lg:col-span-2 rounded-lg border border-[var(--color-border)] p-6" style={{ background: 'var(--color-surface-dark)' }}>
+        <div className="rounded-lg border border-[var(--color-border)] p-6" style={{ background: 'var(--color-surface-dark)' }}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-white font-semibold">Transaksi Terbaru</h2>
             <Link href="/admin/orders" className="text-[var(--color-violet)] text-sm hover:text-[var(--color-violet)]/80 transition-colors">Lihat semua →</Link>
@@ -188,7 +188,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="flex flex-wrap gap-4 justify-center">
         {[
           { label: 'Kelola Transaksi', href: '/admin/orders',   color: 'border-[var(--color-violet-border)] hover:border-[var(--color-violet-border)]/60',
             icon: <svg className="w-6 h-6 text-[var(--color-violet)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> },

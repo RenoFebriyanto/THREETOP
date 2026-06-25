@@ -81,7 +81,7 @@ export default async function AdminUsersPage({
                     <p className="text-[var(--color-muted-strong)] text-xs truncate">{user.email}</p>
                   </div>
                 </div>
-                <div className="grid gap-2 text-xs text-[var(--color-muted-strong)]">
+                <div className="flex flex-col gap-2 text-xs text-[var(--color-muted-strong)]">
                   <div className="flex justify-between gap-2">
                     <span>Role</span>
                     <span className={`font-medium ${user.role === 'ADMIN' ? 'text-[var(--color-violet)]' : 'text-[var(--color-muted)]'}`}>{user.role}</span>

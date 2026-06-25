@@ -11,7 +11,6 @@ export default function TopUpLoading() {
         </div>
         <div className="h-10 w-40 rounded-xl bg-[var(--color-surface-muted)]" />
       </div>
-      {/* Game grid */}
       <div className="flex flex-wrap justify-center gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
           <div key={i} className="rounded-xl bg-[var(--color-surface-muted)]" style={{ flex: '1 1 160px', minWidth: '160px', maxWidth: '220px', height: '140px' }} />

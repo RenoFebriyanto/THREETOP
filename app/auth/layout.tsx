@@ -12,13 +12,13 @@ export default function AuthLayout({
 }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--color-abyss)] relative overflow-hidden">
-      {/* Background grid */}
+      {/* Background pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: `
-            linear-gradient(var(--color-grid-bg) 1px, transparent 1px),
-            linear-gradient(90deg, var(--color-grid-bg) 1px, transparent 1px)
+            linear-gradient(var(--color-pattern-bg) 1px, transparent 1px),
+            linear-gradient(90deg, var(--color-pattern-bg) 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px',
         }}

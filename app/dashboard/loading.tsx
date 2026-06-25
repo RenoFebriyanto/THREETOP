@@ -4,15 +4,15 @@ export default function DashboardLoading() {
       {/* Welcome banner skeleton */}
       <div className="h-32 rounded-xl bg-[var(--color-surface-muted)]" />
       {/* Stats skeleton */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="flex flex-wrap gap-4 justify-center">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-28 rounded-xl bg-[var(--color-surface-muted)]" />
+          <div key={i} className="rounded-xl bg-[var(--color-surface-muted)]" style={{ flex: '1 1 180px', minWidth: '180px', maxWidth: '260px', height: '112px' }} />
         ))}
       </div>
       {/* Content skeleton */}
-      <div className="grid lg:grid-cols-5 gap-6">
-        <div className="lg:col-span-3 h-72 rounded-xl bg-[var(--color-surface-muted)]" />
-        <div className="lg:col-span-2 h-72 rounded-xl bg-[var(--color-surface-muted)]" />
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div className="h-72 rounded-xl bg-[var(--color-surface-muted)]" style={{ flex: '1 1 320px', minWidth: '280px' }} />
+        <div className="h-72 rounded-xl bg-[var(--color-surface-muted)]" style={{ flex: '1 1 240px', minWidth: '240px' }} />
       </div>
     </div>
   )

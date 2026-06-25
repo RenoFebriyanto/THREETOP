@@ -176,10 +176,10 @@ export default function PrivacyPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 py-12">
-        <div className="grid lg:grid-cols-4 gap-8">
+        <div className="flex flex-col lg:flex-row gap-8">
 
           {/* Sidebar navigasi */}
-          <div className="hidden lg:block">
+          <div className="hidden lg:block lg:w-1/4">
             <div className="sticky top-20 space-y-1">
               <p className="text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider mb-3">Daftar Isi</p>
               {SECTIONS.map((s) => (
@@ -192,7 +192,7 @@ export default function PrivacyPage() {
           </div>
 
           {/* Konten */}
-          <div className="lg:col-span-3 space-y-8">
+          <div className="lg:w-3/4 space-y-8">
             <div>
               <h1 className="text-3xl font-bold text-[var(--color-frost)]">Kebijakan Privasi</h1>
               <p className="text-[var(--color-muted)] text-sm mt-2">
