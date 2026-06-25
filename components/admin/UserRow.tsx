@@ -23,8 +23,8 @@ export default function UserRow({ user }: { user: User }) {
   const totalSpend = user.orders.reduce((s, o) => s + o.amount, 0)
 
   return (
-    <div className="flex items-center w-full px-4 py-3 hover:bg-[var(--color-abyss)]/20 transition-colors gap-4">
-      <div className="flex items-center gap-3 w-64 min-w-0">
+    <div className="grid grid-cols-[16rem_7rem_5rem_7rem_9rem_12rem] items-center w-full px-4 py-3 hover:bg-[var(--color-abyss)]/20 transition-colors gap-x-4">
+      <div className="flex items-center gap-3 min-w-0">
         <div className="w-8 h-8 rounded-full bg-[var(--color-surface-dark)] flex items-center justify-center shrink-0">
           <span className="text-white text-xs font-bold">{user.name?.charAt(0).toUpperCase() ?? '?'}</span>
         </div>
@@ -34,7 +34,7 @@ export default function UserRow({ user }: { user: User }) {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 w-28 min-w-0">
+      <div className="flex items-center gap-2 min-w-0">
         <span title={user.role} className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border ${
           user.role === 'ADMIN'
             ? 'bg-[var(--color-violet-bg)] border-[var(--color-violet-border)] text-[var(--color-violet)]'
@@ -50,7 +50,7 @@ export default function UserRow({ user }: { user: User }) {
       <div className="w-20 min-w-0 text-white text-xs font-medium text-left truncate">{user._count.orders}</div>
       <div className="w-28 min-w-0 text-[var(--color-success)] text-xs font-medium truncate">{formatCurrency(totalSpend)}</div>
       <div className="w-36 min-w-0 text-[var(--color-muted-strong)] text-xs truncate">{formatDate(user.createdAt)}</div>
-      <div className="w-48 min-w-0">
+      <div className="min-w-0">
         <AdminUserActions userId={user.id} currentRole={user.role as 'USER' | 'ADMIN'} suspendedUntil={user.suspendedUntil ?? null} />
       </div>
     </div>
