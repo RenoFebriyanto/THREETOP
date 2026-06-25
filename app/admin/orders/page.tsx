@@ -5,6 +5,7 @@ import AdminExportButton from '@/components/admin/ExportButton'
 import CopyButton from '@/components/ui/CopyButton'
 import GameIcon from '@/components/ui/GameIcon'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
+import OrderRow from '@/components/admin/OrderRow'
 
 type OrderStatus = 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED'
 
@@ -108,52 +109,25 @@ export default async function AdminOrdersPage({
         ) : (
           <div className="space-y-4">
             <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[var(--color-border)]">
-                    {['Game', 'Produk', 'User', 'Game ID', 'Jumlah', 'Status', 'Waktu', 'Aksi'].map((h) => (
-                      <th key={h} className="text-left px-4 py-3 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/40">
-                  {orders.map((order) => {
-                    const status = STATUS_CONFIG[order.status as OrderStatus]
-                    const gameInfo = SUPPORTED_GAMES[order.game]
-                    return (
-                      <tr key={order.id} className="hover:bg-[var(--color-abyss)]/20 transition-colors">
-                        <td className="px-4 py-3">
-                          <div className="w-8 h-8 rounded-lg overflow-hidden bg-[var(--color-abyss)] flex items-center justify-center">
-                            {gameInfo
-                              ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
-                              : <span className="text-sm">🎮</span>
-                            }
-                          </div>
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="text-white font-medium whitespace-nowrap">{order.productName}</p>
-                          {order.sn && <p className="text-[var(--color-success)] text-xs font-mono mt-0.5">SN: {order.sn}</p>}
-                        </td>
-                        <td className="px-4 py-3">
-                          <p className="text-[var(--color-frost)] text-xs whitespace-nowrap">{order.user.name ?? '—'}</p>
-                          <p className="text-[var(--color-muted-strong)] text-xs">{order.user.email}</p>
-                        </td>
-                        <td className="px-4 py-3 text-[var(--color-muted)] text-xs font-mono whitespace-nowrap">{order.gameUserId}</td>
-                        <td className="px-4 py-3 text-white font-semibold whitespace-nowrap">{formatCurrency(order.amount)}</td>
-                        <td className="px-4 py-3">
-                          <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${status.bg} ${status.color}`}>
-                            {status.label}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3 text-[var(--color-muted-strong)] text-xs whitespace-nowrap">{formatDate(order.createdAt)}</td>
-                        <td className="px-4 py-3">
-                          <AdminOrderActions orderId={order.id} currentStatus={order.status as OrderStatus} />
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
+              <div className="w-full text-sm">
+                <div className="border-b border-[var(--color-border)] hidden sm:flex px-4 py-3 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">
+                  <div className="w-12">Game</div>
+                  <div className="flex-1">Produk</div>
+                  <div className="w-44">User</div>
+                  <div className="w-28">Game ID</div>
+                  <div className="w-28">Jumlah</div>
+                  <div className="w-28">Status</div>
+                  <div className="w-44">Waktu</div>
+                  <div className="w-36">Aksi</div>
+                </div>
+
+                <div className="divide-y divide-slate-800/40">
+                  {orders.map((order) => (
+                    // @ts-ignore - order type from prisma
+                    <OrderRow key={order.id} order={order} />
+                  ))}
+                </div>
+              </div>
             </div>
             <div className="sm:hidden space-y-4 p-4">
               {orders.map((order) => {

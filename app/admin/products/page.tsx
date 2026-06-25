@@ -1,5 +1,8 @@
 import { getProducts, groupProductsByGame, SUPPORTED_GAMES } from '@/lib/digiflazz'
 import GameIcon from '@/components/ui/GameIcon'
+import Container from '@/components/layout/Container'
+import ProductCard from '@/components/admin/ProductCard'
+import ProductRow from '@/components/admin/ProductRow'
 
 function formatCurrency(n: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(n)
@@ -19,7 +22,7 @@ export default async function AdminProductsPage() {
   const totalActive = products.filter((p) => p.buyer_product_status && p.seller_product_status).length
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <Container className="space-y-6">
       <div className="flex items-start justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Daftar Produk</h1>
@@ -87,40 +90,27 @@ export default async function AdminProductsPage() {
                   ))}
                 </div>
                 <div className="hidden sm:block overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-[var(--color-border)]">
-                        {['SKU', 'Nama Produk', 'Harga', 'Stok', 'Status'].map((h) => (
-                          <th key={h} className="text-left px-4 py-2.5 text-[var(--color-muted-strong)] text-xs font-medium">{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/30">
+                  <div className="w-full text-sm">
+                    <div className="border-b border-[var(--color-border)] hidden sm:flex px-4 py-2.5 text-[var(--color-muted-strong)] text-xs font-medium">
+                      <div className="w-40">SKU</div>
+                      <div className="flex-1">Nama Produk</div>
+                      <div className="w-28 text-right">Harga</div>
+                      <div className="w-20 text-center">Stok</div>
+                      <div className="w-28">Status</div>
+                    </div>
+
+                    <div className="divide-y divide-slate-800/30">
                       {gameProducts.map((p) => (
-                        <tr key={p.buyer_sku_code} className="hover:bg-[var(--color-abyss)]/20 transition-colors">
-                          <td className="px-4 py-2.5 font-mono text-[var(--color-muted)] text-xs">{p.buyer_sku_code}</td>
-                          <td className="px-4 py-2.5 text-white text-xs">{p.product_name}</td>
-                          <td className="px-4 py-2.5 text-[var(--color-frost)] font-semibold text-xs whitespace-nowrap">{formatCurrency(p.price)}</td>
-                          <td className="px-4 py-2.5 text-[var(--color-muted)] text-xs">{p.unlimited_stock ? '∞' : p.stock}</td>
-                          <td className="px-4 py-2.5">
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${
-                              p.buyer_product_status
-                                ? 'bg-[var(--color-success-bg)] border-[var(--color-success-border)] text-[var(--color-success)]'
-                                : 'bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]'
-                            }`}>
-                              {p.buyer_product_status ? 'Aktif' : 'Nonaktif'}
-                            </span>
-                          </td>
-                        </tr>
+                        <ProductRow key={p.buyer_sku_code} product={p} />
                       ))}
-                    </tbody>
-                  </table>
+                    </div>
+                  </div>
                 </div>
               </>
             )}
           </div>
         )
       })}
-    </div>
+    </Container>
   )
 }

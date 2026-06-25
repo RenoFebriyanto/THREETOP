@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/db'
 import AdminUserActions from '@/components/admin/UserActions'
+import UserRow from '@/components/admin/UserRow'
 
 function formatDate(d: Date) {
   return new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(d))
@@ -107,50 +108,23 @@ export default async function AdminUsersPage({
           })}
         </div>
         <div className="hidden sm:block overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--color-border)]">
-                {['User', 'Role', 'Total Order', 'Total Spend', 'Bergabung', 'Aksi'].map((h) => (
-                  <th key={h} className="text-left px-4 py-3 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/40">
-              {users.map((user) => {
-                const totalSpend = user.orders.reduce((s, o) => s + o.amount, 0)
-                return (
-                  <tr key={user.id} className="hover:bg-[var(--color-abyss)]/20 transition-colors">
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-[var(--color-surface-dark)] flex items-center justify-center shrink-0">
-                          <span className="text-white text-xs font-bold">{user.name?.charAt(0).toUpperCase() ?? '?'}</span>
-                        </div>
-                        <div>
-                          <p className="text-white font-medium text-xs">{user.name ?? '—'}</p>
-                          <p className="text-[var(--color-muted-strong)] text-xs">{user.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border ${
-                        user.role === 'ADMIN'
-                          ? 'bg-[var(--color-violet-bg)] border-[var(--color-violet-border)] text-[var(--color-violet)]'
-                          : 'bg-[var(--color-surface-dark)]/40 border-[var(--color-border)]/30 text-[var(--color-muted)]'
-                      }`}>
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-white text-xs font-medium">{user._count.orders}</td>
-                    <td className="px-4 py-3 text-[var(--color-success)] text-xs font-medium whitespace-nowrap">{formatCurrency(totalSpend)}</td>
-                    <td className="px-4 py-3 text-[var(--color-muted-strong)] text-xs whitespace-nowrap">{formatDate(user.createdAt)}</td>
-                    <td className="px-4 py-3">
-                      <AdminUserActions userId={user.id} currentRole={user.role as 'USER' | 'ADMIN'} />
-                    </td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
+          <div className="w-full text-sm">
+            <div className="border-b border-[var(--color-border)] hidden sm:flex px-4 py-3 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">
+              <div className="w-64">User</div>
+              <div className="w-28">Role</div>
+              <div className="w-20">Total Order</div>
+              <div className="w-32">Total Spend</div>
+              <div className="w-40">Bergabung</div>
+              <div className="w-36">Aksi</div>
+            </div>
+
+            <div className="divide-y divide-slate-800/40">
+              {users.map((user) => (
+                // @ts-ignore - user type from prisma
+                <UserRow key={user.id} user={user} />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
