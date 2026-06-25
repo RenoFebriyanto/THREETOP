@@ -16,6 +16,7 @@ export default function AdminUserActions({
   const [loading, setLoading] = useState(false)
   const [openSuspend, setOpenSuspend] = useState(false)
   const btnRef = useRef<HTMLButtonElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
   const [menuStyle, setMenuStyle] = useState<{ top: number; left: number; width: number } | null>(null)
   const [years, setYears] = useState(0)
   const [months, setMonths] = useState(0)
@@ -79,17 +80,15 @@ export default function AdminUserActions({
     if (!btn) return
     const rect = btn.getBoundingClientRect()
     const viewportWidth = window.innerWidth
-    // desired width: 288px on desktop, up to 320 or viewport-32 on small screens
-    const desiredDesktop = 288
-    const desiredMobile = Math.min(320, viewportWidth - 32)
-    const width = viewportWidth < 640 ? desiredMobile : desiredDesktop
-    let left = rect.left + window.scrollX
-    // prefer aligning to the right of button
-    if (left + width > window.scrollX + viewportWidth - 16) {
-      left = Math.max(window.scrollX + 16, (rect.right + window.scrollX) - width)
-    }
-    const top = rect.bottom + window.scrollY + 8
-    setMenuStyle({ top, left, width })
+    const viewportHeight = window.innerHeight
+    const preferredWidth = viewportWidth < 640 ? Math.min(320, viewportWidth - 32) : 288
+    const leftBase = rect.left + window.scrollX
+    const maxLeft = window.scrollX + viewportWidth - preferredWidth - 16
+    const left = Math.min(Math.max(leftBase, window.scrollX + 16), maxLeft)
+    const menuHeightEstimate = 250
+    const spaceBelow = viewportHeight - rect.bottom
+    const top = spaceBelow < menuHeightEstimate ? rect.top + window.scrollY - menuHeightEstimate - 8 : rect.bottom + window.scrollY + 8
+    setMenuStyle({ top, left, width: preferredWidth })
   }, [openSuspend])
 
   return (
@@ -120,6 +119,7 @@ export default function AdminUserActions({
           <>
             <div className="fixed inset-0 z-40" onClick={() => setOpenSuspend(false)} />
             <div
+              ref={menuRef}
               className="fixed z-50 rounded-lg border border-[var(--color-border)] overflow-hidden p-3 shadow-2xl"
               style={{
                 background: 'var(--color-surface-strong)',
