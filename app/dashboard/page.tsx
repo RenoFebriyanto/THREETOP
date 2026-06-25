@@ -209,10 +209,10 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Top Up + Recent Orders */}
-      <div className="flex flex-wrap gap-6">
+      <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-6">
 
         {/* Popular Games */}
-        <div className="flex-auto basis-full lg:basis-[65%] min-w-0 rounded-lg border border-[var(--color-border-subtle)] p-4 sm:p-6" style={{ background: 'var(--color-surface-strong)' }}>
+        <div className="flex-auto basis-full md:basis-[60%] min-w-0 rounded-lg border border-[var(--color-border-subtle)] p-4 sm:p-6" style={{ background: 'var(--color-surface-strong)' }}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-[var(--color-frost)] font-semibold text-lg">Game Populer</h2>
             <Link href="/dashboard/topup" className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">
@@ -240,7 +240,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent Orders */}
-        <div className="flex-auto basis-full lg:basis-[35%] min-w-0 rounded-lg border border-[var(--color-border-subtle)] p-5 sm:p-6" style={{ background: 'var(--color-surface-strong)' }}>
+        <div className="flex-auto basis-full md:basis-[40%] min-w-0 rounded-lg border border-[var(--color-border-subtle)] p-5 sm:p-6" style={{ background: 'var(--color-surface-strong)' }}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-[var(--color-frost)] font-semibold text-lg">Transaksi Terbaru</h2>
             <Link href="/dashboard/orders" className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">
