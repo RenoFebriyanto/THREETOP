@@ -82,7 +82,7 @@ export default async function AdminDashboardPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 space-y-8">
 
       {/* Welcome */}
       <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -109,7 +109,7 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* Stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card) => {
           const colors = accentMap[card.accent]
           return (
@@ -126,7 +126,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Status breakdown + Recent orders */}
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
         {/* Status breakdown */}
         <div className="rounded-lg border border-[var(--color-border)] p-6 space-y-4" style={{ background: 'var(--color-surface-dark)' }}>
@@ -167,18 +167,18 @@ export default async function AdminDashboardPage() {
               {recentOrders.map((order) => {
                 const status = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG]
                 return (
-                  <div key={order.id} className="flex items-center gap-3 p-3 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
+                  <div key={order.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-xs font-medium truncate">{order.productName}</p>
                       <p className="text-[var(--color-muted-strong)] text-xs truncate">{order.user.name ?? order.user.email}</p>
                     </div>
-                    <div className="text-right shrink-0">
+                    <div className="flex flex-col sm:items-end items-start gap-2 shrink-0 min-w-0">
                       <p className="text-white text-xs font-semibold">{formatCurrency(order.amount)}</p>
-                      <span className={`inline-block mt-0.5 px-2 py-0.5 rounded-full text-xs font-medium border ${status.bg} ${status.color}`}>
+                      <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${status.bg} ${status.color}`}>
                         {status.label}
                       </span>
                     </div>
-                    <p className="text-[var(--color-muted-strong)] text-xs shrink-0 hidden sm:block w-28 text-right">{formatDate(order.createdAt)}</p>
+                    <p className="text-[var(--color-muted-strong)] text-xs w-full sm:w-28 text-left sm:text-right break-words">{formatDate(order.createdAt)}</p>
                   </div>
                 )
               })}
@@ -188,7 +188,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Quick links */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           { label: 'Kelola Transaksi', href: '/admin/orders',   color: 'border-[var(--color-violet-border)] hover:border-[var(--color-violet-border)]/60',
             icon: <svg className="w-6 h-6 text-[var(--color-violet)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> },

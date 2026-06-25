@@ -52,7 +52,7 @@ export default async function ProfilePage() {
   ]
 
   return (
-    <div className="max-w-3xl mx-auto space-y-6">
+    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-0 space-y-6">
 
       {/* Header */}
       <div>
@@ -61,8 +61,8 @@ export default async function ProfilePage() {
       </div>
 
       {/* Profile card */}
-      <div className="rounded-lg border border-[var(--color-border)] p-6" style={{ background: 'var(--color-surface-dark)' }}>
-        <div className="flex items-center gap-5">
+      <div className="rounded-lg border border-[var(--color-border)] p-4 sm:p-6" style={{ background: 'var(--color-surface-dark)' }}>
+        <div className="flex flex-col sm:flex-row items-start gap-5">
           <div className="w-20 h-20 rounded-lg overflow-hidden bg-[var(--color-surface-dark)] shrink-0 flex items-center justify-center">
             {user.image ? (
               <Image src={user.image} alt={user.name ?? ''} width={80} height={80} className="w-full h-full object-cover" />
@@ -93,7 +93,7 @@ export default async function ProfilePage() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((s) => (
           <div key={s.label} className="rounded-lg border border-[var(--color-border)] p-4 text-center" style={{ background: 'var(--color-surface-dark)' }}>
             <div className="w-10 h-10 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center mx-auto mb-2 text-[var(--color-frost)]">
@@ -117,9 +117,9 @@ export default async function ProfilePage() {
             { label: 'Role', value: user.role === 'ADMIN' ? 'Administrator' : 'User' },
             { label: 'Status Akun', value: 'Aktif' },
           ].map((item) => (
-            <div key={item.label} className="flex justify-between items-center px-6 py-4">
-              <span className="text-[var(--color-muted)] text-sm">{item.label}</span>
-              <span className="text-white text-sm font-medium">{item.value}</span>
+            <div key={item.label} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 px-6 py-4">
+              <span className="text-[var(--color-muted)] text-sm min-w-0">{item.label}</span>
+              <span className="text-white text-sm font-medium min-w-0 break-words text-left sm:text-right">{item.value}</span>
             </div>
           ))}
         </div>
@@ -127,7 +127,7 @@ export default async function ProfilePage() {
 
       {/* Ubah Password */}
       <div className="rounded-lg border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
-        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center gap-3">
+        <div className="px-6 py-4 border-b border-[var(--color-border)] flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center shrink-0">
             <svg className="w-4 h-4 text-[var(--color-frost)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

@@ -19,7 +19,7 @@ export default function TopUpPage() {
   }, [query, games])
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 space-y-6">
 
       {/* Carousel Promosi */}
       <PromoCarousel />
@@ -65,7 +65,7 @@ export default function TopUpPage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {filtered.map(([key, game]) => (
             <Link key={key} href={`/dashboard/topup/${key}`}
               className="group relative rounded-lg overflow-hidden border border-[var(--color-border)] hover:border-[var(--color-border)]/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl">

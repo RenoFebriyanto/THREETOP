@@ -53,7 +53,7 @@ export default function EditNameForm({ currentName }: { currentName: string }) {
 
   return (
     <div className="mt-2 space-y-2">
-      <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
         <input
           type="text"
           value={name}
@@ -61,18 +61,18 @@ export default function EditNameForm({ currentName }: { currentName: string }) {
           onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') setEditing(false) }}
           maxLength={50}
           autoFocus
-          className="flex-1 px-3 py-1.5 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]/50 text-[var(--color-frost)] text-sm focus:outline-none focus:border-[var(--color-info)] focus:ring-1 focus:ring-[var(--color-info-ring)] transition-all"
+          className="flex-1 min-w-0 px-3 py-1.5 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]/50 text-[var(--color-frost)] text-sm focus:outline-none focus:border-[var(--color-info)] focus:ring-1 focus:ring-[var(--color-info-ring)] transition-all"
         />
         <button
           onClick={handleSave}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] hover:bg-[var(--color-info-bg)] transition-colors disabled:opacity-50"
+          className="w-full sm:w-auto px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] hover:bg-[var(--color-info-bg)] transition-colors disabled:opacity-50"
         >
           {loading ? '...' : 'Simpan'}
         </button>
         <button
           onClick={() => { setEditing(false); setName(currentName); setError('') }}
-          className="px-3 py-1.5 rounded-lg text-xs text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] border border-[var(--color-border)]/50 hover:border-[var(--color-border)] transition-colors"
+          className="w-full sm:w-auto px-3 py-1.5 rounded-lg text-xs text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] border border-[var(--color-border)]/50 hover:border-[var(--color-border)] transition-colors"
         >
           Batal
         </button>

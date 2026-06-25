@@ -143,7 +143,7 @@ export default async function DashboardPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-0 space-y-8">
 
       {/* Welcome Banner */}
       <div
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statCards.map((card) => {
           const colors = accentColors[card.accent]
           return (
@@ -209,17 +209,17 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Top Up + Recent Orders */}
-      <div className="grid lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
         {/* Popular Games */}
-        <div className="lg:col-span-3 rounded-lg border border-[var(--color-border-subtle)] p-6" style={{ background: 'var(--color-surface-strong)' }}>
+        <div className="lg:col-span-3 rounded-lg border border-[var(--color-border-subtle)] p-4 sm:p-6" style={{ background: 'var(--color-surface-strong)' }}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-[var(--color-frost)] font-semibold text-lg">Game Populer</h2>
             <Link href="/dashboard/topup" className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">
               Lihat semua →
             </Link>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {POPULAR_GAMES.map((game) => (
               <Link
                 key={game.key}
@@ -272,7 +272,7 @@ export default async function DashboardPage() {
                 return (
                   <div
                     key={order.id}
-                    className="flex items-center gap-3 p-3 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]"
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]"
                   >
                     <div className="w-8 h-8 rounded-md bg-[var(--color-scrollbar)] flex items-center justify-center shrink-0 overflow-hidden">
                       {gameInfo
@@ -284,11 +284,11 @@ export default async function DashboardPage() {
                       <p className="text-[var(--color-frost)] text-xs font-medium truncate">{order.productName}</p>
                       <p className="text-[var(--color-muted-strong)] text-xs truncate">{order.game}</p>
                     </div>
-                    <div className="text-right shrink-0">
+                    <div className="text-left sm:text-right shrink-0 min-w-0">
                       <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${status.bg} ${status.color}`}>
                         {status.label}
                       </span>
-                      <p className="text-[var(--color-muted-strong)] text-xs mt-1">{formatDate(order.createdAt)}</p>
+                      <p className="text-[var(--color-muted-strong)] text-xs mt-1 break-words">{formatDate(order.createdAt)}</p>
                     </div>
                   </div>
                 )
@@ -299,7 +299,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Info Banner */}
-      <div className="rounded-lg border border-[var(--color-border-subtle)] p-5 flex items-start gap-4" style={{ background: 'var(--color-surface-strong)' }}>
+      <div className="rounded-lg border border-[var(--color-border-subtle)] p-5 flex flex-col sm:flex-row items-start gap-4" style={{ background: 'var(--color-surface-strong)' }}>
         <div className="w-10 h-10 rounded-lg bg-[var(--color-surface-icon)] border border-[var(--color-border)] flex items-center justify-center shrink-0">
           <svg className="w-5 h-5 text-[var(--color-frost)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
