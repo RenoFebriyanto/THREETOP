@@ -6,7 +6,13 @@ import Link from 'next/link'
 
 export type PromoSlide = {
   id: string
-  image: string          // path ke /public/banners/
+  // single legacy image path OR per-breakpoint images
+  image?: string          // path ke /public/banners/ (legacy)
+  images?: {
+    mobile?: string
+    tablet?: string
+    desktop?: string
+  }
   title: string
   subtitle?: string
   badge?: string         // teks badge kecil, e.g. "PROMO", "FLASH SALE"
@@ -19,33 +25,42 @@ export type PromoSlide = {
 const DEFAULT_SLIDES: PromoSlide[] = [
   {
     id: 'ml-promo',
-    image: '/banners/banner-mobile-legends.png',
+    images: {
+      mobile: '/banners/mobile-mobile-legends.png',
+      tablet: '/banners/tablet-mobile-legends.png',
+      desktop: '/banners/desktop-mobile-legends.png',
+    },
     title: 'Mobile Legends',
     subtitle: 'Diamond instan, harga terbaik',
     badge: 'POPULER',
     badgeColor: 'bg-[var(--color-info)]',
     href: '/dashboard/topup/mobile_legends',
-    cta: 'Top Up Sekarang',
   },
   {
     id: 'ff-promo',
-    image: '/banners/banner-free-fire.jpg',
+    images: {
+      mobile: '/banners/mobile-free-fire.png',
+      tablet: '/banners/tablet-free-fire.png',
+      desktop: '/banners/desktop-free-fire.png',
+    },
     title: 'Free Fire',
     subtitle: 'Diamond FF langsung masuk',
     badge: 'PROMO',
     badgeColor: 'bg-[var(--color-warning)]',
     href: '/dashboard/topup/free_fire',
-    cta: 'Top Up Sekarang',
   },
   {
     id: 'pubg-promo',
-    image: '/banners/banner-pubg-mobile.jpg',
+    images: {
+      mobile: '/banners/mobile-pubg-mobile.png',
+      tablet: '/banners/tablet-pubg-mobile.png',
+      desktop: '/banners/desktop-pubg-mobile.png',
+    },
     title: 'PUBG Mobile',
     subtitle: 'UC murah & cepat',
     badge: 'BARU',
     badgeColor: 'bg-[var(--color-success)]',
     href: '/dashboard/topup/pubg_mobile',
-    cta: 'Top Up Sekarang',
   },
 ]
 
@@ -123,17 +138,33 @@ export default function PromoCarousel({
           className={`absolute inset-0 transition-opacity duration-500 ${i === current ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
           aria-hidden={i !== current}
         >
-          {/* Background image atau fallback gradient */}
+          {/* Background image atau fallback gradient. Prefer per-breakpoint images if provided. */}
           {!imgErrors[s.id] ? (
-            <Image
-              src={s.image}
-              alt={s.title}
-              fill
-              sizes="100vw"
-              className="object-cover"
-              priority={i === 0}
-              onError={() => setImgErrors(p => ({ ...p, [s.id]: true }))}
-            />
+            s.images ? (
+              <div className="absolute inset-0">
+                <picture className="w-full h-full block">
+                  {s.images.desktop && <source media="(min-width:1025px)" srcSet={s.images.desktop} />}
+                  {s.images.tablet && <source media="(min-width:641px) and (max-width:1024px)" srcSet={s.images.tablet} />}
+                  {s.images.mobile && <source media="(max-width:640px)" srcSet={s.images.mobile} />}
+                  <img
+                    src={s.images.desktop ?? s.images.tablet ?? s.images.mobile}
+                    alt={s.title}
+                    className="w-full h-full object-cover"
+                    onError={() => setImgErrors(p => ({ ...p, [s.id]: true }))}
+                  />
+                </picture>
+              </div>
+            ) : (
+              <Image
+                src={s.image ?? ''}
+                alt={s.title}
+                fill
+                sizes="100vw"
+                className="object-cover"
+                priority={i === 0}
+                onError={() => setImgErrors(p => ({ ...p, [s.id]: true }))}
+              />
+            )
           ) : (
             // Fallback gradient jika image belum ada
             <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-[var(--color-abyss)]" />
@@ -151,7 +182,6 @@ export default function PromoCarousel({
                   {s.badge}
                 </span>
               )}
-              <span className="ml-1 text-[0.65rem] text-[var(--color-muted-strong)] bg-black/40 px-2 py-0.5 rounded-full">{`${current + 1}/${totalSlides}`}</span>
             </div>
           </Link>
         </div>
