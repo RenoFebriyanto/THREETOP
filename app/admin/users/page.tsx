@@ -67,7 +67,46 @@ export default async function AdminUsersPage({
 
       {/* Table */}
       <div className="rounded-lg border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
-        <div className="overflow-x-auto">
+        <div className="sm:hidden space-y-3 p-4">
+          {users.map((user) => {
+            const totalSpend = user.orders.reduce((s, o) => s + o.amount, 0)
+            return (
+              <div key={user.id} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-dark)] p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[var(--color-surface-dark)] flex items-center justify-center shrink-0">
+                    <span className="text-white text-sm font-bold">{user.name?.charAt(0).toUpperCase() ?? '?'}</span>
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-white font-medium text-sm truncate">{user.name ?? '—'}</p>
+                    <p className="text-[var(--color-muted-strong)] text-xs truncate">{user.email}</p>
+                  </div>
+                </div>
+                <div className="grid gap-2 text-xs text-[var(--color-muted-strong)]">
+                  <div className="flex justify-between gap-2">
+                    <span>Role</span>
+                    <span className={`font-medium ${user.role === 'ADMIN' ? 'text-[var(--color-violet)]' : 'text-[var(--color-muted)]'}`}>{user.role}</span>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <span>Total Order</span>
+                    <span className="text-white font-medium">{user._count.orders}</span>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <span>Total Spend</span>
+                    <span className="text-[var(--color-success)] font-medium">{formatCurrency(totalSpend)}</span>
+                  </div>
+                  <div className="flex justify-between gap-2">
+                    <span>Bergabung</span>
+                    <span className="text-right">{formatDate(user.createdAt)}</span>
+                  </div>
+                </div>
+                <div>
+                  <AdminUserActions userId={user.id} currentRole={user.role as 'USER' | 'ADMIN'} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--color-border)]">

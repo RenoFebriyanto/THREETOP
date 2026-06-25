@@ -62,38 +62,61 @@ export default async function AdminProductsPage() {
             </div>
 
             {gameProducts.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-[var(--color-border)]">
-                      {['SKU', 'Nama Produk', 'Harga', 'Stok', 'Status'].map((h) => (
-                        <th key={h} className="text-left px-4 py-2.5 text-[var(--color-muted-strong)] text-xs font-medium">{h}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-800/30">
-                    {gameProducts.map((p) => (
-                      <tr key={p.buyer_sku_code} className="hover:bg-[var(--color-abyss)]/20 transition-colors">
-                        <td className="px-4 py-2.5 font-mono text-[var(--color-muted)] text-xs">{p.buyer_sku_code}</td>
-                        <td className="px-4 py-2.5 text-white text-xs">{p.product_name}</td>
-                        <td className="px-4 py-2.5 text-[var(--color-frost)] font-semibold text-xs whitespace-nowrap">{formatCurrency(p.price)}</td>
-                        <td className="px-4 py-2.5 text-[var(--color-muted)] text-xs">
-                          {p.unlimited_stock ? '∞' : p.stock}
-                        </td>
-                        <td className="px-4 py-2.5">
-                          <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${
-                            p.buyer_product_status
-                              ? 'bg-[var(--color-success-bg)] border-[var(--color-success-border)] text-[var(--color-success)]'
-                              : 'bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]'
-                          }`}>
-                            {p.buyer_product_status ? 'Aktif' : 'Nonaktif'}
-                          </span>
-                        </td>
+              <>
+                <div className="sm:hidden space-y-3 px-4 py-4">
+                  {gameProducts.map((p) => (
+                    <div key={p.buyer_sku_code} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-dark)] p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-white text-sm font-semibold truncate">{p.product_name}</p>
+                          <p className="text-[var(--color-muted)] text-xs mt-1 truncate">{p.buyer_sku_code}</p>
+                        </div>
+                        <span className="text-[var(--color-frost)] font-semibold text-sm whitespace-nowrap">{formatCurrency(p.price)}</span>
+                      </div>
+                      <div className="flex flex-wrap gap-2 text-xs text-[var(--color-muted)]">
+                        <span className="rounded-full bg-[var(--color-surface-muted)] px-2 py-1">{p.unlimited_stock ? 'Stok: ∞' : `Stok: ${p.stock}`}</span>
+                        <span className={`rounded-full px-2 py-1 border text-xs font-medium ${
+                          p.buyer_product_status
+                            ? 'bg-[var(--color-success-bg)] border-[var(--color-success-border)] text-[var(--color-success)]'
+                            : 'bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]'
+                        }`}>
+                          {p.buyer_product_status ? 'Aktif' : 'Nonaktif'}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="hidden sm:block overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-[var(--color-border)]">
+                        {['SKU', 'Nama Produk', 'Harga', 'Stok', 'Status'].map((h) => (
+                          <th key={h} className="text-left px-4 py-2.5 text-[var(--color-muted-strong)] text-xs font-medium">{h}</th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                    </thead>
+                    <tbody className="divide-y divide-slate-800/30">
+                      {gameProducts.map((p) => (
+                        <tr key={p.buyer_sku_code} className="hover:bg-[var(--color-abyss)]/20 transition-colors">
+                          <td className="px-4 py-2.5 font-mono text-[var(--color-muted)] text-xs">{p.buyer_sku_code}</td>
+                          <td className="px-4 py-2.5 text-white text-xs">{p.product_name}</td>
+                          <td className="px-4 py-2.5 text-[var(--color-frost)] font-semibold text-xs whitespace-nowrap">{formatCurrency(p.price)}</td>
+                          <td className="px-4 py-2.5 text-[var(--color-muted)] text-xs">{p.unlimited_stock ? '∞' : p.stock}</td>
+                          <td className="px-4 py-2.5">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${
+                              p.buyer_product_status
+                                ? 'bg-[var(--color-success-bg)] border-[var(--color-success-border)] text-[var(--color-success)]'
+                                : 'bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)]'
+                            }`}>
+                              {p.buyer_product_status ? 'Aktif' : 'Nonaktif'}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         )

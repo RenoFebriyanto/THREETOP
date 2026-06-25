@@ -105,53 +105,113 @@ export default async function AdminOrdersPage({
             <p className="text-[var(--color-muted-strong)] text-sm">Tidak ada transaksi ditemukan</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-[var(--color-border)]">
-                  {['Game', 'Produk', 'User', 'Game ID', 'Jumlah', 'Status', 'Waktu', 'Aksi'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/40">
-                {orders.map((order) => {
-                  const status = STATUS_CONFIG[order.status as OrderStatus]
-                  const gameInfo = SUPPORTED_GAMES[order.game]
-                  return (
-                    <tr key={order.id} className="hover:bg-[var(--color-abyss)]/20 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-[var(--color-abyss)] flex items-center justify-center">
-                          {gameInfo
-                            ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
-                            : <span className="text-sm">🎮</span>
-                          }
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        <p className="text-white font-medium whitespace-nowrap">{order.productName}</p>
-                        {order.sn && <p className="text-[var(--color-success)] text-xs font-mono mt-0.5">SN: {order.sn}</p>}
-                      </td>
-                      <td className="px-4 py-3">
-                        <p className="text-[var(--color-frost)] text-xs whitespace-nowrap">{order.user.name ?? '—'}</p>
-                        <p className="text-[var(--color-muted-strong)] text-xs">{order.user.email}</p>
-                      </td>
-                      <td className="px-4 py-3 text-[var(--color-muted)] text-xs font-mono whitespace-nowrap">{order.gameUserId}</td>
-                      <td className="px-4 py-3 text-white font-semibold whitespace-nowrap">{formatCurrency(order.amount)}</td>
-                      <td className="px-4 py-3">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${status.bg} ${status.color}`}>
+          <div className="space-y-4">
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-[var(--color-border)]">
+                    {['Game', 'Produk', 'User', 'Game ID', 'Jumlah', 'Status', 'Waktu', 'Aksi'].map((h) => (
+                      <th key={h} className="text-left px-4 py-3 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/40">
+                  {orders.map((order) => {
+                    const status = STATUS_CONFIG[order.status as OrderStatus]
+                    const gameInfo = SUPPORTED_GAMES[order.game]
+                    return (
+                      <tr key={order.id} className="hover:bg-[var(--color-abyss)]/20 transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="w-8 h-8 rounded-lg overflow-hidden bg-[var(--color-abyss)] flex items-center justify-center">
+                            {gameInfo
+                              ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
+                              : <span className="text-sm">🎮</span>
+                            }
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-white font-medium whitespace-nowrap">{order.productName}</p>
+                          {order.sn && <p className="text-[var(--color-success)] text-xs font-mono mt-0.5">SN: {order.sn}</p>}
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-[var(--color-frost)] text-xs whitespace-nowrap">{order.user.name ?? '—'}</p>
+                          <p className="text-[var(--color-muted-strong)] text-xs">{order.user.email}</p>
+                        </td>
+                        <td className="px-4 py-3 text-[var(--color-muted)] text-xs font-mono whitespace-nowrap">{order.gameUserId}</td>
+                        <td className="px-4 py-3 text-white font-semibold whitespace-nowrap">{formatCurrency(order.amount)}</td>
+                        <td className="px-4 py-3">
+                          <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${status.bg} ${status.color}`}>
+                            {status.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-[var(--color-muted-strong)] text-xs whitespace-nowrap">{formatDate(order.createdAt)}</td>
+                        <td className="px-4 py-3">
+                          <AdminOrderActions orderId={order.id} currentStatus={order.status as OrderStatus} />
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+            <div className="sm:hidden space-y-4 p-4">
+              {orders.map((order) => {
+                const status = STATUS_CONFIG[order.status as OrderStatus]
+                const gameInfo = SUPPORTED_GAMES[order.game]
+                return (
+                  <div key={order.id} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-dark)] p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-11 h-11 rounded-lg overflow-hidden bg-[var(--color-abyss)] flex items-center justify-center shrink-0">
+                        {gameInfo
+                          ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
+                          : <span className="text-sm">🎮</span>
+                        }
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-white text-sm font-semibold truncate">{order.productName}</p>
+                        <p className="text-[var(--color-muted)] text-xs truncate">{order.user.name ?? order.user.email}</p>
+                        <p className="text-[var(--color-muted-strong)] text-xs truncate">ID: {order.gameUserId}</p>
+                        <p className="text-[var(--color-muted-strong)] text-xs mt-1">{formatDate(order.createdAt)}</p>
+                      </div>
+                      <div className="shrink-0 text-right">
+                        <p className="text-[var(--color-frost)] font-semibold text-sm whitespace-nowrap">{formatCurrency(order.amount)}</p>
+                        <span className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium border ${status.bg} ${status.color}`}>
                           {status.label}
                         </span>
-                      </td>
-                      <td className="px-4 py-3 text-[var(--color-muted-strong)] text-xs whitespace-nowrap">{formatDate(order.createdAt)}</td>
-                      <td className="px-4 py-3">
-                        <AdminOrderActions orderId={order.id} currentStatus={order.status as OrderStatus} />
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+                      </div>
+                    </div>
+                    <div className="grid gap-2 text-xs text-[var(--color-muted-strong)]">
+                      <div className="flex justify-between gap-2">
+                        <span>Game</span>
+                        <span className="font-medium text-white truncate text-right">{gameInfo?.label ?? order.game}</span>
+                      </div>
+                      {order.sn && (
+                        <div className="flex justify-between gap-2">
+                          <span>SN</span>
+                          <span className="font-mono text-[var(--color-success)] truncate text-right">{order.sn}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between gap-2">
+                        <span>Status</span>
+                        <span className="text-right">{status.label}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {order.sn && <CopyButton text={order.sn} label="SN" />}
+                      {order.paymentStatus === 'UNPAID' && order.paymentUrl && (
+                        <a href={order.paymentUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs text-[var(--color-frost)] hover:text-[var(--color-frost)] transition-colors">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+                          Lanjutkan Pembayaran
+                        </a>
+                      )}
+                    </div>
+                    <div className="pt-3 border-t border-[var(--color-border)]">
+                      <AdminOrderActions orderId={order.id} currentStatus={order.status as OrderStatus} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         )}
       </div>

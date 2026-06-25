@@ -87,6 +87,7 @@ body {
   color: var(--color-frost);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
 }
 
 ::selection { background: var(--color-border); color: var(--color-button-text); }

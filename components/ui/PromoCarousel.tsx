@@ -109,8 +109,8 @@ export default function PromoCarousel({
 
   return (
     <div
-      className="relative w-full rounded-lg overflow-hidden select-none"
-      style={{ aspectRatio }}
+      className="relative w-full max-w-full rounded-lg overflow-hidden select-none"
+      style={{ aspectRatio, minHeight: 0 }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
       onTouchStart={onTouchStart}
