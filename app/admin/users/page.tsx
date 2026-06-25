@@ -110,7 +110,7 @@ export default async function AdminUsersPage({
         <div className="hidden sm:block overflow-x-auto">
           <div className="w-full text-sm">
             <div className="border-b border-[var(--color-border)] hidden sm:grid grid-cols-[16rem_7rem_5rem_7rem_9rem_12rem] px-4 py-3 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">
-              <div className="pl-1">User</div>
+              <div className="pl-14">User</div>
               <div>Role</div>
               <div>Total Order</div>
               <div>Total Spend</div>
