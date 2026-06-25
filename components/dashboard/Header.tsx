@@ -59,7 +59,7 @@ export default function DashboardHeader({ user }: { user: User }) {
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-2">
             <img src="/threetop-32x32.png" alt="ThreeTop" className="w-7 h-7 rounded object-contain" />
-            <span className="text-base font-black text-[#e4f0f6]">THREE<span className="text-[#e4f0f6]">TOP</span></span>
+            <span className="text-base font-black" style={{ color: 'var(--color-frost)' }}>THREE<span style={{ color: 'var(--color-frost)' }}>TOP</span></span>
           </div>
 
           {/* Desktop page title */}

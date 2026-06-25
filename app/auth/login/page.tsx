@@ -143,12 +143,7 @@ function LoginForm() {
       <div className="w-full">
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 mb-4">
-            <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center shadow-lg shadow-sky-500/30">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" fill="white" fillOpacity="0.9"/>
-                <path d="M5 8H11M8 5V11" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </div>
+            <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
             <span className="text-2xl font-black tracking-tight text-[#e4f0f6]">
               THREE<span className="text-[#e4f0f6]">TOP</span>
             </span>
@@ -237,12 +232,7 @@ function LoginForm() {
       {/* Logo & Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 mb-4">
-          <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center shadow-lg shadow-sky-500/30">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" fill="white" fillOpacity="0.9"/>
-              <path d="M5 8H11M8 5V11" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </div>
+          <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
           <span className="text-2xl font-black tracking-tight text-[#e4f0f6]"
             style={{ fontFamily: "'Rajdhani', 'Bebas Neue', sans-serif", letterSpacing: '-0.02em' }}>
             THREE<span className="text-[#e4f0f6]">TOP</span>

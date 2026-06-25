@@ -2,10 +2,17 @@ import { auth } from '@/lib/auth'
 import Link from 'next/link'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
-// Abyss: #0a0f1e | Frost: #e4f0f6
-// Button primary: bg #e4f0f6, text #0a0f1e (gelap di atas terang)
-// Background: #0a0f1e
-// Teks: #e4f0f6
+const theme = {
+  background: 'var(--color-abyss)',
+  foreground: 'var(--color-frost)',
+  muted: 'var(--color-muted)',
+  mutedStrong: 'var(--color-muted-strong)',
+  border: 'var(--color-border)',
+  surface: 'var(--color-surface)',
+  surfaceStrong: 'var(--color-surface-strong)',
+  buttonBg: 'var(--color-button-bg)',
+  buttonText: 'var(--color-button-text)',
+}
 
 export default async function HomePage() {
   const session = await auth()
@@ -13,40 +20,38 @@ export default async function HomePage() {
   const games = Object.entries(SUPPORTED_GAMES)
 
   return (
-    <div className="min-h-screen" style={{ background: '#0a0f1e', color: '#e4f0f6' }}>
+    <div className="min-h-screen" style={{ background: theme.background, color: theme.foreground }}>
 
       {/* Navbar */}
       <header className="sticky top-0 z-50"
-        style={{ background: 'rgba(10,15,30,0.97)', borderBottom: '1px solid #1e2d4a', backdropFilter: 'blur(12px)' }}>
+        style={{ background: 'rgba(10,15,30,0.98)', borderBottom: `1px solid ${theme.border}`, backdropFilter: 'blur(12px)' }}>
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
-            <span className="text-xl font-black" style={{ color: '#e4f0f6' }}>THREE<span style={{ color: '#e4f0f6' }}>TOP</span></span>
+            <span className="text-xl font-black" style={{ color: theme.foreground }}>THREE<span style={{ color: theme.foreground }}>TOP</span></span>
           </div>
-          <nav className="hidden md:flex items-center gap-6 text-sm" style={{ color: '#a8c4d4' }}>
-            <a href="#games" className="transition-colors" style={{ color: '#a8c4d4' }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = '#e4f0f6')}
-              onMouseLeave={(e) => (e.currentTarget.style.color = '#a8c4d4')}>Game</a>
-            <a href="#cara-topup" style={{ color: '#a8c4d4' }}>Cara Top Up</a>
-            <a href="#keunggulan" style={{ color: '#a8c4d4' }}>Keunggulan</a>
+          <nav className="hidden md:flex items-center gap-6 text-sm" style={{ color: theme.muted }}>
+            <a href="#games" style={{ color: theme.muted }}>Game</a>
+            <a href="#cara-topup" style={{ color: theme.muted }}>Cara Top Up</a>
+            <a href="#keunggulan" style={{ color: theme.muted }}>Keunggulan</a>
           </nav>
           <div className="flex items-center gap-3">
             {isLoggedIn ? (
               <Link href="/dashboard"
                 className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-90"
-                style={{ background: '#e4f0f6', color: '#0a0f1e' }}>
+                style={{ background: theme.buttonBg, color: theme.buttonText }}>
                 Ke Dashboard
               </Link>
             ) : (
               <>
                 <Link href="/auth/login"
                   className="text-sm hidden sm:block transition-colors"
-                  style={{ color: '#a8c4d4' }}>
+                  style={{ color: theme.muted }}>
                   Masuk
                 </Link>
                 <Link href="/auth/register"
                   className="px-4 py-2 rounded-lg text-sm font-semibold transition-all hover:opacity-90"
-                  style={{ background: '#e4f0f6', color: '#0a0f1e' }}>
+                  style={{ background: theme.buttonBg, color: theme.buttonText }}>
                   Daftar Gratis
                 </Link>
               </>
@@ -69,18 +74,18 @@ export default async function HomePage() {
 
         <div className="relative max-w-6xl mx-auto px-4 py-24 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium mb-6"
-            style={{ border: '1px solid rgba(228,240,246,0.2)', background: 'rgba(228,240,246,0.05)', color: '#e4f0f6' }}>
-            <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#e4f0f6' }} />
+            style={{ border: `1px solid ${theme.border}`, background: theme.surface, color: theme.foreground }}>
+            <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: theme.foreground }} />
             Proses Instan · Harga Terbaik · 50+ Game
           </div>
 
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6" style={{ color: '#e4f0f6' }}>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black leading-tight mb-6" style={{ color: theme.foreground }}>
             Top Up Game Favoritmu
             <br />
-            <span style={{ color: '#e4f0f6' }}>Lebih Mudah &amp; Cepat</span>
+            <span style={{ color: theme.foreground }}>Lebih Mudah &amp; Cepat</span>
           </h1>
 
-          <p className="text-lg max-w-2xl mx-auto mb-10 leading-relaxed" style={{ color: '#a8c4d4' }}>
+          <p className="text-lg max-w-2xl mx-auto mb-10 leading-relaxed" style={{ color: theme.muted }}>
             ThreeTop hadir sebagai platform top up game digital terpercaya.
             Diamond, UC, VP, dan mata uang game lainnya langsung masuk ke akunmu dalam hitungan detik.
           </p>
@@ -89,19 +94,19 @@ export default async function HomePage() {
             {isLoggedIn ? (
               <Link href="/dashboard"
                 className="w-full sm:w-auto px-8 py-3.5 rounded-lg text-base font-semibold transition-all hover:opacity-90"
-                style={{ background: '#e4f0f6', color: '#0a0f1e' }}>
+                style={{ background: theme.buttonBg, color: theme.buttonText }}>
                 Buka Dashboard
               </Link>
             ) : (
               <>
                 <Link href="/auth/register"
                   className="w-full sm:w-auto px-8 py-3.5 rounded-lg text-base font-semibold transition-all hover:opacity-90"
-                  style={{ background: '#e4f0f6', color: '#0a0f1e' }}>
+                  style={{ background: theme.buttonBg, color: theme.buttonText }}>
                   Mulai Top Up Sekarang
                 </Link>
                 <Link href="/auth/login"
                   className="w-full sm:w-auto px-8 py-3.5 rounded-lg text-base font-medium transition-colors"
-                  style={{ border: '1px solid #1e2d4a', color: '#a8c4d4' }}>
+                  style={{ border: `1px solid ${theme.border}`, color: theme.muted }}>
                   Sudah punya akun? Masuk
                 </Link>
               </>
@@ -111,8 +116,8 @@ export default async function HomePage() {
           <div className="grid grid-cols-3 gap-6 max-w-sm mx-auto mt-16">
             {[{ value: '50+', label: 'Game' }, { value: '< 1 menit', label: 'Proses' }, { value: '24/7', label: 'Layanan' }].map((s) => (
               <div key={s.label} className="text-center">
-                <p className="text-2xl font-black" style={{ color: '#e4f0f6' }}>{s.value}</p>
-                <p className="text-xs mt-1" style={{ color: '#5a8099' }}>{s.label}</p>
+                <p className="text-2xl font-black" style={{ color: theme.foreground }}>{s.value}</p>
+                <p className="text-xs mt-1" style={{ color: theme.mutedStrong }}>{s.label}</p>
               </div>
             ))}
           </div>
@@ -120,41 +125,41 @@ export default async function HomePage() {
       </section>
 
       {/* Game list */}
-      <section id="games" className="py-20" style={{ borderTop: '1px solid #1e2d4a' }}>
+      <section id="games" className="py-20" style={{ borderTop: `1px solid ${theme.border}` }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-3" style={{ color: '#e4f0f6' }}>Game yang Tersedia</h2>
-            <p style={{ color: '#a8c4d4' }}>Top up game favoritmu dengan harga kompetitif dan proses instan</p>
+            <h2 className="text-3xl font-bold mb-3" style={{ color: theme.foreground }}>Game yang Tersedia</h2>
+            <p style={{ color: theme.muted }}>Top up game favoritmu dengan harga kompetitif dan proses instan</p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {games.map(([key, game]) => (
               <Link key={key} href="/auth/register"
                 className="group relative rounded-lg overflow-hidden transition-all duration-200 hover:-translate-y-1 text-center"
-                style={{ border: '1px solid #1e2d4a', background: '#111827' }}>
+                style={{ border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
                 <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-10 group-hover:opacity-20 transition-opacity`} />
                 <div className="relative p-5">
                   <div className="w-12 h-12 rounded-lg flex items-center justify-center mx-auto mb-3 overflow-hidden"
-                    style={{ background: '#1e2d4a' }}>
-                    <span className="text-xs font-bold" style={{ color: '#a8c4d4' }}>{game.icon}</span>
+                    style={{ background: theme.surface }}>
+                    <span className="text-xs font-bold" style={{ color: theme.muted }}>{game.icon}</span>
                   </div>
-                  <p className="text-xs font-semibold leading-tight" style={{ color: '#e4f0f6' }}>{game.label}</p>
-                  <p className="text-xs mt-1" style={{ color: '#5a8099' }}>{game.tag}</p>
+                  <p className="text-xs font-semibold leading-tight" style={{ color: theme.foreground }}>{game.label}</p>
+                  <p className="text-xs mt-1" style={{ color: theme.mutedStrong }}>{game.tag}</p>
                 </div>
               </Link>
             ))}
           </div>
-          <p className="text-center text-sm mt-6" style={{ color: '#5a8099' }}>
+          <p className="text-center text-sm mt-6" style={{ color: theme.mutedStrong }}>
             Dan 50+ game lainnya tersedia setelah kamu masuk
           </p>
         </div>
       </section>
 
       {/* Cara Top Up */}
-      <section id="cara-topup" className="py-20" style={{ borderTop: '1px solid #1e2d4a' }}>
+      <section id="cara-topup" className="py-20" style={{ borderTop: `1px solid ${theme.border}` }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-3" style={{ color: '#e4f0f6' }}>Cara Top Up</h2>
-            <p style={{ color: '#a8c4d4' }}>Proses mudah, cepat, dan aman hanya dalam 3 langkah</p>
+            <h2 className="text-3xl font-bold mb-3" style={{ color: theme.foreground }}>Cara Top Up</h2>
+            <p style={{ color: theme.muted }}>Proses mudah, cepat, dan aman hanya dalam 3 langkah</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             {[
@@ -163,14 +168,14 @@ export default async function HomePage() {
               { step: '03', title: 'Item Langsung Masuk', desc: 'Diamond, UC, VP langsung masuk ke akun game kamu dalam hitungan detik.' },
             ].map((item) => (
               <div key={item.step} className="rounded-lg p-6 relative overflow-hidden"
-                style={{ border: '1px solid #1e2d4a', background: '#111827' }}>
+                style={{ border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
                 <div className="absolute top-4 right-4 text-5xl font-black" style={{ color: 'rgba(228,240,246,0.04)' }}>{item.step}</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
                   style={{ background: 'rgba(228,240,246,0.08)', border: '1px solid rgba(228,240,246,0.15)' }}>
-                  <span className="text-sm font-bold" style={{ color: '#e4f0f6' }}>{item.step}</span>
+                  <span className="text-sm font-bold" style={{ color: theme.foreground }}>{item.step}</span>
                 </div>
-                <h3 className="font-semibold mb-2" style={{ color: '#e4f0f6' }}>{item.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#a8c4d4' }}>{item.desc}</p>
+                <h3 className="font-semibold mb-2" style={{ color: theme.foreground }}>{item.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: theme.muted }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -178,11 +183,11 @@ export default async function HomePage() {
       </section>
 
       {/* Keunggulan */}
-      <section id="keunggulan" className="py-20" style={{ borderTop: '1px solid #1e2d4a' }}>
+      <section id="keunggulan" className="py-20" style={{ borderTop: `1px solid ${theme.border}` }}>
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-3" style={{ color: '#e4f0f6' }}>Kenapa ThreeTop?</h2>
-            <p style={{ color: '#a8c4d4' }}>Dipercaya oleh ribuan gamer Indonesia</p>
+            <h2 className="text-3xl font-bold mb-3" style={{ color: theme.foreground }}>Kenapa ThreeTop?</h2>
+            <p style={{ color: theme.muted }}>Dipercaya oleh ribuan gamer Indonesia</p>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {[
@@ -194,13 +199,13 @@ export default async function HomePage() {
               { title: 'Support 24/7', desc: 'Tim siap membantu setiap hari, kapanpun kamu butuhkan.' },
             ].map((item) => (
               <div key={item.title} className="rounded-lg p-6"
-                style={{ border: '1px solid #1e2d4a', background: '#111827' }}>
+                style={{ border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
                   style={{ background: 'rgba(228,240,246,0.08)', border: '1px solid rgba(228,240,246,0.15)' }}>
-                  <div className="w-4 h-4 rounded-full" style={{ background: '#e4f0f6' }} />
+                  <div className="w-4 h-4 rounded-full" style={{ background: theme.foreground }} />
                 </div>
-                <h3 className="font-semibold mb-2" style={{ color: '#e4f0f6' }}>{item.title}</h3>
-                <p className="text-sm leading-relaxed" style={{ color: '#a8c4d4' }}>{item.desc}</p>
+                <h3 className="font-semibold mb-2" style={{ color: theme.foreground }}>{item.title}</h3>
+                <p className="text-sm leading-relaxed" style={{ color: theme.muted }}>{item.desc}</p>
               </div>
             ))}
           </div>
@@ -208,28 +213,28 @@ export default async function HomePage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20" style={{ borderTop: '1px solid #1e2d4a' }}>
+      <section className="py-20" style={{ borderTop: `1px solid ${theme.border}` }}>
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-4" style={{ color: '#e4f0f6' }}>Siap Top Up Sekarang?</h2>
-          <p className="mb-8" style={{ color: '#a8c4d4' }}>
+          <h2 className="text-3xl font-bold mb-4" style={{ color: theme.foreground }}>Siap Top Up Sekarang?</h2>
+          <p className="mb-8" style={{ color: theme.muted }}>
             {isLoggedIn ? 'Kamu sudah masuk. Langsung top up dari dashboard.' : 'Daftar gratis dan mulai top up game favoritmu.'}
           </p>
           <Link href={isLoggedIn ? '/dashboard/topup' : '/auth/register'}
             className="inline-block px-10 py-4 rounded-lg text-base font-semibold transition-all hover:opacity-90"
-            style={{ background: '#e4f0f6', color: '#0a0f1e' }}>
+            style={{ background: theme.buttonBg, color: theme.buttonText }}>
             {isLoggedIn ? 'Top Up Sekarang' : 'Daftar Gratis Sekarang'}
           </Link>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-8" style={{ borderTop: '1px solid #1e2d4a' }}>
+      <footer className="py-8" style={{ borderTop: `1px solid ${theme.border}` }}>
         <div className="max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img src="/threetop-32x32.png" alt="ThreeTop" className="w-6 h-6 rounded object-contain" />
-            <span className="text-sm font-black" style={{ color: '#e4f0f6' }}>THREETOP</span>
+            <span className="text-sm font-black" style={{ color: theme.foreground }}>THREETOP</span>
           </div>
-          <div className="flex items-center gap-5 text-xs" style={{ color: '#5a8099' }}>
+          <div className="flex items-center gap-5 text-xs" style={{ color: theme.mutedStrong }}>
             <a href="/terms" className="transition-colors hover:opacity-80">Syarat &amp; Ketentuan</a>
             <a href="/privacy" className="transition-colors hover:opacity-80">Kebijakan Privasi</a>
             <span>© 2025 ThreeTop.</span>
