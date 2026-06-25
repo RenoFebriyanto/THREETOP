@@ -50,10 +50,8 @@ export default function UserRow({ user }: { user: User }) {
       <div className="w-20 min-w-0 text-white text-xs font-medium text-left truncate">{user._count.orders}</div>
       <div className="w-28 min-w-0 text-[var(--color-success)] text-xs font-medium truncate">{formatCurrency(totalSpend)}</div>
       <div className="w-36 min-w-0 text-[var(--color-muted-strong)] text-xs truncate">{formatDate(user.createdAt)}</div>
-      <div className="flex-1 flex justify-end min-w-[170px]">
-        <div className="min-w-0">
-          <AdminUserActions userId={user.id} currentRole={user.role as 'USER' | 'ADMIN'} suspendedUntil={user.suspendedUntil ?? null} />
-        </div>
+      <div className="w-48 min-w-0">
+        <AdminUserActions userId={user.id} currentRole={user.role as 'USER' | 'ADMIN'} suspendedUntil={user.suspendedUntil ?? null} />
       </div>
     </div>
   )
