@@ -212,7 +212,7 @@ export default async function DashboardPage() {
       <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:gap-6">
 
         {/* Popular Games */}
-        <div className="flex flex-col flex-auto basis-full md:basis-[60%] min-w-0 rounded-lg border border-[var(--color-border-subtle)] p-4 sm:p-6 h-full max-h-[min(55vh,520px)] overflow-y-auto pr-1" style={{ background: 'var(--color-surface-strong)' }}>
+        <div className="flex flex-col flex-auto basis-full md:basis-[60%] min-w-0 rounded-lg border border-[var(--color-border-subtle)] p-4 sm:p-6 md:h-[min(55vh,520px)]" style={{ background: 'var(--color-surface-strong)' }}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-[var(--color-frost)] font-semibold text-lg">Game Populer</h2>
             <Link href="/dashboard/topup" className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">
@@ -240,7 +240,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Recent Orders */}
-        <div className="flex flex-col flex-auto basis-full md:basis-[40%] min-w-0 rounded-lg border border-[var(--color-border-subtle)] p-5 sm:p-6 h-full min-h-0" style={{ background: 'var(--color-surface-strong)' }}>
+        <div className="flex flex-col flex-auto basis-full md:basis-[40%] min-w-0 rounded-lg border border-[var(--color-border-subtle)] p-5 sm:p-6 md:h-[min(55vh,520px)]" style={{ background: 'var(--color-surface-strong)' }}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-[var(--color-frost)] font-semibold text-lg">Transaksi Terbaru</h2>
             <Link href="/dashboard/orders" className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">
@@ -265,7 +265,7 @@ export default async function DashboardPage() {
               </Link>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto space-y-3 max-h-[min(55vh,520px)] pr-1">
+            <div className="flex-1 overflow-y-auto space-y-3 pr-1">
               {stats.recentOrders.map((order: Order) => {
                 const status = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG]
                 const gameInfo = SUPPORTED_GAMES[order.game]
