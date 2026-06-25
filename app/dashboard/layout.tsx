@@ -27,7 +27,7 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[var(--color-abyss)] flex">
+    <div className="min-h-screen bg-[var(--color-abyss)] flex overflow-x-hidden min-w-0">
       {/* Midtrans Snap.js — load sekali untuk semua halaman dashboard */}
       <Script
         src={SNAP_URL}

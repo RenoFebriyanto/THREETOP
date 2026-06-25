@@ -80,14 +80,28 @@
   --font-mono: var(--font-geist-mono);
 }
 
-html { color-scheme: dark; }
+html,
+body,
+#__next {
+  min-width: 100%;
+  max-width: 100%;
+  width: 100%;
+  overflow-x: hidden;
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+}
+
+html {
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+}
 
 body {
   background: var(--color-abyss);
   color: var(--color-frost);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  min-height: 100vh;
 }
 
 ::selection { background: var(--color-border); color: var(--color-button-text); }
