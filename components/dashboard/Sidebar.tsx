@@ -77,32 +77,27 @@ export default function DashboardSidebar({ user }: { user: User }) {
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 border-r border-slate-800/60 z-20"
-        style={{ background: 'rgba(8,12,20,0.97)' }}
+        style={{ background: '#0a0f1e' }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-6 py-5 border-b border-slate-800/60">
-          <div className="w-8 h-8 rounded-lg bg-sky-500 flex items-center justify-center shadow-lg shadow-sky-500/30 shrink-0">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" fill="white" fillOpacity="0.9"/>
-              <path d="M5 8H11M8 5V11" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-          </div>
-          <span className="text-xl font-black text-white tracking-tight">
+        <div className="flex items-center gap-2.5 px-6 py-5 border-b border-[#1e2d4a]">
+          <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain shrink-0" />
+          <span className="text-xl font-black text-[#e4f0f6] tracking-tight">
             THREE<span className="text-sky-400">TOP</span>
           </span>
         </div>
 
         {/* Nav */}
         <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-          <p className="text-slate-600 text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu</p>
+          <p className="text-[#5a8099] text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu</p>
           {NAV_ITEMS.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                 isActive(item.href, item.exact)
                   ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  : 'text-[#a8c4d4] hover:text-[#e4f0f6] hover:bg-[#111827]'
               }`}
             >
               {item.icon}
@@ -117,16 +112,16 @@ export default function DashboardSidebar({ user }: { user: User }) {
           {user.role === 'ADMIN' && (
             <>
               <div className="pt-4 pb-2">
-                <p className="text-slate-600 text-xs font-semibold uppercase tracking-widest px-3">Admin</p>
+                <p className="text-[#5a8099] text-xs font-semibold uppercase tracking-widest px-3">Admin</p>
               </div>
               {ADMIN_ITEMS.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 ${
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                     isActive(item.href)
                       ? 'bg-violet-500/10 text-violet-400 border border-violet-500/20'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                      : 'text-[#a8c4d4] hover:text-[#e4f0f6] hover:bg-[#111827]'
                   }`}
                 >
                   {item.icon}
@@ -138,34 +133,33 @@ export default function DashboardSidebar({ user }: { user: User }) {
         </nav>
 
         {/* User Profile + Logout */}
-        <div className="p-3 border-t border-slate-800/60">
+        <div className="p-3 border-t border-[#1e2d4a]">
           <div className="px-3 pb-2 flex items-center gap-3">
-            <a href="/terms" target="_blank" className="text-slate-600 hover:text-slate-400 text-xs transition-colors">
+            <a href="/terms" target="_blank" className="text-[#5a8099] hover:text-[#a8c4d4] text-xs transition-colors">
               Syarat &amp; Ketentuan
             </a>
-            <span className="text-slate-700">·</span>
-            <a href="/privacy" target="_blank" className="text-slate-600 hover:text-slate-400 text-xs transition-colors">
+            <span className="text-[#1e2d4a]">·</span>
+            <a href="/privacy" target="_blank" className="text-[#5a8099] hover:text-[#a8c4d4] text-xs transition-colors">
               Privasi
             </a>
           </div>
-          <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/40">
-            {/* Avatar */}
-            <div className="w-8 h-8 rounded-full overflow-hidden bg-slate-700 shrink-0 flex items-center justify-center">
+          <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#111827]">
+            <div className="w-8 h-8 rounded-md overflow-hidden bg-[#1e2d4a] shrink-0 flex items-center justify-center">
               {user.image ? (
                 <Image src={user.image} alt={user.name ?? ''} width={32} height={32} className="w-full h-full object-cover" />
               ) : (
-                <span className="text-slate-300 text-sm font-bold">
+                <span className="text-[#e4f0f6] text-sm font-bold">
                   {user.name?.charAt(0).toUpperCase() ?? '?'}
                 </span>
               )}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-xs font-semibold truncate">{user.name ?? 'User'}</p>
-              <p className="text-slate-500 text-xs truncate">{user.email}</p>
+              <p className="text-[#e4f0f6] text-xs font-semibold truncate">{user.name ?? 'User'}</p>
+              <p className="text-[#5a8099] text-xs truncate">{user.email}</p>
             </div>
             <button
               onClick={() => signOut({ callbackUrl: '/auth/login' })}
-              className="text-slate-500 hover:text-red-400 transition-colors shrink-0"
+              className="text-[#5a8099] hover:text-red-400 transition-colors shrink-0"
               title="Logout"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

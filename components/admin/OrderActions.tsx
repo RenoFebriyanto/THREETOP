@@ -41,7 +41,7 @@ export default function AdminOrderActions({
       <button
         onClick={() => setOpen(!open)}
         disabled={loading}
-        className="px-2.5 py-1.5 rounded-lg text-xs bg-slate-700/60 border border-slate-600/50 text-slate-300 hover:text-white hover:bg-slate-700 transition-colors disabled:opacity-50 whitespace-nowrap"
+        className="px-2.5 py-1.5 rounded-lg text-xs bg-slate-700/60 border border-slate-600/50 text-[#e4f0f6] hover:text-[#e4f0f6] hover:bg-slate-700 transition-colors disabled:opacity-50 whitespace-nowrap"
       >
         {loading ? '...' : 'Ubah Status'}
       </button>
@@ -49,11 +49,11 @@ export default function AdminOrderActions({
       {open && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-8 z-20 w-36 rounded-xl border border-slate-700/60 overflow-hidden shadow-2xl"
+          <div className="absolute right-0 top-8 z-20 w-36 rounded-lg border border-slate-700/60 overflow-hidden shadow-2xl"
             style={{ background: 'rgba(15,20,35,0.98)' }}>
             {others.map((s) => (
               <button key={s} onClick={() => updateStatus(s)}
-                className="w-full text-left px-3 py-2.5 text-xs text-slate-300 hover:bg-slate-800/80 hover:text-white transition-colors">
+                className="w-full text-left px-3 py-2.5 text-xs text-[#e4f0f6] hover:bg-[#111827]/80 hover:text-[#e4f0f6] transition-colors">
                 → {s === 'SUCCESS' ? 'Sukses' : s === 'FAILED' ? 'Gagal' : s === 'PROCESSING' ? 'Diproses' : 'Pending'}
               </button>
             ))}

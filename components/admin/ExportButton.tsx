@@ -55,7 +55,7 @@ export default function AdminExportButton() {
       <button
         onClick={() => { setOpen(!open); setShowDateFilter(false) }}
         disabled={!!loading}
-        className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium border border-violet-500/30 bg-violet-500/10 text-violet-400 hover:bg-violet-500/20 transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-violet-500/30 bg-violet-500/10 text-violet-400 hover:bg-violet-500/20 transition-colors disabled:opacity-50"
       >
         {loading ? (
           <>
@@ -79,14 +79,14 @@ export default function AdminExportButton() {
         <>
           <div className="fixed inset-0 z-10" onClick={() => { setOpen(false); setShowDateFilter(false) }} />
           <div
-            className="absolute right-0 top-11 z-20 w-64 rounded-xl border border-slate-700/60 overflow-hidden shadow-2xl"
+            className="absolute right-0 top-11 z-20 w-64 rounded-lg border border-slate-700/60 overflow-hidden shadow-2xl"
             style={{ background: 'rgba(15,20,35,0.98)' }}
           >
             {/* Filter tanggal */}
-            <div className="p-3 border-b border-slate-800/60">
+            <div className="p-3 border-b border-[#1e2d4a]/60">
               <button
                 onClick={() => setShowDateFilter(!showDateFilter)}
-                className="w-full flex items-center justify-between text-xs text-slate-400 hover:text-white transition-colors"
+                className="w-full flex items-center justify-between text-xs text-[#a8c4d4] hover:text-[#e4f0f6] transition-colors"
               >
                 <span className="flex items-center gap-1.5">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,20 +102,20 @@ export default function AdminExportButton() {
               {showDateFilter && (
                 <div className="mt-3 space-y-2">
                   <div>
-                    <label className="block text-xs text-slate-500 mb-1">Dari</label>
+                    <label className="block text-xs text-[#5a8099] mb-1">Dari</label>
                     <input type="date" value={from} onChange={e => setFrom(e.target.value)}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 text-white text-xs focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#111827]/60 border border-[#1e2d4a]/50 text-white text-xs focus:outline-none focus:border-violet-500 transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-slate-500 mb-1">Sampai</label>
+                    <label className="block text-xs text-[#5a8099] mb-1">Sampai</label>
                     <input type="date" value={to} onChange={e => setTo(e.target.value)}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-slate-800/60 border border-slate-700/50 text-white text-xs focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#111827]/60 border border-[#1e2d4a]/50 text-white text-xs focus:outline-none focus:border-violet-500 transition-colors"
                     />
                   </div>
                   {(from || to) && (
                     <button onClick={() => { setFrom(''); setTo('') }}
-                      className="text-xs text-slate-500 hover:text-red-400 transition-colors">
+                      className="text-xs text-[#5a8099] hover:text-red-400 transition-colors">
                       Reset filter
                     </button>
                   )}
@@ -124,14 +124,14 @@ export default function AdminExportButton() {
             </div>
 
             {/* Export options */}
-            <p className="px-3 py-2 text-slate-500 text-xs font-semibold uppercase tracking-wider">
+            <p className="px-3 py-2 text-[#5a8099] text-xs font-semibold uppercase tracking-wider">
               Pilih Laporan
             </p>
             {exports.map((item) => (
               <button
                 key={item.label}
                 onClick={() => download(item.url, item.label)}
-                className="w-full text-left px-3 py-2.5 text-sm text-slate-300 hover:bg-slate-800/80 hover:text-white transition-colors flex items-center gap-2"
+                className="w-full text-left px-3 py-2.5 text-sm text-[#e4f0f6] hover:bg-[#111827]/80 hover:text-[#e4f0f6] transition-colors flex items-center gap-2"
               >
                 <svg className="w-3.5 h-3.5 text-violet-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

@@ -88,14 +88,14 @@ export default async function AdminDashboardPage() {
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-white">Selamat datang, {session!.user.name?.split(' ')[0]}</h1>
-          <p className="text-slate-400 text-sm mt-1">Ini ringkasan platform ThreeTop hari ini.</p>
+          <p className="text-[#a8c4d4] text-sm mt-1">Ini ringkasan platform ThreeTop hari ini.</p>
         </div>
         <AdminExportButton />
       </div>
 
       {/* Alert saldo rendah */}
       {digiflazzBalance !== null && digiflazzBalance < LOW_BALANCE_THRESHOLD && (
-        <div className="rounded-2xl border border-red-500/30 p-4 flex items-start gap-3 bg-red-500/5">
+        <div className="rounded-lg border border-red-500/30 p-4 flex items-start gap-3 bg-red-500/5">
           <svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -113,13 +113,13 @@ export default async function AdminDashboardPage() {
         {statCards.map((card) => {
           const colors = accentMap[card.accent]
           return (
-            <div key={card.label} className={`rounded-2xl border ${colors.border} p-5`} style={{ background: 'rgba(15,20,35,0.8)' }}>
+            <div key={card.label} className={`rounded-lg border ${colors.border} p-5`} style={{ background: 'rgba(17,24,39,0.8)' }}>
               <div className="flex items-start justify-between mb-3">
-                <p className="text-slate-400 text-xs font-medium">{card.label}</p>
+                <p className="text-[#a8c4d4] text-xs font-medium">{card.label}</p>
                 <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${colors.icon}`}>{card.icon}</div>
               </div>
               <p className="text-2xl font-bold text-white leading-tight">{card.value}</p>
-              <p className="text-slate-500 text-xs mt-1">{card.sub}</p>
+              <p className="text-[#5a8099] text-xs mt-1">{card.sub}</p>
             </div>
           )
         })}
@@ -129,7 +129,7 @@ export default async function AdminDashboardPage() {
       <div className="grid lg:grid-cols-3 gap-6">
 
         {/* Status breakdown */}
-        <div className="rounded-2xl border border-slate-700/50 p-6 space-y-4" style={{ background: 'rgba(15,20,35,0.8)' }}>
+        <div className="rounded-lg border border-[#1e2d4a]/50 p-6 space-y-4" style={{ background: 'rgba(17,24,39,0.8)' }}>
           <h2 className="text-white font-semibold">Status Transaksi</h2>
           {[
             { label: 'Sukses', count: successOrders, color: 'bg-emerald-400' },
@@ -140,37 +140,37 @@ export default async function AdminDashboardPage() {
             return (
               <div key={item.label}>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="text-slate-400">{item.label}</span>
-                  <span className="text-white font-medium">{item.count} <span className="text-slate-500">({pct}%)</span></span>
+                  <span className="text-[#a8c4d4]">{item.label}</span>
+                  <span className="text-white font-medium">{item.count} <span className="text-[#5a8099]">({pct}%)</span></span>
                 </div>
-                <div className="h-1.5 rounded-full bg-slate-800">
+                <div className="h-1.5 rounded-full bg-[#111827]">
                   <div className={`h-1.5 rounded-full ${item.color} transition-all`} style={{ width: `${pct}%` }} />
                 </div>
               </div>
             )
           })}
-          <div className="pt-2 border-t border-slate-800/60">
+          <div className="pt-2 border-t border-[#1e2d4a]/60">
             <Link href="/admin/orders" className="text-violet-400 text-xs hover:text-violet-300 transition-colors">Lihat semua transaksi →</Link>
           </div>
         </div>
 
         {/* Recent orders */}
-        <div className="lg:col-span-2 rounded-2xl border border-slate-700/50 p-6" style={{ background: 'rgba(15,20,35,0.8)' }}>
+        <div className="lg:col-span-2 rounded-lg border border-[#1e2d4a]/50 p-6" style={{ background: 'rgba(17,24,39,0.8)' }}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-white font-semibold">Transaksi Terbaru</h2>
             <Link href="/admin/orders" className="text-violet-400 text-sm hover:text-violet-300 transition-colors">Lihat semua →</Link>
           </div>
           {recentOrders.length === 0 ? (
-            <p className="text-slate-500 text-sm text-center py-8">Belum ada transaksi</p>
+            <p className="text-[#5a8099] text-sm text-center py-8">Belum ada transaksi</p>
           ) : (
             <div className="space-y-2">
               {recentOrders.map((order) => {
                 const status = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG]
                 return (
-                  <div key={order.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/40 border border-slate-700/30">
+                  <div key={order.id} className="flex items-center gap-3 p-3 rounded-lg bg-[#111827]/40 border border-[#1e2d4a]/30">
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-xs font-medium truncate">{order.productName}</p>
-                      <p className="text-slate-500 text-xs truncate">{order.user.name ?? order.user.email}</p>
+                      <p className="text-[#5a8099] text-xs truncate">{order.user.name ?? order.user.email}</p>
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-white text-xs font-semibold">{formatCurrency(order.amount)}</p>
@@ -178,7 +178,7 @@ export default async function AdminDashboardPage() {
                         {status.label}
                       </span>
                     </div>
-                    <p className="text-slate-600 text-xs shrink-0 hidden sm:block w-28 text-right">{formatDate(order.createdAt)}</p>
+                    <p className="text-[#5a8099] text-xs shrink-0 hidden sm:block w-28 text-right">{formatDate(order.createdAt)}</p>
                   </div>
                 )
               })}
@@ -196,21 +196,21 @@ export default async function AdminDashboardPage() {
             icon: <svg className="w-6 h-6 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
           { label: 'Daftar Produk',     href: '/admin/products', color: 'border-emerald-500/20 hover:border-emerald-500/40',
             icon: <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg> },
-          { label: 'Dashboard User',    href: '/dashboard',      color: 'border-slate-700/40 hover:border-slate-600/60',
-            icon: <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg> },
+          { label: 'Dashboard User',    href: '/dashboard',      color: 'border-[#1e2d4a]/40 hover:border-slate-600/60',
+            icon: <svg className="w-6 h-6 text-[#a8c4d4]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg> },
         ].map((item) => (
           <Link key={item.href} href={item.href}
-            className={`rounded-2xl border p-4 flex flex-col items-center gap-2 text-center transition-all duration-200 hover:-translate-y-0.5 ${item.color}`}
-            style={{ background: 'rgba(15,20,35,0.8)' }}
+            className={`rounded-lg border p-4 flex flex-col items-center gap-2 text-center transition-all duration-200 hover:-translate-y-0.5 ${item.color}`}
+            style={{ background: 'rgba(17,24,39,0.8)' }}
           >
             {item.icon}
-            <span className="text-slate-300 text-xs font-medium">{item.label}</span>
+            <span className="text-[#e4f0f6] text-xs font-medium">{item.label}</span>
           </Link>
         ))}
       </div>
       {/* Revenue per game */}
       {revenueByGame.length > 0 && (
-        <div className="rounded-2xl border border-slate-700/50 p-6" style={{ background: 'rgba(15,20,35,0.8)' }}>
+        <div className="rounded-lg border border-[#1e2d4a]/50 p-6" style={{ background: 'rgba(17,24,39,0.8)' }}>
           <h2 className="text-white font-semibold mb-5">Revenue per Game</h2>
           <div className="space-y-4">
             {revenueByGame.map((item) => {
@@ -220,21 +220,21 @@ export default async function AdminDashboardPage() {
               const pct = Math.round((revenue / maxRevenue) * 100)
               return (
                 <div key={item.game} className="flex items-center gap-4">
-                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-slate-800 shrink-0 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#111827] shrink-0 flex items-center justify-center">
                     {gameInfo
                       ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
-                      : <span className="text-xs text-slate-500">?</span>
+                      : <span className="text-xs text-[#5a8099]">?</span>
                     }
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1.5">
-                      <span className="text-slate-300 text-xs font-medium">{gameInfo?.label ?? item.game}</span>
+                      <span className="text-[#e4f0f6] text-xs font-medium">{gameInfo?.label ?? item.game}</span>
                       <div className="flex items-center gap-3 shrink-0">
-                        <span className="text-slate-500 text-xs">{item._count.id} order</span>
+                        <span className="text-[#5a8099] text-xs">{item._count.id} order</span>
                         <span className="text-white text-xs font-semibold">{formatCurrency(revenue)}</span>
                       </div>
                     </div>
-                    <div className="h-1.5 rounded-full bg-slate-800">
+                    <div className="h-1.5 rounded-full bg-[#111827]">
                       <div
                         className="h-1.5 rounded-full bg-gradient-to-r from-sky-500 to-violet-500 transition-all"
                         style={{ width: `${pct}%` }}

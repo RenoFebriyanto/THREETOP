@@ -75,7 +75,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
         {toasts.map((t) => (
           <div
             key={t.id}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl border shadow-2xl text-sm font-medium pointer-events-auto max-w-sm animate-in slide-in-from-right-5 fade-in duration-200 ${STYLES[t.type]}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-2xl text-sm font-medium pointer-events-auto max-w-sm animate-in slide-in-from-right-5 fade-in duration-200 ${STYLES[t.type]}`}
             style={{ backdropFilter: 'blur(12px)' }}
           >
             {ICONS[t.type]}

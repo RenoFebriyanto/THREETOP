@@ -45,7 +45,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Back */}
-      <Link href="/dashboard/orders" className="inline-flex items-center gap-2 text-slate-400 hover:text-white text-sm transition-colors">
+      <Link href="/dashboard/orders" className="inline-flex items-center gap-2 text-[#a8c4d4] hover:text-[#e4f0f6] text-sm transition-colors">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
@@ -53,10 +53,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       </Link>
 
       {/* Status banner */}
-      <div className={`rounded-2xl border p-6 text-center ${status.bg}`}>
+      <div className={`rounded-xl border p-6 text-center ${status.bg}`}>
         <div className="flex justify-center mb-3">{status.icon}</div>
         <h1 className={`text-xl font-bold ${status.color}`}>{status.label}</h1>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-[#a8c4d4] text-sm mt-1">
           {order.status === 'SUCCESS' ? 'Transaksi berhasil diproses' :
            order.status === 'PROCESSING' ? 'Transaksi sedang diproses oleh supplier' :
            order.status === 'FAILED' ? 'Transaksi gagal diproses' :
@@ -70,23 +70,23 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       </div>
 
       {/* Detail card */}
-      <div className="rounded-2xl border border-slate-700/50 overflow-hidden" style={{ background: 'rgba(15,20,35,0.8)' }}>
+      <div className="rounded-lg border border-[#1e2d4a]/50 overflow-hidden" style={{ background: 'rgba(17,24,39,0.8)' }}>
         {/* Game header */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-slate-800/60">
-          <div className="w-10 h-10 rounded-xl overflow-hidden bg-slate-800 shrink-0 flex items-center justify-center">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e2d4a]/60">
+          <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#111827] shrink-0 flex items-center justify-center">
             {gameInfo
               ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={40} />
               : <span className="text-xl">🎮</span>
             }
           </div>
           <div>
-            <h2 className="text-white font-semibold">{order.productName}</h2>
-            <p className="text-slate-500 text-xs">{gameInfo?.label ?? order.game}</p>
+            <h2 className="text-[#e4f0f6] font-semibold">{order.productName}</h2>
+            <p className="text-[#5a8099] text-xs">{gameInfo?.label ?? order.game}</p>
           </div>
         </div>
 
         {/* Detail rows */}
-        <div className="divide-y divide-slate-800/40">
+        <div className="divide-y divide-[#1e2d4a]/40">
           {[
             { label: 'Order ID',           value: order.id,                mono: true,    copy: true,    copyLabel: 'Order ID' },
             { label: 'Game ID',            value: order.gameUserId,        mono: true,    copy: true,    copyLabel: 'Game ID' },
@@ -99,13 +99,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             ...(order.sn ? [{ label: 'Serial Number', value: order.sn, mono: true, success: true, copy: true, copyLabel: 'Serial Number' }] : []),
           ].map((item) => (
             <div key={item.label} className="flex justify-between items-center px-6 py-3.5 gap-4">
-              <span className="text-slate-400 text-sm shrink-0">{item.label}</span>
+              <span className="text-[#a8c4d4] text-sm shrink-0">{item.label}</span>
               <div className="flex items-center gap-2 min-w-0">
                 <span className={`text-sm font-medium text-right break-all ${
                   (item as { success?: boolean }).success ? 'text-emerald-400 font-mono' :
                   (item as { highlight?: boolean }).highlight ? 'text-sky-400 font-bold text-base' :
-                  (item as { mono?: boolean }).mono ? 'text-slate-300 font-mono text-xs' :
-                  'text-white'
+                  (item as { mono?: boolean }).mono ? 'text-[#e4f0f6] font-mono text-xs' :
+                  'text-[#e4f0f6]'
                 }`}>
                   {item.value}
                 </span>

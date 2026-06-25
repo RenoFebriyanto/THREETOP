@@ -51,7 +51,7 @@ export default function ChangePasswordForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="flex items-start gap-2.5 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+        <div className="flex items-start gap-2.5 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
           <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" /></svg>
           {error}
         </div>
@@ -59,13 +59,13 @@ export default function ChangePasswordForm() {
 
       {/* Password lama */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">Password Saat Ini</label>
+        <label className="block text-sm font-medium text-[#e4f0f6] mb-2">Password Saat Ini</label>
         <div className="relative">
           <input type={showCurrent ? 'text' : 'password'} name="current" value={form.current} onChange={handleChange}
             placeholder="Masukkan password saat ini" disabled={loading} autoComplete="current-password"
-            className="w-full px-4 pr-11 py-3 rounded-xl bg-slate-800/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all disabled:opacity-50" />
+            className="w-full px-4 pr-11 py-3 rounded-lg bg-[#111827]/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all disabled:opacity-50" />
           <button type="button" tabIndex={-1} onClick={() => setShowCurrent(v => !v)}
-            className="absolute inset-y-0 right-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors">
+            className="absolute inset-y-0 right-3.5 flex items-center text-[#5a8099] hover:text-[#e4f0f6] transition-colors">
             {showCurrent ? <EyeOff /> : <EyeOn />}
           </button>
         </div>
@@ -73,13 +73,13 @@ export default function ChangePasswordForm() {
 
       {/* Password baru */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">Password Baru</label>
+        <label className="block text-sm font-medium text-[#e4f0f6] mb-2">Password Baru</label>
         <div className="relative">
           <input type={showNew ? 'text' : 'password'} name="newPass" value={form.newPass} onChange={handleChange}
             placeholder="Min. 8 karakter" disabled={loading} autoComplete="new-password"
-            className="w-full px-4 pr-11 py-3 rounded-xl bg-slate-800/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all disabled:opacity-50" />
+            className="w-full px-4 pr-11 py-3 rounded-lg bg-[#111827]/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all disabled:opacity-50" />
           <button type="button" tabIndex={-1} onClick={() => setShowNew(v => !v)}
-            className="absolute inset-y-0 right-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors">
+            className="absolute inset-y-0 right-3.5 flex items-center text-[#5a8099] hover:text-[#e4f0f6] transition-colors">
             {showNew ? <EyeOff /> : <EyeOn />}
           </button>
         </div>
@@ -87,20 +87,20 @@ export default function ChangePasswordForm() {
           <div className="mt-2 flex items-center gap-2">
             <div className="flex gap-1 flex-1">
               {[1, 2, 3].map((l) => (
-                <div key={l} className={`h-1 flex-1 rounded-full transition-all duration-300 ${strength >= l ? strengthColor[strength] : 'bg-slate-800'}`} />
+                <div key={l} className={`h-1 flex-1 rounded-full transition-all duration-300 ${strength >= l ? strengthColor[strength] : 'bg-[#111827]'}`} />
               ))}
             </div>
-            <span className="text-xs text-slate-500">{strengthLabel[strength]}</span>
+            <span className="text-xs text-[#5a8099]">{strengthLabel[strength]}</span>
           </div>
         )}
       </div>
 
       {/* Konfirmasi */}
       <div>
-        <label className="block text-sm font-medium text-slate-300 mb-2">Konfirmasi Password Baru</label>
+        <label className="block text-sm font-medium text-[#e4f0f6] mb-2">Konfirmasi Password Baru</label>
         <input type="password" name="confirm" value={form.confirm} onChange={handleChange}
           placeholder="Ulangi password baru" disabled={loading} autoComplete="new-password"
-          className={`w-full px-4 py-3 rounded-xl bg-slate-800/60 border text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-1 transition-all disabled:opacity-50 ${
+          className={`w-full px-4 py-3 rounded-lg bg-[#111827]/60 border text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-1 transition-all disabled:opacity-50 ${
             form.confirm.length > 0 && form.confirm !== form.newPass
               ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/50'
               : form.confirm.length > 0 && form.confirm === form.newPass
@@ -110,7 +110,7 @@ export default function ChangePasswordForm() {
       </div>
 
       <button type="submit" disabled={loading}
-        className="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+        className="w-full py-3 rounded-lg font-semibold text-sm text-white transition-all disabled:opacity-60 disabled:cursor-not-allowed"
         style={{ background: loading ? 'rgba(14,165,233,0.4)' : 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', boxShadow: loading ? 'none' : '0 0 20px rgba(14,165,233,0.3)' }}>
         {loading ? (
           <span className="flex items-center justify-center gap-2">

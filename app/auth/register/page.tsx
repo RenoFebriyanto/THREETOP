@@ -87,21 +87,21 @@ export default function RegisterPage() {
             </svg>
           </div>
           <span
-            className="text-2xl font-black tracking-tight text-white"
+            className="text-2xl font-black tracking-tight text-[#e4f0f6]"
             style={{ fontFamily: "'Rajdhani', 'Bebas Neue', sans-serif", letterSpacing: '-0.02em' }}
           >
             THREE<span className="text-sky-400">TOP</span>
           </span>
         </div>
-        <h1 className="text-2xl font-bold text-white mb-1">Buat Akun Baru</h1>
-        <p className="text-slate-400 text-sm">Top up game lebih mudah dan hemat</p>
+        <h1 className="text-2xl font-bold text-[#e4f0f6] mb-1">Buat Akun Baru</h1>
+        <p className="text-[#a8c4d4] text-sm">Top up game lebih mudah dan hemat</p>
       </div>
 
       {/* Card */}
       <div
-        className="rounded-2xl p-8 border border-slate-700/50 shadow-2xl"
+        className="rounded-lg p-8 border border-[#1e2d4a]/50 shadow-2xl"
         style={{
-          background: 'linear-gradient(135deg, rgba(15,23,42,0.95) 0%, rgba(15,20,35,0.98) 100%)',
+          background: 'linear-gradient(135deg, rgba(10,15,30,0.95) 0%, rgba(17,24,39,0.98) 100%)',
           backdropFilter: 'blur(20px)',
         }}
       >
@@ -109,7 +109,7 @@ export default function RegisterPage() {
 
           {/* Alert Error */}
           {error && (
-            <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+            <div className="flex items-start gap-3 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
               <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd" />
               </svg>
@@ -119,7 +119,7 @@ export default function RegisterPage() {
 
           {/* Alert Success */}
           {success && (
-            <div className="flex items-start gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm">
+            <div className="flex items-start gap-3 px-4 py-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm">
               <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
               </svg>
@@ -129,11 +129,11 @@ export default function RegisterPage() {
 
           {/* Field Nama */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[#a8c4d4] mb-2">
               Nama Lengkap
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-slate-500">
+              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-[#5a8099]">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -145,18 +145,18 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Masukkan nama Anda"
                 disabled={loading}
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all duration-200 disabled:opacity-50"
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[#111827]/60 border border-slate-600/50 text-[#e4f0f6] placeholder-[#5a8099] text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all duration-200 disabled:opacity-50"
               />
             </div>
           </div>
 
           {/* Field Email */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[#a8c4d4] mb-2">
               Email
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-slate-500">
+              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-[#5a8099]">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
@@ -168,18 +168,18 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="email@contoh.com"
                 disabled={loading}
-                className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-800/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all duration-200 disabled:opacity-50"
+                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[#111827]/60 border border-slate-600/50 text-[#e4f0f6] placeholder-[#5a8099] text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all duration-200 disabled:opacity-50"
               />
             </div>
           </div>
 
           {/* Field Password */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[#a8c4d4] mb-2">
               Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-slate-500">
+              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-[#5a8099]">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -191,12 +191,12 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Min. 8 karakter"
                 disabled={loading}
-                className="w-full pl-10 pr-11 py-3 rounded-xl bg-slate-800/60 border border-slate-600/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all duration-200 disabled:opacity-50"
+                className="w-full pl-10 pr-11 py-3 rounded-lg bg-[#111827]/60 border border-slate-600/50 text-[#e4f0f6] placeholder-[#5a8099] text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all duration-200 disabled:opacity-50"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute inset-y-0 right-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                className="absolute inset-y-0 right-3.5 flex items-center text-[#5a8099] hover:text-[#a8c4d4] transition-colors"
                 tabIndex={-1}
               >
                 {showPassword ? (
@@ -233,7 +233,7 @@ export default function RegisterPage() {
                     />
                   ))}
                 </div>
-                <span className="text-xs text-slate-500">
+                <span className="text-xs text-[#5a8099]">
                   {form.password.length < 4
                     ? 'Lemah'
                     : form.password.length < 8
@@ -246,11 +246,11 @@ export default function RegisterPage() {
 
           {/* Field Konfirmasi Password */}
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">
+            <label className="block text-sm font-medium text-[#a8c4d4] mb-2">
               Konfirmasi Password
             </label>
             <div className="relative">
-              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-slate-500">
+              <div className="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-[#5a8099]">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
@@ -262,7 +262,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Ulangi password"
                 disabled={loading}
-                className={`w-full pl-10 pr-11 py-3 rounded-xl bg-slate-800/60 border text-white placeholder-slate-500 text-sm focus:outline-none focus:ring-1 transition-all duration-200 disabled:opacity-50 ${
+                className={`w-full pl-10 pr-11 py-3 rounded-lg bg-[#111827]/60 border text-[#e4f0f6] placeholder-[#5a8099] text-sm focus:outline-none focus:ring-1 transition-all duration-200 disabled:opacity-50 ${
                   form.confirmPassword.length > 0 && form.password !== form.confirmPassword
                     ? 'border-red-500/60 focus:border-red-500 focus:ring-red-500/50'
                     : form.confirmPassword.length > 0 && form.password === form.confirmPassword
@@ -273,7 +273,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirm((v) => !v)}
-                className="absolute inset-y-0 right-3.5 flex items-center text-slate-500 hover:text-slate-300 transition-colors"
+                className="absolute inset-y-0 right-3.5 flex items-center text-[#5a8099] hover:text-[#a8c4d4] transition-colors"
                 tabIndex={-1}
               >
                 {showConfirm ? (
@@ -294,7 +294,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden"
+            className="w-full py-3.5 rounded-lg font-semibold text-sm text-[#e4f0f6] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden"
             style={{
               background: loading
                 ? 'rgba(14,165,233,0.4)'
@@ -318,13 +318,13 @@ export default function RegisterPage() {
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-6">
-          <div className="flex-1 h-px bg-slate-700/60" />
-          <span className="text-slate-500 text-xs">atau</span>
-          <div className="flex-1 h-px bg-slate-700/60" />
+          <div className="flex-1 h-px bg-[#1e2d4a]/60" />
+          <span className="text-[#5a8099] text-xs">atau</span>
+          <div className="flex-1 h-px bg-[#1e2d4a]/60" />
         </div>
 
         {/* Link ke Login */}
-        <p className="text-center text-sm text-slate-400">
+        <p className="text-center text-sm text-[#a8c4d4]">
           Sudah punya akun?{' '}
           <Link
             href="/auth/login"
@@ -336,13 +336,13 @@ export default function RegisterPage() {
       </div>
 
       {/* Footer note */}
-      <p className="text-center text-xs text-slate-600 mt-6">
+      <p className="text-center text-xs text-[#3d5a73] mt-6">
         Dengan mendaftar, kamu menyetujui{' '}
-        <a href="/terms" target="_blank" className="text-slate-500 hover:text-slate-400 underline transition-colors">
+        <a href="/terms" target="_blank" className="text-[#5a8099] hover:text-[#a8c4d4] underline transition-colors">
           syarat &amp; ketentuan
         </a>
         {' '}dan{' '}
-        <a href="/privacy" target="_blank" className="text-slate-500 hover:text-slate-400 underline transition-colors">
+        <a href="/privacy" target="_blank" className="text-[#5a8099] hover:text-[#a8c4d4] underline transition-colors">
           kebijakan privasi
         </a>
         {' '}ThreeTop

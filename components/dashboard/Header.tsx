@@ -41,14 +41,14 @@ export default function DashboardHeader({ user }: { user: User }) {
 
   return (
     <>
-      <header className="sticky top-0 z-10 border-b border-slate-800/60 px-4 lg:px-8 py-4 flex items-center justify-between gap-4"
-        style={{ background: 'rgba(8,12,20,0.95)', backdropFilter: 'blur(12px)' }}
+      <header className="sticky top-0 z-10 border-b border-[#1e2d4a] px-4 lg:px-8 py-4 flex items-center justify-between gap-4"
+        style={{ background: 'rgba(10,15,30,0.97)', backdropFilter: 'blur(12px)' }}
       >
         {/* Left: Mobile logo + Page title */}
         <div className="flex items-center gap-3">
           {/* Mobile menu toggle */}
           <button
-            className="lg:hidden text-slate-400 hover:text-white transition-colors"
+            className="lg:hidden text-[#a8c4d4] hover:text-[#e4f0f6] transition-colors"
             onClick={() => setMobileMenuOpen(true)}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -58,17 +58,12 @@ export default function DashboardHeader({ user }: { user: User }) {
 
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" fill="white" fillOpacity="0.9"/>
-                <path d="M5 8H11M8 5V11" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round"/>
-              </svg>
-            </div>
-            <span className="text-base font-black text-white">THREE<span className="text-sky-400">TOP</span></span>
+            <img src="/threetop-32x32.png" alt="ThreeTop" className="w-7 h-7 rounded object-contain" />
+            <span className="text-base font-black text-[#e4f0f6]">THREE<span className="text-sky-400">TOP</span></span>
           </div>
 
           {/* Desktop page title */}
-          <h2 className="hidden lg:block text-white font-semibold text-lg">{pageTitle}</h2>
+          <h2 className="hidden lg:block text-[#e4f0f6] font-semibold text-lg">{pageTitle}</h2>
         </div>
 
         {/* Right: Quick top up + user badge */}
@@ -115,21 +110,16 @@ export default function DashboardHeader({ user }: { user: User }) {
 
           {/* Drawer */}
           <div
-            className="absolute left-0 top-0 h-full w-72 border-r border-slate-800/60 flex flex-col"
-            style={{ background: 'rgba(8,12,20,0.99)' }}
+            className="absolute left-0 top-0 h-full w-72 border-r border-[#1e2d4a] flex flex-col"
+            style={{ background: '#0a0f1e' }}
           >
             {/* Logo */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-slate-800/60">
+            <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e2d4a]">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center">
-                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-                    <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" fill="white" fillOpacity="0.9"/>
-                    <path d="M5 8H11M8 5V11" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round"/>
-                  </svg>
-                </div>
-                <span className="text-lg font-black text-white">THREE<span className="text-sky-400">TOP</span></span>
+                <img src="/threetop-32x32.png" alt="ThreeTop" className="w-7 h-7 rounded object-contain" />
+                <span className="text-lg font-black text-[#e4f0f6]">THREE<span className="text-sky-400">TOP</span></span>
               </div>
-              <button onClick={() => setMobileMenuOpen(false)} className="text-slate-500 hover:text-white">
+              <button onClick={() => setMobileMenuOpen(false)} className="text-slate-500 hover:text-[#e4f0f6]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -146,7 +136,7 @@ export default function DashboardHeader({ user }: { user: User }) {
                   className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors ${
                     isActive(item.href, item.exact)
                       ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20'
-                      : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                      : 'text-[#a8c4d4] hover:text-[#e4f0f6] hover:bg-[#111827]/60'
                   }`}
                 >
                   {item.label}
@@ -157,7 +147,7 @@ export default function DashboardHeader({ user }: { user: User }) {
                 <Link
                   href="/admin/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/60 transition-colors"
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-[#a8c4d4] hover:text-[#e4f0f6] hover:bg-[#111827]/60 transition-colors"
                 >
                   Admin Panel
                 </Link>
@@ -165,8 +155,8 @@ export default function DashboardHeader({ user }: { user: User }) {
             </nav>
 
             {/* User + Logout */}
-            <div className="p-3 border-t border-slate-800/60">
-              <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-800/40 mb-2">
+            <div className="p-3 border-t border-[#1e2d4a]/60">
+              <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-[#111827]/40 mb-2">
                 <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center shrink-0">
                   {user.image ? (
                     <Image src={user.image} alt={user.name ?? ''} width={32} height={32} className="rounded-full" />

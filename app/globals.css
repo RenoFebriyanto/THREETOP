@@ -1,76 +1,55 @@
 @import "tailwindcss";
 
-/* ── ThreeTop Color System ─────────────────────────────────────────────────
-   Abyss  : Background gelap biru tua (deep ocean dark)
-   Frost  : Aksen biru es cerah (ice blue highlights)
+/* ── ThreeTop Design System ────────────────────────────────────────────────
+   Abyss  #0A0F1E  — background utama (deep navy)
+   Frost  #E4F0F6  — teks dan surface terang (ice white-blue)
    ─────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* Abyss — background layers */
-  --abyss-900: #050810;   /* terdalam */
-  --abyss-800: #080d1a;   /* background utama */
-  --abyss-700: #0a1020;   /* card background */
-  --abyss-600: #0e1628;   /* card hover */
-  --abyss-500: #131e35;   /* border subtle */
-  --abyss-400: #1a2844;   /* border medium */
-  --abyss-300: #243558;   /* border prominent */
+  /* Abyss layers */
+  --abyss:       #0a0f1e;
+  --abyss-light: #0f1629;
+  --abyss-card:  #111827;
+  --abyss-hover: #151f35;
+  --abyss-border:#1e2d4a;
 
-  /* Frost — aksen dan highlights */
-  --frost-100: #f0f9ff;   /* text terang */
-  --frost-200: #e0f2fe;   /* text muted terang */
-  --frost-300: #bae6fd;   /* text secondary */
-  --frost-400: #7dd3fc;   /* aksen muda */
-  --frost-500: #38bdf8;   /* primary aksen */
-  --frost-600: #0ea5e9;   /* primary hover */
-  --frost-700: #0284c7;   /* primary active */
+  /* Frost layers */
+  --frost:       #e4f0f6;
+  --frost-muted: #a8c4d4;
+  --frost-dim:   #5a8099;
 
-  /* Semantic */
-  --background:    var(--abyss-800);
-  --surface:       var(--abyss-700);
-  --surface-hover: var(--abyss-600);
-  --border:        var(--abyss-500);
-  --border-strong: var(--abyss-400);
-  --accent:        var(--frost-500);
-  --accent-hover:  var(--frost-600);
-  --text-primary:  var(--frost-100);
-  --text-secondary: var(--frost-300);
-  --text-muted:    #4a6080;
+  /* Accent (sky/cyan) */
+  --accent:      #38bdf8;
+  --accent-dark: #0284c7;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--text-primary);
+  --color-background: var(--abyss);
+  --color-foreground: var(--frost);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-html {
-  color-scheme: dark;
-}
+html { color-scheme: dark; }
 
 body {
-  background: var(--background);
-  color: var(--text-primary);
+  background: var(--abyss);
+  color: var(--frost);
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Scrollbar ─────────────────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--abyss-400); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--abyss-300); }
+::-webkit-scrollbar-thumb { background: var(--abyss-border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a3d5e; }
 
-/* ── Selection ─────────────────────────────────────────────────────────── */
-::selection { background: rgba(56, 189, 248, 0.25); color: #fff; }
+::selection { background: rgba(56, 189, 248, 0.2); color: var(--frost); }
 
-/* ── Carousel progress bar ─────────────────────────────────────────────── */
 @keyframes carousel-progress {
   from { width: 0% }
   to   { width: 100% }
 }
-
-/* ── Toast animations ──────────────────────────────────────────────────── */
 @keyframes slide-in-from-right-5 {
   from { transform: translateX(1.25rem); opacity: 0; }
   to   { transform: translateX(0);       opacity: 1; }
@@ -83,24 +62,3 @@ body {
 .slide-in-from-right-5 { animation-name: slide-in-from-right-5; }
 .fade-in { animation-name: fade-in; }
 .duration-200 { animation-duration: 200ms; }
-
-/* ── Frost glow effect untuk elemen aktif ──────────────────────────────── */
-.frost-glow {
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.25),
-              0 0 40px rgba(56, 189, 248, 0.1);
-}
-
-/* ── Abyss card base ───────────────────────────────────────────────────── */
-.abyss-card {
-  background: rgba(10, 16, 32, 0.85);
-  border: 1px solid rgba(26, 40, 68, 0.6);
-  backdrop-filter: blur(12px);
-}
-
-/* ── Gradient text Frost ───────────────────────────────────────────────── */
-.frost-text {
-  background: linear-gradient(135deg, var(--frost-400) 0%, var(--frost-600) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}

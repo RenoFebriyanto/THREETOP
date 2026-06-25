@@ -109,7 +109,7 @@ export default function PromoCarousel({
 
   return (
     <div
-      className="relative w-full rounded-2xl overflow-hidden select-none"
+      className="relative w-full rounded-lg overflow-hidden select-none"
       style={{ aspectRatio }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -161,7 +161,7 @@ export default function PromoCarousel({
               )}
               {s.cta && (
                 <div className="mt-4">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold text-white transition-all group-hover:gap-3"
+                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all group-hover:gap-3"
                     style={{ background: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)', boxShadow: '0 0 16px rgba(14,165,233,0.4)' }}>
                     {s.cta}
                     <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
