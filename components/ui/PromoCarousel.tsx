@@ -19,7 +19,7 @@ export type PromoSlide = {
 const DEFAULT_SLIDES: PromoSlide[] = [
   {
     id: 'ml-promo',
-    image: '/banners/banner-mobile-legends.jpg',
+    image: '/banners/banner-mobile-legends.png',
     title: 'Mobile Legends',
     subtitle: 'Diamond instan, harga terbaik',
     badge: 'POPULER',
