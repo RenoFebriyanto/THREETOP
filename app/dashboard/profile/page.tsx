@@ -93,14 +93,17 @@ export default async function ProfilePage() {
       </div>
 
       {/* Stats cards */}
-      <div className="flex flex-wrap gap-4 justify-center">
+      <div className="flex flex-wrap gap-2 justify-between">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-lg border border-[var(--color-border)] p-4 text-center flex-auto basis-full sm:basis-[calc(50%-1rem)] xl:basis-[calc(25%-1rem)] min-w-0" style={{ background: 'var(--color-surface-dark)' }}>
-            <div className="w-10 h-10 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center mx-auto mb-2 text-[var(--color-frost)]">
-              {s.icon}
+          <div key={s.label} className="rounded-lg border border-[var(--color-border)] p-3 sm:p-4 shadow-lg flex-none basis-[calc(50%-0.5rem)] md:basis-[calc(25%-0.75rem)] max-w-[calc(50%-0.5rem)] md:max-w-[calc(25%-0.75rem)] min-w-[140px]" style={{ background: 'var(--color-surface)' }}>
+            <div className="flex items-start justify-between mb-3">
+              <p className="text-[var(--color-muted)] text-xs font-medium leading-tight">{s.label}</p>
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center">
+                {s.icon}
+              </div>
             </div>
-            <p className="text-white font-bold text-lg leading-tight">{s.value}</p>
-            <p className="text-[var(--color-muted-strong)] text-xs mt-1">{s.label}</p>
+            <p className="text-2xl font-bold text-[var(--color-frost)]">{s.value}</p>
+            <p className="text-[var(--color-muted-strong)] text-xs mt-1">{s.label === 'Total Pengeluaran' ? '' : ''}</p>
           </div>
         ))}
       </div>

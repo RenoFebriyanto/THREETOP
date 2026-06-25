@@ -153,6 +153,17 @@ export default function DashboardHeader({ user }: { user: User }) {
               )}
             </nav>
 
+            {/* Terms & Privacy links for mobile */}
+            <div className="px-3 pb-2 flex items-center gap-2.5">
+              <a href="/terms" onClick={() => setMobileMenuOpen(false)} className="text-[var(--color-muted)] hover:text-[var(--color-frost)] text-xs transition-colors">
+                Syarat &amp; Ketentuan
+              </a>
+              <span className="text-[var(--color-border)]">·</span>
+              <a href="/privacy" onClick={() => setMobileMenuOpen(false)} className="text-[var(--color-muted)] hover:text-[var(--color-frost)] text-xs transition-colors">
+                Privasi
+              </a>
+            </div>
+
             {/* User + Logout */}
             <div className="p-3 border-t border-[var(--color-border)]/60">
               <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-[var(--color-surface)] mb-2">
