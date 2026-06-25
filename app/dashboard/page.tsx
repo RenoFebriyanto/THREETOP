@@ -209,7 +209,7 @@ export default async function DashboardPage() {
       </div>
 
       {/* Quick Top Up + Recent Orders */}
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(320px,1fr))] lg:grid-cols-5 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
         {/* Popular Games */}
         <div className="lg:col-span-3 rounded-lg border border-[var(--color-border-subtle)] p-4 sm:p-6" style={{ background: 'var(--color-surface-strong)' }}>
@@ -219,7 +219,7 @@ export default async function DashboardPage() {
               Lihat semua →
             </Link>
           </div>
-          <div className="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {POPULAR_GAMES.map((game) => (
               <Link
                 key={game.key}
