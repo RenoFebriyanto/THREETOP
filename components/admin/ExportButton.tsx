@@ -55,7 +55,7 @@ export default function AdminExportButton() {
       <button
         onClick={() => { setOpen(!open); setShowDateFilter(false) }}
         disabled={!!loading}
-        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-violet-500/30 bg-violet-500/10 text-violet-400 hover:bg-violet-500/20 transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium border border-[var(--color-violet-border)] bg-[var(--color-violet-bg)] text-[var(--color-violet)] hover:bg-[var(--color-violet-bg)] transition-colors disabled:opacity-50"
       >
         {loading ? (
           <>
@@ -79,20 +79,20 @@ export default function AdminExportButton() {
         <>
           <div className="fixed inset-0 z-10" onClick={() => { setOpen(false); setShowDateFilter(false) }} />
           <div
-            className="absolute right-0 top-11 z-20 w-64 rounded-lg border border-slate-700/60 overflow-hidden shadow-2xl"
-            style={{ background: 'rgba(10,15,30,0.85)' }}
+            className="absolute right-0 top-11 z-20 w-64 rounded-lg border border-[var(--color-border-subtle)] overflow-hidden shadow-2xl"
+            style={{ background: 'var(--color-surface-dark)' }}
           >
             {/* Filter tanggal */}
-            <div className="p-3 border-b border-[#1e2d4a]/60">
+            <div className="p-3 border-b border-[var(--color-border)]">
               <button
                 onClick={() => setShowDateFilter(!showDateFilter)}
-                className="w-full flex items-center justify-between text-xs text-[#a8c4d4] hover:text-[#e4f0f6] transition-colors"
+                className="w-full flex items-center justify-between text-xs text-[var(--color-muted)] hover:text-[var(--color-frost)] transition-colors"
               >
                 <span className="flex items-center gap-1.5">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  Filter Tanggal {(from || to) && <span className="text-violet-400">(aktif)</span>}
+                  Filter Tanggal {(from || to) && <span className="text-[var(--color-violet)]">(aktif)</span>}
                 </span>
                 <svg className={`w-3.5 h-3.5 transition-transform ${showDateFilter ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -102,20 +102,20 @@ export default function AdminExportButton() {
               {showDateFilter && (
                 <div className="mt-3 space-y-2">
                   <div>
-                    <label className="block text-xs text-[#5a8099] mb-1">Dari</label>
+                    <label className="block text-xs text-[var(--color-muted-strong)] mb-1">Dari</label>
                     <input type="date" value={from} onChange={e => setFrom(e.target.value)}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#111827]/60 border border-[#1e2d4a]/50 text-white text-xs focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--color-surface-strong)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-violet-border)] transition-colors"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs text-[#5a8099] mb-1">Sampai</label>
+                    <label className="block text-xs text-[var(--color-muted-strong)] mb-1">Sampai</label>
                     <input type="date" value={to} onChange={e => setTo(e.target.value)}
-                      className="w-full px-2.5 py-1.5 rounded-lg bg-[#111827]/60 border border-[#1e2d4a]/50 text-white text-xs focus:outline-none focus:border-violet-500 transition-colors"
+                      className="w-full px-2.5 py-1.5 rounded-lg bg-[var(--color-surface-strong)] border border-[var(--color-border)] text-white text-xs focus:outline-none focus:border-[var(--color-violet-border)] transition-colors"
                     />
                   </div>
                   {(from || to) && (
                     <button onClick={() => { setFrom(''); setTo('') }}
-                      className="text-xs text-[#5a8099] hover:text-red-400 transition-colors">
+                      className="text-xs text-[var(--color-muted-strong)] hover:text-[var(--color-error)] transition-colors">
                       Reset filter
                     </button>
                   )}
@@ -124,16 +124,16 @@ export default function AdminExportButton() {
             </div>
 
             {/* Export options */}
-            <p className="px-3 py-2 text-[#5a8099] text-xs font-semibold uppercase tracking-wider">
+            <p className="px-3 py-2 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider">
               Pilih Laporan
             </p>
             {exports.map((item) => (
               <button
                 key={item.label}
                 onClick={() => download(item.url, item.label)}
-                className="w-full text-left px-3 py-2.5 text-sm text-[#e4f0f6] hover:bg-[#111827]/80 hover:text-[#e4f0f6] transition-colors flex items-center gap-2"
+                className="w-full text-left px-3 py-2.5 text-sm text-[var(--color-frost)] hover:bg-[var(--color-surface)] hover:text-[var(--color-frost)] transition-colors flex items-center gap-2"
               >
-                <svg className="w-3.5 h-3.5 text-violet-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-[var(--color-violet)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 {item.label}

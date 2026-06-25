@@ -23,10 +23,10 @@ export default function CopyButton({ text, label = 'Salin' }: { text: string; la
       onClick={handleCopy}
       title={`Salin ${label}`}
       className="inline-flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium border transition-all duration-150 shrink-0
-        border-slate-600/50 bg-[#111827]/60 text-[#a8c4d4] hover:text-[#e4f0f6] hover:border-slate-500"
+        border-[var(--color-border)] bg-[var(--color-surface-dark)] text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:border-[var(--color-border)]"
     >
       {copied ? (
-        <svg className="w-3 h-3 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-3 h-3 text-[var(--color-success)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
         </svg>
       ) : (

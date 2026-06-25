@@ -8,14 +8,14 @@ import CopyButton from '@/components/ui/CopyButton'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
 const STATUS_CONFIG = {
-  SUCCESS:    { label: 'Sukses',    color: 'text-emerald-400', bg: 'bg-emerald-400/10 border-emerald-400/20',
-    icon: <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-  FAILED:     { label: 'Gagal',     color: 'text-red-400',     bg: 'bg-red-400/10 border-red-400/20',
-    icon: <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-  PENDING:    { label: 'Pending',   color: 'text-amber-400',   bg: 'bg-amber-400/10 border-amber-400/20',
-    icon: <svg className="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-  PROCESSING: { label: 'Diproses', color: 'text-[#e4f0f6]',     bg: 'bg-sky-400/10 border-sky-400/20',
-    icon: <svg className="w-8 h-8 text-[#e4f0f6] animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> },
+  SUCCESS:    { label: 'Sukses',    color: 'text-[var(--color-success)]', bg: 'bg-[var(--color-success-bg)] border-[var(--color-success-border)]',
+    icon: <svg className="w-8 h-8 text-[var(--color-success)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+  FAILED:     { label: 'Gagal',     color: 'text-[var(--color-error)]',     bg: 'bg-[var(--color-error-bg)] border-[var(--color-error-border)]',
+    icon: <svg className="w-8 h-8 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+  PENDING:    { label: 'Pending',   color: 'text-[var(--color-warning)]',   bg: 'bg-[var(--color-warning-bg)] border-[var(--color-warning-border)]',
+    icon: <svg className="w-8 h-8 text-[var(--color-warning)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
+  PROCESSING: { label: 'Diproses', color: 'text-[var(--color-frost)]',     bg: 'bg-[var(--color-info-bg)] border-[var(--color-info-border)]',
+    icon: <svg className="w-8 h-8 text-[var(--color-frost)] animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg> },
 } as const
 
 function formatCurrency(n: number) {
@@ -45,7 +45,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Back */}
-      <Link href="/dashboard/orders" className="inline-flex items-center gap-2 text-[#a8c4d4] hover:text-[#e4f0f6] text-sm transition-colors">
+      <Link href="/dashboard/orders" className="inline-flex items-center gap-2 text-[var(--color-muted)] hover:text-[var(--color-frost)] text-sm transition-colors">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
@@ -56,7 +56,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       <div className={`rounded-xl border p-6 text-center ${status.bg}`}>
         <div className="flex justify-center mb-3">{status.icon}</div>
         <h1 className={`text-xl font-bold ${status.color}`}>{status.label}</h1>
-        <p className="text-[#a8c4d4] text-sm mt-1">
+        <p className="text-[var(--color-muted)] text-sm mt-1">
           {order.status === 'SUCCESS' ? 'Transaksi berhasil diproses' :
            order.status === 'PROCESSING' ? 'Transaksi sedang diproses oleh supplier' :
            order.status === 'FAILED' ? 'Transaksi gagal diproses' :
@@ -70,23 +70,23 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       </div>
 
       {/* Detail card */}
-      <div className="rounded-lg border border-[#1e2d4a]/50 overflow-hidden" style={{ background: 'rgba(10,15,30,0.85)' }}>
+      <div className="rounded-lg border border-[var(--color-border)] overflow-hidden bg-[var(--color-surface-dark)]">
         {/* Game header */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-[#1e2d4a]/60">
-          <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#111827] shrink-0 flex items-center justify-center">
+        <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--color-border)]/60">
+          <div className="w-10 h-10 rounded-lg overflow-hidden bg-[var(--color-abyss)] shrink-0 flex items-center justify-center">
             {gameInfo
               ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={40} />
               : <span className="text-xl">🎮</span>
             }
           </div>
           <div>
-            <h2 className="text-[#e4f0f6] font-semibold">{order.productName}</h2>
-            <p className="text-[#5a8099] text-xs">{gameInfo?.label ?? order.game}</p>
+            <h2 className="text-[var(--color-frost)] font-semibold">{order.productName}</h2>
+            <p className="text-[var(--color-muted-strong)] text-xs">{gameInfo?.label ?? order.game}</p>
           </div>
         </div>
 
         {/* Detail rows */}
-        <div className="divide-y divide-[#1e2d4a]/40">
+        <div className="divide-y divide-[var(--color-border)]/40">
           {[
             { label: 'Order ID',           value: order.id,                mono: true,    copy: true,    copyLabel: 'Order ID' },
             { label: 'Game ID',            value: order.gameUserId,        mono: true,    copy: true,    copyLabel: 'Game ID' },
@@ -99,13 +99,13 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             ...(order.sn ? [{ label: 'Serial Number', value: order.sn, mono: true, success: true, copy: true, copyLabel: 'Serial Number' }] : []),
           ].map((item) => (
             <div key={item.label} className="flex justify-between items-center px-6 py-3.5 gap-4">
-              <span className="text-[#a8c4d4] text-sm shrink-0">{item.label}</span>
+              <span className="text-[var(--color-muted)] text-sm shrink-0">{item.label}</span>
               <div className="flex items-center gap-2 min-w-0">
                 <span className={`text-sm font-medium text-right break-all ${
-                  (item as { success?: boolean }).success ? 'text-emerald-400 font-mono' :
-                  (item as { highlight?: boolean }).highlight ? 'text-[#e4f0f6] font-bold text-base' :
-                  (item as { mono?: boolean }).mono ? 'text-[#e4f0f6] font-mono text-xs' :
-                  'text-[#e4f0f6]'
+                  (item as { success?: boolean }).success ? 'text-[var(--color-success)] font-mono' :
+                  (item as { highlight?: boolean }).highlight ? 'text-[var(--color-frost)] font-bold text-base' :
+                  (item as { mono?: boolean }).mono ? 'text-[var(--color-frost)] font-mono text-xs' :
+                  'text-[var(--color-frost)]'
                 }`}>
                   {item.value}
                 </span>
@@ -122,7 +122,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       {order.paymentStatus === 'UNPAID' && order.paymentUrl && (
         <a href={order.paymentUrl} target="_blank" rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl font-semibold text-sm text-white transition-all hover:scale-[1.02]"
-          style={{ background: '#e4f0f6', boxShadow: '0 0 20px rgba(14,165,233,0.3)' }}>
+          style={{ background: 'var(--color-button-bg)', boxShadow: '0 0 20px var(--color-glow)' }}>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
           </svg>
@@ -133,13 +133,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       {/* Tombol bawah */}
       <div className="flex gap-3">
         <Link href="/dashboard/orders"
-          className="flex-1 py-3 rounded-xl text-sm font-medium text-center border border-slate-700/50 text-slate-400 hover:text-white hover:border-slate-600 transition-colors"
-          style={{ background: 'rgba(10,15,30,0.85)' }}>
+          className="flex-1 py-3 rounded-xl text-sm font-medium text-center border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:border-[var(--color-border)] transition-colors bg-[var(--color-surface-dark)]">
           Lihat Semua Riwayat
         </Link>
         <Link href="/dashboard/topup"
-          className="flex-1 py-3 rounded-xl text-sm font-semibold text-center text-white"
-          style={{ background: '#e4f0f6' }}>
+          className="flex-1 py-3 rounded-xl text-sm font-semibold text-center text-[var(--color-button-text)]"
+          style={{ background: 'var(--color-button-bg)' }}>
           Top Up Lagi
         </Link>
       </div>

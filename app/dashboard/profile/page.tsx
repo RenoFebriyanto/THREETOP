@@ -57,13 +57,13 @@ export default async function ProfilePage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-white">Profil Saya</h1>
-        <p className="text-[#a8c4d4] text-sm mt-1">Informasi akun dan statistik transaksi kamu</p>
+        <p className="text-[var(--color-muted)] text-sm mt-1">Informasi akun dan statistik transaksi kamu</p>
       </div>
 
       {/* Profile card */}
-      <div className="rounded-lg border border-[#1e2d4a]/50 p-6" style={{ background: 'rgba(10,15,30,0.85)' }}>
+      <div className="rounded-lg border border-[var(--color-border)] p-6" style={{ background: 'var(--color-surface-dark)' }}>
         <div className="flex items-center gap-5">
-          <div className="w-20 h-20 rounded-lg overflow-hidden bg-slate-700 shrink-0 flex items-center justify-center">
+          <div className="w-20 h-20 rounded-lg overflow-hidden bg-[var(--color-surface-dark)] shrink-0 flex items-center justify-center">
             {user.image ? (
               <Image src={user.image} alt={user.name ?? ''} width={80} height={80} className="w-full h-full object-cover" />
             ) : (
@@ -76,14 +76,14 @@ export default async function ProfilePage() {
             <div className="flex items-center gap-2 flex-wrap">
               <h2 className="text-white font-bold text-xl">{user.name ?? 'Pengguna'}</h2>
               {user.role === 'ADMIN' && (
-                <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-500/20 border border-violet-500/30 text-violet-400">
+                <span className="px-2 py-0.5 rounded-full text-xs font-semibold bg-[var(--color-violet-bg)] border border-[var(--color-violet-border)] text-[var(--color-violet)]">
                   Admin
                 </span>
               )}
             </div>
-            <p className="text-[#a8c4d4] text-sm mt-1">{user.email}</p>
+            <p className="text-[var(--color-muted)] text-sm mt-1">{user.email}</p>
             {memberSince && (
-              <p className="text-[#5a8099] text-xs mt-1.5">
+              <p className="text-[var(--color-muted-strong)] text-xs mt-1.5">
                 Member sejak {formatDate(memberSince.createdAt)}
               </p>
             )}
@@ -95,19 +95,19 @@ export default async function ProfilePage() {
       {/* Stats grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {stats.map((s) => (
-          <div key={s.label} className="rounded-lg border border-[#1e2d4a]/50 p-4 text-center" style={{ background: 'rgba(10,15,30,0.85)' }}>
-            <div className="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mx-auto mb-2 text-[#e4f0f6]">
+          <div key={s.label} className="rounded-lg border border-[var(--color-border)] p-4 text-center" style={{ background: 'var(--color-surface-dark)' }}>
+            <div className="w-10 h-10 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center mx-auto mb-2 text-[var(--color-frost)]">
               {s.icon}
             </div>
             <p className="text-white font-bold text-lg leading-tight">{s.value}</p>
-            <p className="text-[#5a8099] text-xs mt-1">{s.label}</p>
+            <p className="text-[var(--color-muted-strong)] text-xs mt-1">{s.label}</p>
           </div>
         ))}
       </div>
 
       {/* Account info */}
-      <div className="rounded-lg border border-[#1e2d4a]/50 overflow-hidden" style={{ background: 'rgba(10,15,30,0.85)' }}>
-        <div className="px-6 py-4 border-b border-[#1e2d4a]/60">
+      <div className="rounded-lg border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
+        <div className="px-6 py-4 border-b border-[var(--color-border)]">
           <h3 className="text-white font-semibold">Informasi Akun</h3>
         </div>
         <div className="divide-y divide-slate-800/60">
@@ -118,7 +118,7 @@ export default async function ProfilePage() {
             { label: 'Status Akun', value: 'Aktif' },
           ].map((item) => (
             <div key={item.label} className="flex justify-between items-center px-6 py-4">
-              <span className="text-[#a8c4d4] text-sm">{item.label}</span>
+              <span className="text-[var(--color-muted)] text-sm">{item.label}</span>
               <span className="text-white text-sm font-medium">{item.value}</span>
             </div>
           ))}
@@ -126,16 +126,16 @@ export default async function ProfilePage() {
       </div>
 
       {/* Ubah Password */}
-      <div className="rounded-lg border border-[#1e2d4a]/50 overflow-hidden" style={{ background: 'rgba(10,15,30,0.85)' }}>
-        <div className="px-6 py-4 border-b border-[#1e2d4a]/60 flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center shrink-0">
-            <svg className="w-4 h-4 text-[#e4f0f6]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="rounded-lg border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
+        <div className="px-6 py-4 border-b border-[var(--color-border)] flex items-center gap-3">
+          <div className="w-8 h-8 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-[var(--color-frost)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
           <div>
             <h3 className="text-white font-semibold text-sm">Ubah Password</h3>
-            <p className="text-[#5a8099] text-xs mt-0.5">Gunakan password yang kuat dan unik</p>
+            <p className="text-[var(--color-muted-strong)] text-xs mt-0.5">Gunakan password yang kuat dan unik</p>
           </div>
         </div>
         <div className="p-6">

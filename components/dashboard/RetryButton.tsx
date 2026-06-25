@@ -38,7 +38,7 @@ export default function RetryButton({ orderId }: { orderId: string }) {
     <button
       onClick={handleRetry}
       disabled={loading}
-      className="px-3 py-1.5 rounded-lg text-xs font-medium bg-amber-500/10 border border-amber-500/20 text-amber-400 hover:bg-amber-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+      className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] text-[var(--color-warning)] hover:bg-[var(--color-warning-bg)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {loading ? (
         <span className="flex items-center gap-1.5">

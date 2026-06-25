@@ -11,13 +11,8 @@ const LAST_UPDATED = 'Juni 2025'
 function Logo() {
   return (
     <Link href="/" className="flex items-center gap-2">
-      <div className="w-7 h-7 rounded-lg bg-sky-500 flex items-center justify-center">
-        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-          <path d="M8 1L14 4.5V11.5L8 15L2 11.5V4.5L8 1Z" fill="white" fillOpacity="0.9"/>
-          <path d="M5 8H11M8 5V11" stroke="#0EA5E9" strokeWidth="1.5" strokeLinecap="round"/>
-        </svg>
-      </div>
-      <span className="text-base font-black text-white">THREE<span className="text-[#e4f0f6]">TOP</span></span>
+      <img src="/threetop-32x32.png" alt="ThreeTop" className="w-7 h-7 rounded object-contain" />
+      <span className="text-base font-black text-[var(--color-frost)]">THREE<span className="text-[var(--color-frost)]">TOP</span></span>
     </Link>
   )
 }
@@ -166,16 +161,16 @@ const SECTIONS = [
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#0a0f1e]">
+    <div className="min-h-screen bg-[var(--color-abyss)]">
       {/* Header */}
-      <div className="border-b border-[#1a2844]/60 sticky top-0 z-10" style={{ background: 'rgba(10,15,30,0.97)', backdropFilter: 'blur(12px)' }}>
+      <div className="border-b border-[var(--color-border)] sticky top-0 z-10" style={{ background: 'var(--color-overlay-sticky)', backdropFilter: 'blur(12px)' }}>
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center gap-4">
           <Logo />
-          <span className="text-slate-600">/</span>
-          <span className="text-slate-400 text-sm">Kebijakan Privasi</span>
+          <span className="text-[var(--color-muted-strong)]">/</span>
+          <span className="text-[var(--color-muted)] text-sm">Kebijakan Privasi</span>
           <div className="ml-auto flex items-center gap-3">
-            <Link href="/terms" className="text-slate-500 hover:text-slate-300 text-xs transition-colors">Syarat &amp; Ketentuan</Link>
-            <Link href="/dashboard" className="text-[#e4f0f6] hover:text-[#e4f0f6] text-xs transition-colors">Dashboard</Link>
+            <Link href="/terms" className="text-[var(--color-muted)] hover:text-[var(--color-frost)] text-xs transition-colors">Syarat &amp; Ketentuan</Link>
+            <Link href="/dashboard" className="text-[var(--color-frost)] hover:text-[var(--color-frost)] text-xs transition-colors">Dashboard</Link>
           </div>
         </div>
       </div>
@@ -186,10 +181,10 @@ export default function PrivacyPage() {
           {/* Sidebar navigasi */}
           <div className="hidden lg:block">
             <div className="sticky top-20 space-y-1">
-              <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mb-3">Daftar Isi</p>
+              <p className="text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider mb-3">Daftar Isi</p>
               {SECTIONS.map((s) => (
                 <a key={s.id} href={`#${s.id}`}
-                  className="block text-slate-400 hover:text-white text-xs py-1.5 transition-colors leading-tight">
+                  className="block text-[var(--color-muted)] hover:text-[var(--color-frost)] text-xs py-1.5 transition-colors leading-tight">
                   {s.title}
                 </a>
               ))}
@@ -199,19 +194,19 @@ export default function PrivacyPage() {
           {/* Konten */}
           <div className="lg:col-span-3 space-y-8">
             <div>
-              <h1 className="text-3xl font-bold text-white">Kebijakan Privasi</h1>
-              <p className="text-slate-400 text-sm mt-2">
+              <h1 className="text-3xl font-bold text-[var(--color-frost)]">Kebijakan Privasi</h1>
+              <p className="text-[var(--color-muted)] text-sm mt-2">
                 Terakhir diperbarui: {LAST_UPDATED} · Berlaku untuk semua pengguna ThreeTop
               </p>
             </div>
 
             {/* Pengantar */}
-            <div className="rounded-2xl border border-emerald-500/20 p-6 bg-emerald-500/5">
+            <div className="rounded-2xl border border-[var(--color-success-border)] p-6 bg-[var(--color-success-bg)]">
               <div className="flex items-start gap-3">
-                <svg className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-[var(--color-success)] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <p className="text-slate-300 text-sm leading-relaxed">
+                <p className="text-[var(--color-muted)] text-sm leading-relaxed">
                   Privasi Pengguna adalah prioritas kami. ThreeTop tidak menjual data Pengguna kepada pihak ketiga
                   dan hanya menggunakan data yang benar-benar diperlukan untuk menjalankan layanan.
                   Dokumen ini menjelaskan secara transparan bagaimana kami mengelola data Pengguna.
@@ -221,15 +216,13 @@ export default function PrivacyPage() {
 
             {/* Sections */}
             {SECTIONS.map((section) => (
-              <div key={section.id} id={section.id}
-                className="rounded-2xl border border-[#243558]/50 p-6 scroll-mt-20"
-                style={{ background: 'rgba(10,16,32,0.8)' }}>
-                <h2 className="text-white font-semibold text-lg mb-4">{section.title}</h2>
+              <div key={section.id} id={section.id} className="rounded-2xl border border-[var(--color-border)]/50 p-6 scroll-mt-20 bg-[var(--color-surface-dark)]">
+                <h2 className="text-[var(--color-frost)] font-semibold text-lg mb-4">{section.title}</h2>
                 <ul className="space-y-3">
                   {section.content.map((item, i) => (
                     <li key={i} className="flex items-start gap-3">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500/60 shrink-0 mt-2" />
-                      <p className="text-slate-400 text-sm leading-relaxed">{item}</p>
+                      <div className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)] shrink-0 mt-2" />
+                      <p className="text-[var(--color-muted)] text-sm leading-relaxed">{item}</p>
                     </li>
                   ))}
                 </ul>
@@ -237,22 +230,22 @@ export default function PrivacyPage() {
             ))}
 
             {/* Footer */}
-            <div className="rounded-2xl border border-[#243558]/30 p-6 text-center" style={{ background: 'rgba(10,16,32,0.6)' }}>
-              <p className="text-slate-400 text-sm mb-2">
+            <div className="rounded-2xl border border-[var(--color-border)] p-6 text-center bg-[var(--color-surface-dark)]">
+              <p className="text-[var(--color-muted)] text-sm mb-2">
                 Pertanyaan tentang privasi? Hubungi kami di{' '}
-                <a href="mailto:privacy@threetop.id" className="text-[#e4f0f6] hover:text-[#e4f0f6] transition-colors">
+                <a href="mailto:privacy@threetop.id" className="text-[var(--color-frost)] hover:text-[var(--color-frost)] transition-colors">
                   privacy@threetop.id
                 </a>
               </p>
-              <p className="text-slate-600 text-xs mb-5">Versi {LAST_UPDATED}</p>
+              <p className="text-[var(--color-muted-strong)] text-xs mb-5">Versi {LAST_UPDATED}</p>
               <div className="flex items-center justify-center gap-3 flex-wrap">
                 <Link href="/terms"
-                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-slate-300 border border-[#243558]/50 hover:text-white hover:border-slate-600 transition-colors">
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-[var(--color-muted)] border border-[var(--color-border)]/50 hover:text-[var(--color-frost)] hover:border-[var(--color-border)] transition-colors">
                   Syarat &amp; Ketentuan
                 </Link>
                 <Link href="/dashboard"
-                  className="px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all hover:scale-105"
-                  style={{ background: '#e4f0f6' }}>
+                  className="px-5 py-2.5 rounded-xl text-sm font-semibold text-[var(--color-button-text)] transition-all hover:scale-105"
+                  style={{ background: 'var(--color-button-bg)' }}>
                   Kembali ke Dashboard
                 </Link>
               </div>

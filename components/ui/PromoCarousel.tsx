@@ -23,7 +23,7 @@ const DEFAULT_SLIDES: PromoSlide[] = [
     title: 'Mobile Legends',
     subtitle: 'Diamond instan, harga terbaik',
     badge: 'POPULER',
-    badgeColor: 'bg-sky-500',
+    badgeColor: 'bg-[var(--color-info)]',
     href: '/dashboard/topup/mobile_legends',
     cta: 'Top Up Sekarang',
   },
@@ -33,7 +33,7 @@ const DEFAULT_SLIDES: PromoSlide[] = [
     title: 'Free Fire',
     subtitle: 'Diamond FF langsung masuk',
     badge: 'PROMO',
-    badgeColor: 'bg-orange-500',
+    badgeColor: 'bg-[var(--color-warning)]',
     href: '/dashboard/topup/free_fire',
     cta: 'Top Up Sekarang',
   },
@@ -43,7 +43,7 @@ const DEFAULT_SLIDES: PromoSlide[] = [
     title: 'PUBG Mobile',
     subtitle: 'UC murah & cepat',
     badge: 'BARU',
-    badgeColor: 'bg-yellow-500',
+    badgeColor: 'bg-[var(--color-success)]',
     href: '/dashboard/topup/pubg_mobile',
     cta: 'Top Up Sekarang',
   },
@@ -137,7 +137,7 @@ export default function PromoCarousel({
             />
           ) : (
             // Fallback gradient jika image belum ada
-            <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-[#0a0f1e]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-[var(--color-abyss)]" />
           )}
 
           {/* Overlay gelap untuk readability teks */}
@@ -147,7 +147,7 @@ export default function PromoCarousel({
           <Link href={s.href} className="absolute inset-0 flex items-end p-6 sm:p-8 group">
             <div className="max-w-lg">
               {s.badge && (
-                <span className={`inline-block px-2.5 py-1 rounded-full text-white text-xs font-bold mb-3 ${s.badgeColor ?? 'bg-sky-500'}`}>
+                <span className={`inline-block px-2.5 py-1 rounded-full text-white text-xs font-bold mb-3 ${s.badgeColor ?? 'bg-[var(--color-info)]'}`}>
                   {s.badge}
                 </span>
               )}
@@ -161,8 +161,8 @@ export default function PromoCarousel({
               )}
               {s.cta && (
                 <div className="mt-4">
-                  <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition-all group-hover:gap-3"
-                    style={{ background: '#e4f0f6', boxShadow: '0 0 16px rgba(14,165,233,0.4)' }}>
+                    <span className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-[var(--color-button-text)] transition-all group-hover:gap-3"
+                      style={{ background: 'var(--color-button-bg)', boxShadow: '0 0 16px var(--color-accent-loading)' }}>
                     {s.cta}
                     <svg className="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -222,7 +222,7 @@ export default function PromoCarousel({
         <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/10 z-20 overflow-hidden">
           <div
             key={`${current}-progress`}
-            className="h-full bg-sky-400/60 rounded-full"
+            className="h-full bg-[var(--color-info)] opacity-60 rounded-full"
             style={{
               animation: `carousel-progress ${autoPlayInterval}ms linear forwards`,
             }}

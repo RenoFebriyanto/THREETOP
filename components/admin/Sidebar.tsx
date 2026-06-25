@@ -39,53 +39,53 @@ export default function AdminSidebar({ user }: { user: User }) {
   }
 
   return (
-    <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 border-r border-[#1e2d4a] z-20" style={{ background: '#0a0f1e' }}>
+    <aside className="hidden lg:flex flex-col fixed left-0 top-0 h-screen w-64 border-r border-[var(--color-shadow)] z-20" style={{ background: 'var(--color-abyss)' }}>
       {/* Logo */}
-      <div className="flex items-center gap-2.5 px-6 py-5 border-b border-[#1e2d4a]">
+      <div className="flex items-center gap-2.5 px-6 py-5 border-b border-[var(--color-overlay-subtle)]">
         <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain shrink-0" />
         <div>
-          <span className="text-base font-black text-[#e4f0f6]">THREE<span className="text-violet-400">TOP</span></span>
-          <p className="text-violet-400 text-xs font-medium -mt-0.5">Admin Panel</p>
+          <span className="text-base font-black text-[var(--color-frost)]">THREE<span className="text-[var(--color-muted-strong)]">TOP</span></span>
+          <p className="text-[var(--color-muted-strong)] text-xs font-medium -mt-0.5">Admin Panel</p>
         </div>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
-        <p className="text-[#5a8099] text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu Admin</p>
+        <p className="text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-widest px-3 mb-3">Menu Admin</p>
         {NAV_ITEMS.map((item) => (
           <Link key={item.href} href={item.href}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
               isActive(item.href, item.exact)
-                ? 'bg-violet-500/10 text-violet-400 border border-violet-500/20'
-                : 'text-[#a8c4d4] hover:text-[#e4f0f6] hover:bg-[#111827]'
+                ? 'bg-[var(--color-surface-subtle)] text-[var(--color-frost)] border border-[var(--color-border-subtle)]'
+                : 'text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:bg-[var(--color-surface-strong)]'
             }`}
           >
             {item.icon}{item.label}
-            {isActive(item.href, item.exact) && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-violet-400" />}
+            {isActive(item.href, item.exact) && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-[var(--color-muted-strong)]" />}
           </Link>
         ))}
         <div className="pt-4 pb-2">
-          <p className="text-[#5a8099] text-xs font-semibold uppercase tracking-widest px-3">User Area</p>
+          <p className="text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-widest px-3">User Area</p>
         </div>
-        <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#a8c4d4] hover:text-[#e4f0f6] hover:bg-[#111827] transition-all">
+        <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:bg-[var(--color-surface)] transition-all">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
           Kembali ke Dashboard
         </Link>
       </nav>
 
       {/* User */}
-      <div className="p-3 border-t border-[#1e2d4a]">
-        <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[#111827]">
-          <div className="w-8 h-8 rounded-md overflow-hidden bg-[#1e2d4a] shrink-0 flex items-center justify-center">
+      <div className="p-3 border-t border-[var(--color-overlay-subtle)]">
+        <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-[var(--color-surface)]">
+          <div className="w-8 h-8 rounded-md overflow-hidden bg-[var(--color-surface-subtle)] shrink-0 flex items-center justify-center">
             {user.image
               ? <Image src={user.image} alt={user.name ?? ''} width={32} height={32} className="w-full h-full object-cover" />
-              : <span className="text-[#e4f0f6] text-sm font-bold">{user.name?.charAt(0).toUpperCase() ?? '?'}</span>}
+              : <span className="text-[var(--color-frost)] text-sm font-bold">{user.name?.charAt(0).toUpperCase() ?? '?'}</span>}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[#e4f0f6] text-xs font-semibold truncate">{user.name ?? 'Admin'}</p>
-            <p className="text-violet-400 text-xs">Administrator</p>
+            <p className="text-[var(--color-frost)] text-xs font-semibold truncate">{user.name ?? 'Admin'}</p>
+            <p className="text-[var(--color-muted-strong)] text-xs">Administrator</p>
           </div>
-          <button onClick={() => signOut({ callbackUrl: '/auth/login' })} className="text-[#5a8099] hover:text-red-400 transition-colors shrink-0" title="Logout">
+          <button onClick={() => signOut({ callbackUrl: '/auth/login' })} className="text-[var(--color-muted)] hover:text-[var(--color-error)] transition-colors shrink-0" title="Logout">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
           </button>
         </div>

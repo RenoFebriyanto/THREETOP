@@ -24,7 +24,7 @@ export default async function HomePage() {
 
       {/* Navbar */}
       <header className="sticky top-0 z-50"
-        style={{ background: 'rgba(10,15,30,0.98)', borderBottom: `1px solid ${theme.border}`, backdropFilter: 'blur(12px)' }}>
+        style={{ background: 'var(--color-overlay-sticky)', borderBottom: `1px solid ${theme.border}`, backdropFilter: 'blur(12px)' }}>
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
@@ -64,10 +64,10 @@ export default async function HomePage() {
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full blur-3xl"
-            style={{ background: 'rgba(228,240,246,0.03)' }} />
+            style={{ background: 'var(--color-overlay-subtle)' }} />
           <div className="absolute inset-0 opacity-[0.015]"
             style={{
-              backgroundImage: 'linear-gradient(rgba(228,240,246,1) 1px, transparent 1px), linear-gradient(90deg, rgba(228,240,246,1) 1px, transparent 1px)',
+              backgroundImage: 'linear-gradient(var(--color-frost) 1px, transparent 1px), linear-gradient(90deg, var(--color-frost) 1px, transparent 1px)',
               backgroundSize: '40px 40px',
             }} />
         </div>
@@ -169,9 +169,9 @@ export default async function HomePage() {
             ].map((item) => (
               <div key={item.step} className="rounded-lg p-6 relative overflow-hidden"
                 style={{ border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
-                <div className="absolute top-4 right-4 text-5xl font-black" style={{ color: 'rgba(228,240,246,0.04)' }}>{item.step}</div>
+                <div className="absolute top-4 right-4 text-5xl font-black" style={{ color: 'var(--color-overlay-watermark)' }}>{item.step}</div>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
-                  style={{ background: 'rgba(228,240,246,0.08)', border: '1px solid rgba(228,240,246,0.15)' }}>
+                  style={{ background: 'var(--color-surface-strong)', border: '1px solid var(--color-border-subtle)' }}>
                   <span className="text-sm font-bold" style={{ color: theme.foreground }}>{item.step}</span>
                 </div>
                 <h3 className="font-semibold mb-2" style={{ color: theme.foreground }}>{item.title}</h3>
@@ -201,7 +201,7 @@ export default async function HomePage() {
               <div key={item.title} className="rounded-lg p-6"
                 style={{ border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
-                  style={{ background: 'rgba(228,240,246,0.08)', border: '1px solid rgba(228,240,246,0.15)' }}>
+                  style={{ background: 'var(--color-surface-strong)', border: '1px solid var(--color-border-subtle)' }}>
                   <div className="w-4 h-4 rounded-full" style={{ background: theme.foreground }} />
                 </div>
                 <h3 className="font-semibold mb-2" style={{ color: theme.foreground }}>{item.title}</h3>

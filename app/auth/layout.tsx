@@ -11,23 +11,23 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0a0f1e] relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--color-abyss)] relative overflow-hidden">
       {/* Background grid */}
       <div
         className="absolute inset-0 opacity-[0.03]"
         style={{
           backgroundImage: `
-            linear-gradient(rgba(56,189,248,1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(56,189,248,1) 1px, transparent 1px)
+            linear-gradient(var(--color-grid-bg) 1px, transparent 1px),
+            linear-gradient(90deg, var(--color-grid-bg) 1px, transparent 1px)
           `,
           backgroundSize: '40px 40px',
         }}
       />
 
       {/* Glow top-left */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-[var(--color-surface-strong)] rounded-full blur-3xl pointer-events-none" />
       {/* Glow bottom-right */}
-      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[var(--color-surface-icon)] rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md px-4">
         {children}

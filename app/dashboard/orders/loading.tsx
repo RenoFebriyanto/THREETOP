@@ -4,24 +4,24 @@ export default function OrdersLoading() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-2">
-          <div className="h-7 w-48 rounded-xl bg-[#111827]/60" />
-          <div className="h-4 w-32 rounded-lg bg-[#111827]/40" />
+          <div className="h-7 w-48 rounded-xl bg-[var(--color-surface-muted)]" />
+          <div className="h-4 w-32 rounded-lg bg-[var(--color-surface-muted)]" />
         </div>
-        <div className="h-9 w-28 rounded-xl bg-[#111827]/60" />
+        <div className="h-9 w-28 rounded-xl bg-[var(--color-surface-muted)]" />
       </div>
       {/* Order cards */}
       {Array.from({ length: 5 }).map((_, i) => (
-        <div key={i} className="rounded-xl border border-[#1e2d4a]/40 p-5" style={{ background: 'rgba(10,15,30,0.85)' }}>
+        <div key={i} className="rounded-xl border border-[var(--color-border)] p-5" style={{ background: 'var(--color-surface-dark)' }}>
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-[#111827]/60 shrink-0" />
+            <div className="w-12 h-12 rounded-xl bg-[var(--color-surface-muted)] shrink-0" />
             <div className="flex-1 space-y-2">
-              <div className="h-4 w-40 rounded-lg bg-[#111827]/60" />
-              <div className="h-3 w-24 rounded-lg bg-[#111827]/40" />
-              <div className="h-3 w-20 rounded-lg bg-slate-800/30" />
+              <div className="h-4 w-40 rounded-lg bg-[var(--color-surface-muted)]" />
+              <div className="h-3 w-24 rounded-lg bg-[var(--color-surface-muted)]" />
+              <div className="h-3 w-20 rounded-lg bg-[var(--color-surface-muted)]/30" />
             </div>
             <div className="space-y-2 text-right">
-              <div className="h-4 w-20 rounded-lg bg-[#111827]/60" />
-              <div className="h-6 w-16 rounded-full bg-[#111827]/40" />
+              <div className="h-4 w-20 rounded-lg bg-[var(--color-surface-muted)]" />
+              <div className="h-6 w-16 rounded-full bg-[var(--color-surface-muted)]" />
             </div>
           </div>
         </div>

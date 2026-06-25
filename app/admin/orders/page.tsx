@@ -8,10 +8,10 @@ import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 type OrderStatus = 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED'
 
 const STATUS_CONFIG = {
-  SUCCESS:    { label: 'Sukses',    color: 'text-emerald-400', bg: 'bg-emerald-400/10 border-emerald-400/20' },
-  FAILED:     { label: 'Gagal',     color: 'text-red-400',     bg: 'bg-red-400/10 border-red-400/20' },
-  PENDING:    { label: 'Pending',   color: 'text-amber-400',   bg: 'bg-amber-400/10 border-amber-400/20' },
-  PROCESSING: { label: 'Diproses', color: 'text-[#e4f0f6]',     bg: 'bg-sky-400/10 border-sky-400/20' },
+  SUCCESS:    { label: 'Sukses',    color: 'text-[var(--color-success)]', bg: 'bg-[var(--color-success-bg)] border-[var(--color-success-border)]' },
+  FAILED:     { label: 'Gagal',     color: 'text-[var(--color-error)]',     bg: 'bg-[var(--color-error-bg)] border-[var(--color-error-border)]' },
+  PENDING:    { label: 'Pending',   color: 'text-[var(--color-warning)]',   bg: 'bg-[var(--color-warning-bg)] border-[var(--color-warning-border)]' },
+  PROCESSING: { label: 'Diproses', color: 'text-[var(--color-frost)]',     bg: 'bg-[var(--color-info-bg)] border-[var(--color-info-border)]' },
 } as const
 
 function formatCurrency(n: number) {
@@ -70,7 +70,7 @@ export default async function AdminOrdersPage({
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Manajemen Transaksi</h1>
-          <p className="text-[#a8c4d4] text-sm mt-1">{total} transaksi ditemukan</p>
+          <p className="text-[var(--color-muted)] text-sm mt-1">{total} transaksi ditemukan</p>
         </div>
         <AdminExportButton />
       </div>
@@ -80,7 +80,7 @@ export default async function AdminOrdersPage({
         <form className="flex-1">
           <input type="text" name="q" defaultValue={q}
             placeholder="Cari email, nama, produk, atau game ID..."
-            className="w-full px-4 py-2.5 rounded-lg bg-[#111827]/60 border border-[#1e2d4a]/50 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-violet-500 transition-colors"
+            className="w-full px-4 py-2.5 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-white placeholder-[var(--color-muted-strong)] text-sm focus:outline-none focus:border-[var(--color-violet-border)] transition-colors"
           />
         </form>
         <div className="flex gap-1.5 flex-wrap">
@@ -89,8 +89,8 @@ export default async function AdminOrdersPage({
               href={`/admin/orders?status=${tab.value}${q ? `&q=${q}` : ''}`}
               className={`px-3 py-2 rounded-lg text-xs font-medium transition-colors ${
                 (status ?? '') === tab.value
-                  ? 'bg-violet-500/20 border border-violet-500/40 text-violet-400'
-                  : 'bg-[#111827]/60 border border-[#1e2d4a]/50 text-[#a8c4d4] hover:text-[#e4f0f6]'
+                  ? 'bg-[var(--color-violet-bg)] border border-[var(--color-violet-border)] text-[var(--color-violet)]'
+                  : 'bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-frost)]'
               }`}>
               {tab.label}
             </Link>
@@ -99,18 +99,18 @@ export default async function AdminOrdersPage({
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border border-[#1e2d4a]/50 overflow-hidden" style={{ background: 'rgba(10,15,30,0.85)' }}>
+      <div className="rounded-lg border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
         {orders.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-[#5a8099] text-sm">Tidak ada transaksi ditemukan</p>
+            <p className="text-[var(--color-muted-strong)] text-sm">Tidak ada transaksi ditemukan</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-[#1e2d4a]/60">
+                <tr className="border-b border-[var(--color-border)]">
                   {['Game', 'Produk', 'User', 'Game ID', 'Jumlah', 'Status', 'Waktu', 'Aksi'].map((h) => (
-                    <th key={h} className="text-left px-4 py-3 text-[#5a8099] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">{h}</th>
+                    <th key={h} className="text-left px-4 py-3 text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
@@ -119,9 +119,9 @@ export default async function AdminOrdersPage({
                   const status = STATUS_CONFIG[order.status as OrderStatus]
                   const gameInfo = SUPPORTED_GAMES[order.game]
                   return (
-                    <tr key={order.id} className="hover:bg-[#111827]/20 transition-colors">
+                    <tr key={order.id} className="hover:bg-[var(--color-abyss)]/20 transition-colors">
                       <td className="px-4 py-3">
-                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#111827] flex items-center justify-center">
+                        <div className="w-8 h-8 rounded-lg overflow-hidden bg-[var(--color-abyss)] flex items-center justify-center">
                           {gameInfo
                             ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={32} />
                             : <span className="text-sm">🎮</span>
@@ -130,20 +130,20 @@ export default async function AdminOrdersPage({
                       </td>
                       <td className="px-4 py-3">
                         <p className="text-white font-medium whitespace-nowrap">{order.productName}</p>
-                        {order.sn && <p className="text-emerald-400 text-xs font-mono mt-0.5">SN: {order.sn}</p>}
+                        {order.sn && <p className="text-[var(--color-success)] text-xs font-mono mt-0.5">SN: {order.sn}</p>}
                       </td>
                       <td className="px-4 py-3">
-                        <p className="text-[#e4f0f6] text-xs whitespace-nowrap">{order.user.name ?? '—'}</p>
-                        <p className="text-[#5a8099] text-xs">{order.user.email}</p>
+                        <p className="text-[var(--color-frost)] text-xs whitespace-nowrap">{order.user.name ?? '—'}</p>
+                        <p className="text-[var(--color-muted-strong)] text-xs">{order.user.email}</p>
                       </td>
-                      <td className="px-4 py-3 text-[#a8c4d4] text-xs font-mono whitespace-nowrap">{order.gameUserId}</td>
+                      <td className="px-4 py-3 text-[var(--color-muted)] text-xs font-mono whitespace-nowrap">{order.gameUserId}</td>
                       <td className="px-4 py-3 text-white font-semibold whitespace-nowrap">{formatCurrency(order.amount)}</td>
                       <td className="px-4 py-3">
                         <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium border whitespace-nowrap ${status.bg} ${status.color}`}>
                           {status.label}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[#5a8099] text-xs whitespace-nowrap">{formatDate(order.createdAt)}</td>
+                      <td className="px-4 py-3 text-[var(--color-muted-strong)] text-xs whitespace-nowrap">{formatDate(order.createdAt)}</td>
                       <td className="px-4 py-3">
                         <AdminOrderActions orderId={order.id} currentStatus={order.status as OrderStatus} />
                       </td>
@@ -159,17 +159,17 @@ export default async function AdminOrdersPage({
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-[#5a8099] text-xs">Halaman {page} dari {totalPages}</p>
+          <p className="text-[var(--color-muted-strong)] text-xs">Halaman {page} dari {totalPages}</p>
           <div className="flex gap-2">
             {page > 1 && (
               <Link href={`/admin/orders?page=${page - 1}&status=${status ?? ''}${q ? `&q=${q}` : ''}`}
-                className="px-3 py-1.5 rounded-lg text-xs bg-[#111827]/60 border border-[#1e2d4a]/50 text-[#a8c4d4] hover:text-[#e4f0f6] transition-colors">
+                className="px-3 py-1.5 rounded-lg text-xs bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-frost)] transition-colors">
                 ← Prev
               </Link>
             )}
             {page < totalPages && (
               <Link href={`/admin/orders?page=${page + 1}&status=${status ?? ''}${q ? `&q=${q}` : ''}`}
-                className="px-3 py-1.5 rounded-lg text-xs bg-[#111827]/60 border border-[#1e2d4a]/50 text-[#a8c4d4] hover:text-[#e4f0f6] transition-colors">
+                className="px-3 py-1.5 rounded-lg text-xs bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-frost)] transition-colors">
                 Next →
               </Link>
             )}

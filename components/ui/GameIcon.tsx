@@ -17,7 +17,7 @@ export default function GameIcon({ image, fallback, label, size = 40, className 
   if (error) {
     return (
       <span
-        className={`flex items-center justify-center bg-slate-700/60 text-slate-300 font-bold rounded-lg ${className}`}
+        className={`flex items-center justify-center bg-[var(--color-surface-muted)] text-[var(--color-muted)] font-bold rounded-lg ${className}`}
         style={{ width: size, height: size, fontSize: Math.max(10, size * 0.28) }}
       >
         {fallback}

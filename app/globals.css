@@ -2,16 +2,75 @@
 
 /* ThreeTop — always dark theme with Abyss/Frost palette */
 :root {
+  /* Core colors */
   --color-abyss: #0a0f1e;
   --color-frost: #e4f0f6;
+  
+  /* Surface layers */
   --color-surface: rgba(228,240,246,0.05);
   --color-surface-strong: rgba(228,240,246,0.08);
+  --color-surface-dark: rgba(10,15,30,0.85);
+  --color-surface-muted: rgba(10,15,30,0.65);
+  
+  /* Overlays & effects */
+  --color-overlay-sticky: rgba(10,15,30,0.97);
+  --color-overlay-subtle: rgba(228,240,246,0.03);
+  --color-overlay-watermark: rgba(228,240,246,0.04);
+  --color-overlay-background: rgba(10,15,30,0.95);
+  --color-overlay-gradient-start: rgba(10,15,30,0.9);
+  --color-overlay-gradient-end: rgba(10,15,30,0.75);
+  
+  /* Accents & states */
   --color-border: rgba(228,240,246,0.2);
+  --color-border-subtle: rgba(228,240,246,0.15);
+  --color-surface-icon: rgba(228,240,246,0.1);
+  --color-surface-subtle: rgba(228,240,246,0.06);
+  --color-surface-hover: rgba(228,240,246,0.14);
+  --color-separator: rgba(228,240,246,0.25);
+  --color-shadow: rgba(228,240,246,0.12);
+  --color-grid-bg: rgba(228,240,246,0.16);
+  
+  /* States */
+  --color-disabled-bg: rgba(228,240,246,0.35);
+  --color-focus-ring: rgba(228,240,246,0.1);
+  --color-focus-border: rgba(228,240,246,0.35);
+  --color-focus-ring: rgba(228,240,246,0.1);
+  --color-error-ring: rgba(248,113,113,0.15);
+  --color-success-ring: rgba(52,211,153,0.15);
+  --color-warning-ring: rgba(245,158,11,0.15);
+  --color-info-ring: rgba(56,189,248,0.15);
+  --color-accent-disabled: rgba(14,165,233,0.2);
+  --color-accent-loading: rgba(14,165,233,0.4);
+  --color-glow: rgba(228,240,246,0.3);
+
+  /* Semantic state colors */
+  --color-error: #f87171;
+  --color-error-bg: rgba(248,113,113,0.1);
+  --color-error-border: rgba(248,113,113,0.25);
+  --color-success: #34d399;
+  --color-success-bg: rgba(52,211,153,0.1);
+  --color-success-border: rgba(52,211,153,0.25);
+  --color-warning: #f59e0b;
+  --color-warning-bg: rgba(245,158,11,0.1);
+  --color-warning-border: rgba(245,158,11,0.25);
+  --color-info: #38bdf8;
+  --color-info-bg: rgba(56,189,248,0.1);
+  --color-info-border: rgba(56,189,248,0.25);
+  --color-violet: #a78bfa;
+  --color-violet-bg: rgba(167,139,250,0.1);
+  --color-violet-border: rgba(167,139,250,0.25);
+
+  /* Text & semantic */
   --color-muted: #a8c4d4;
   --color-muted-strong: #5a8099;
-  --color-shadow: rgba(228,240,246,0.12);
+  
+  /* Buttons */
   --color-button-bg: #e4f0f6;
   --color-button-text: #0a0f1e;
+  
+  /* Scrollbar */
+  --color-scrollbar: #1e2d4a;
+  --color-scrollbar-hover: #2a3d5e;
 }
 
 @theme inline {
@@ -30,19 +89,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-::selection { background: rgba(228,240,246,0.2); color: var(--color-button-text); }
+::selection { background: var(--color-border); color: var(--color-button-text); }
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(228,240,246,0.15); }
-
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #1e2d4a; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #2a3d5e; }
-
-::selection { background: rgba(228,240,246,0.2); color: #0a0f1e; }
+::-webkit-scrollbar-thumb { background: var(--color-scrollbar); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-scrollbar-hover); }
 
 @keyframes carousel-progress {
   from { width: 0% }

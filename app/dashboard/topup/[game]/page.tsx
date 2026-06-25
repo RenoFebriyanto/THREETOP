@@ -198,9 +198,9 @@ export default function GameTopUpPage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto space-y-6">
-        <div className="h-8 w-48 rounded-xl bg-[#111827]/60 animate-pulse" />
+        <div className="h-8 w-48 rounded-xl bg-[var(--color-surface-muted)] animate-pulse" />
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 rounded-xl bg-[#111827]/60 animate-pulse" />)}
+          {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-24 rounded-xl bg-[var(--color-surface-muted)] animate-pulse" />)}
         </div>
       </div>
     )
@@ -209,9 +209,9 @@ export default function GameTopUpPage() {
   if (error) {
     return (
       <div className="max-w-4xl mx-auto">
-        <div className="rounded-xl border border-red-500/20 p-8 text-center" style={{ background: 'rgba(10,15,30,0.85)' }}>
-          <p className="text-red-400 text-sm mb-4">{error}</p>
-          <button onClick={fetchProducts} className="px-4 py-2 rounded-xl bg-sky-500/10 border border-sky-500/20 text-[#e4f0f6] text-sm hover:bg-sky-500/20 transition-colors">Coba Lagi</button>
+        <div className="rounded-xl border border-[var(--color-error-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}>
+          <p className="text-[var(--color-error)] text-sm mb-4">{error}</p>
+          <button onClick={fetchProducts} className="px-4 py-2 rounded-xl bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] text-sm hover:bg-[var(--color-info-border)] transition-colors">Coba Lagi</button>
         </div>
       </div>
     )
@@ -223,28 +223,28 @@ export default function GameTopUpPage() {
     const isPending = orderResult.status === 'PROCESSING'
     return (
       <div className="max-w-md mx-auto">
-        <div className="rounded-xl border border-[#1e2d4a]/50 overflow-hidden" style={{ background: 'rgba(10,15,30,0.85)' }}>
-          <div className={`p-6 text-center border-b ${isSuccess ? 'bg-emerald-500/10 border-emerald-500/20' : isPending ? 'bg-amber-500/10 border-amber-500/20' : 'bg-red-500/10 border-red-500/20'}`}>
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-emerald-500/20' : isPending ? 'bg-amber-500/20' : 'bg-red-500/20'}`}>
-              {isSuccess ? <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-              : isPending ? <svg className="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-              : <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>}
+        <div className="rounded-xl border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
+          <div className={`p-6 text-center border-b ${isSuccess ? 'bg-[var(--color-success-bg)] border-[var(--color-success-border)]' : isPending ? 'bg-[var(--color-warning-bg)] border-[var(--color-warning-border)]' : 'bg-[var(--color-error-bg)] border-[var(--color-error-border)]'}`}>
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-[var(--color-success-bg)]' : isPending ? 'bg-[var(--color-warning-bg)]' : 'bg-[var(--color-error-bg)]'}`}>
+              {isSuccess ? <svg className="w-8 h-8 text-[var(--color-success)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+              : isPending ? <svg className="w-8 h-8 text-[var(--color-warning)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+              : <svg className="w-8 h-8 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>}
             </div>
-            <h2 className={`text-lg font-bold ${isSuccess ? 'text-emerald-400' : isPending ? 'text-amber-400' : 'text-red-400'}`}>
+            <h2 className={`text-lg font-bold ${isSuccess ? 'text-[var(--color-success)]' : isPending ? 'text-[var(--color-warning)]' : 'text-[var(--color-error)]'}`}>
               {isSuccess ? 'Top Up Berhasil!' : isPending ? 'Sedang Diproses' : 'Transaksi Gagal'}
             </h2>
           </div>
           <div className="p-6 space-y-3">
             {[{ label: 'Produk', value: orderResult.productName }, { label: 'Game ID', value: orderResult.gameUserId }, { label: 'Total', value: formatCurrency(orderResult.amount) }, ...(orderResult.sn ? [{ label: 'Serial Number', value: orderResult.sn }] : [])].map((item) => (
-              <div key={item.label} className="flex justify-between items-center py-2 border-b border-slate-800/60 last:border-0">
-                <span className="text-[#a8c4d4] text-sm">{item.label}</span>
+              <div key={item.label} className="flex justify-between items-center py-2 border-b border-[var(--color-border)]/60 last:border-0">
+                <span className="text-[var(--color-muted)] text-sm">{item.label}</span>
                 <span className="text-white text-sm font-medium text-right max-w-[60%] break-all">{item.value}</span>
               </div>
             ))}
           </div>
           <div className="p-6 pt-0 flex gap-3">
-            <button onClick={handleReset} className="flex-1 py-3 rounded-xl text-sm font-semibold bg-sky-500/10 border border-sky-500/20 text-[#e4f0f6] hover:bg-sky-500/20 transition-colors">Top Up Lagi</button>
-            <Link href="/dashboard/orders" className="flex-1 py-3 rounded-xl text-sm font-semibold text-center bg-[#111827]/60 border border-[#1e2d4a]/50 text-[#e4f0f6] hover:bg-slate-800 transition-colors">Lihat Riwayat</Link>
+            <button onClick={handleReset} className="flex-1 py-3 rounded-xl text-sm font-semibold bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] hover:bg-[var(--color-info-border)] transition-colors">Top Up Lagi</button>
+            <Link href="/dashboard/orders" className="flex-1 py-3 rounded-xl text-sm font-semibold text-center bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-frost)] hover:bg-[var(--color-surface-muted)] transition-colors">Lihat Riwayat</Link>
           </div>
         </div>
       </div>
@@ -255,18 +255,18 @@ export default function GameTopUpPage() {
   if (step === 'processing') {
     return (
       <div className="max-w-md mx-auto">
-        <div className="rounded-xl border border-[#1e2d4a]/50 p-12 flex flex-col items-center text-center" style={{ background: 'rgba(10,15,30,0.85)' }}>
-          <div className="w-16 h-16 rounded-full bg-sky-500/10 border border-sky-500/20 flex items-center justify-center mb-4">
-            <svg className="animate-spin w-8 h-8 text-[#e4f0f6]" fill="none" viewBox="0 0 24 24">
+        <div className="rounded-xl border border-[var(--color-border)] p-12 flex flex-col items-center text-center" style={{ background: 'var(--color-surface-dark)' }}>
+          <div className="w-16 h-16 rounded-full bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center mb-4">
+            <svg className="animate-spin w-8 h-8 text-[var(--color-frost)]" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
           </div>
           <h2 className="text-white font-bold text-lg">Memuat Halaman Pembayaran</h2>
-          <p className="text-[#a8c4d4] text-sm mt-2 max-w-xs">
+          <p className="text-[var(--color-muted)] text-sm mt-2 max-w-xs">
             Pilih metode pembayaran di popup yang muncul. Selesaikan pembayaran tanpa menutup halaman ini.
           </p>
-          <button onClick={handleReset} className="mt-6 text-slate-600 text-xs hover:text-[#a8c4d4] transition-colors">Batalkan</button>
+          <button onClick={handleReset} className="mt-6 text-[var(--color-muted)] text-xs hover:text-[var(--color-frost)] transition-colors">Batalkan</button>
         </div>
       </div>
     )
@@ -278,39 +278,39 @@ export default function GameTopUpPage() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
-        <Link href="/dashboard/topup" className="text-[#a8c4d4] hover:text-white transition-colors">Top Up</Link>
-        <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+        <Link href="/dashboard/topup" className="text-[var(--color-muted)] hover:text-white transition-colors">Top Up</Link>
+        <svg className="w-4 h-4 text-[var(--color-muted-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
         <span className="text-white font-medium">{gameInfo.label}</span>
       </div>
 
       {/* Game header */}
-      <div className="rounded-xl border border-[#1e2d4a]/50 p-6 flex items-center gap-4" style={{ background: 'rgba(10,15,30,0.85)' }}>
+      <div className="rounded-xl border border-[var(--color-border)] p-6 flex items-center gap-4" style={{ background: 'var(--color-surface-dark)' }}>
         <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${gameInfo.color} flex items-center justify-center shrink-0 overflow-hidden`}>
           <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={48} className="rounded-xl" />
         </div>
-        <div><h1 className="text-white font-bold text-xl">{gameInfo.label}</h1><span className="text-[#a8c4d4] text-sm">{gameInfo.tag}</span></div>
+        <div><h1 className="text-white font-bold text-xl">{gameInfo.label}</h1><span className="text-[var(--color-muted)] text-sm">{gameInfo.tag}</span></div>
       </div>
 
       {/* Step 1 — Pilih nominal */}
       {(step === 'select' || step === 'input' || step === 'confirm') && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-500 text-white text-xs font-bold mr-2">1</span>Pilih Nominal</h2>
-            {step !== 'select' && <button onClick={() => { setStep('select'); setSelectedProduct(null) }} className="text-[#e4f0f6] text-sm hover:text-[#e4f0f6] transition-colors">Ubah</button>}
+            <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">1</span>Pilih Nominal</h2>
+            {step !== 'select' && <button onClick={() => { setStep('select'); setSelectedProduct(null) }} className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">Ubah</button>}
           </div>
           {products.length === 0 ? (
-            <div className="rounded-xl border border-[#1e2d4a]/50 p-8 text-center" style={{ background: 'rgba(10,15,30,0.85)' }}><p className="text-[#a8c4d4] text-sm">Tidak ada produk tersedia saat ini.</p></div>
+            <div className="rounded-xl border border-[var(--color-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}><p className="text-[var(--color-muted)] text-sm">Tidak ada produk tersedia saat ini.</p></div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {products.map((product) => {
                 const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
                 return (
                   <button key={product.buyer_sku_code} onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
-                    className={`relative rounded-xl border p-4 text-left transition-all duration-150 ${isSelected ? 'border-sky-500/60 bg-sky-500/10' : step === 'select' ? 'border-[#1e2d4a]/50 hover:border-slate-500/60 hover:bg-[#111827]/40 cursor-pointer' : 'border-[#1e2d4a]/40 opacity-40 cursor-default'}`}
-                    style={{ background: isSelected ? undefined : 'rgba(10,15,30,0.85)' }}>
-                    {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-sky-500 flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
+                    className={`relative rounded-xl border p-4 text-left transition-all duration-150 ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
+                    style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
+                    {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
                     <p className="text-white font-semibold text-sm leading-tight">{product.product_name}</p>
-                    <p className="text-[#e4f0f6] font-bold text-base mt-1">{formatCurrency(product.price)}</p>
+                    <p className="text-[var(--color-frost)] font-bold text-base mt-1">{formatCurrency(product.price)}</p>
                   </button>
                 )
               })}
@@ -321,15 +321,15 @@ export default function GameTopUpPage() {
 
       {/* Step 2 — Input ID */}
       {(step === 'input' || step === 'confirm') && selectedProduct && (
-        <div className="rounded-xl border border-[#1e2d4a]/50 p-6 space-y-4" style={{ background: 'rgba(10,15,30,0.85)' }}>
+        <div className="rounded-xl border border-[var(--color-border)] p-6 space-y-4" style={{ background: 'var(--color-surface-dark)' }}>
           <div className="flex items-center justify-between">
-            <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-500 text-white text-xs font-bold mr-2">2</span>Masukkan {gameInfo.userIdLabel}</h2>
-            {step === 'confirm' && <button onClick={() => setStep('input')} className="text-[#e4f0f6] text-sm hover:text-[#e4f0f6] transition-colors">Ubah</button>}
+            <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">2</span>Masukkan {gameInfo.userIdLabel}</h2>
+            {step === 'confirm' && <button onClick={() => setStep('input')} className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">Ubah</button>}
           </div>
           {step === 'input' ? (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-[#e4f0f6] mb-2">{gameInfo.userIdLabel}</label>
+                <label className="block text-sm font-medium text-[var(--color-frost)] mb-2">{gameInfo.userIdLabel}</label>
                 <input type="text" value={gameUserId}
                   onChange={(e) => {
                     const val = e.target.value; setGameUserId(val); setInputError(''); resetNick()
@@ -337,11 +337,11 @@ export default function GameTopUpPage() {
                     debounceRef.current = setTimeout(() => autoCheckNickname(val, serverId), 800)
                   }}
                   placeholder={gameInfo.userIdPlaceholder}
-                  className="w-full px-4 py-3 rounded-xl bg-[#111827]/60 border border-[#1e2d4a]/70 text-white placeholder-[#5a8099] text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all" />
+                    className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]/70 text-white placeholder-[var(--color-muted-strong)] text-sm focus:outline-none focus:border-[var(--color-info-border)] focus:ring-1 focus:ring-[var(--color-info-ring)] transition-all" />
               </div>
               {gameInfo.requireServer && (
                 <div>
-                  <label className="block text-sm font-medium text-[#e4f0f6] mb-2">Server ID</label>
+                  <label className="block text-sm font-medium text-[var(--color-frost)] mb-2">Server ID</label>
                   <input type="text" value={serverId}
                     onChange={(e) => {
                       const val = e.target.value; setServerId(val); setInputError(''); resetNick()
@@ -349,48 +349,48 @@ export default function GameTopUpPage() {
                       debounceRef.current = setTimeout(() => autoCheckNickname(gameUserId, val), 800)
                     }}
                     placeholder="1234"
-                    className="w-full px-4 py-3 rounded-xl bg-[#111827]/60 border border-[#1e2d4a]/70 text-white placeholder-[#5a8099] text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all" />
+                    className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]/70 text-white placeholder-[var(--color-muted-strong)] text-sm focus:outline-none focus:border-[var(--color-info-border)] focus:ring-1 focus:ring-[var(--color-info-ring)] transition-all" />
                 </div>
               )}
-              <p className="text-[#5a8099] text-xs flex items-start gap-1.5">
-                <svg className="w-3.5 h-3.5 mt-0.5 shrink-0 text-slate-600" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
+              <p className="text-[var(--color-muted-strong)] text-xs flex items-start gap-1.5">
+                <svg className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[var(--color-muted-strong)]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
                 {gameInfo.userIdHint}
               </p>
               {/* Auto nickname indicator */}
               {nickLoading && (
-                <div className="flex items-center gap-2 text-[#a8c4d4] text-sm">
+                <div className="flex items-center gap-2 text-[var(--color-muted)] text-sm">
                   <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
                   Memeriksa akun...
                 </div>
               )}
               {nickChecked && nickname && (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30">
-                  <svg className="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-success-bg)] border border-[var(--color-success-border)]">
+                  <svg className="w-5 h-5 text-[var(--color-success)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                   <div>
-                    <p className="text-emerald-400 text-xs font-medium">Akun Ditemukan</p>
-                    <p className="text-white text-sm font-bold">{nickname}{nickCountry ? <span className="text-[#a8c4d4] font-normal text-xs ml-2">({nickCountry})</span> : ''}</p>
+                    <p className="text-[var(--color-success)] text-xs font-medium">Akun Ditemukan</p>
+                    <p className="text-white text-sm font-bold">{nickname}{nickCountry ? <span className="text-[var(--color-muted)] font-normal text-xs ml-2">({nickCountry})</span> : ''}</p>
                   </div>
                 </div>
               )}
               {nickError && !nickLoading && (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/30">
-                  <svg className="w-4 h-4 text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd"/></svg>
-                  <p className="text-red-400 text-sm">{nickError}</p>
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-error-bg)] border border-[var(--color-error-border)]">
+                  <svg className="w-4 h-4 text-[var(--color-error)] shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd"/></svg>
+                  <p className="text-[var(--color-error)] text-sm">{nickError}</p>
                 </div>
               )}
-              {inputError && <p className="text-red-400 text-sm">{inputError}</p>}
+              {inputError && <p className="text-[var(--color-error)] text-sm">{inputError}</p>}
               <button onClick={handleInputSubmit} disabled={!nickChecked}
-                className="w-full py-3 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ background: nickChecked ? '#e4f0f6' : 'rgba(14,165,233,0.2)', boxShadow: nickChecked ? '0 0 20px rgba(14,165,233,0.3)' : 'none' }}>
+                className="w-full py-3 rounded-xl font-semibold text-sm text-[var(--color-button-text)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                style={{ background: nickChecked ? 'var(--color-button-bg)' : 'var(--color-accent-disabled)', boxShadow: nickChecked ? '0 0 20px var(--color-glow)' : 'none' }}>
                 Lanjutkan
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[#111827]/60 border border-[#1e2d4a]/30">
-              <svg className="w-4 h-4 text-[#5a8099] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
+              <svg className="w-4 h-4 text-[var(--color-muted-strong)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
               <div>
                 <span className="text-white text-sm">{customerNoDisplay}</span>
-                {nickname && <span className="text-emerald-400 text-xs ml-2">· {nickname}</span>}
+                {nickname && <span className="text-[var(--color-success)] text-xs ml-2">· {nickname}</span>}
               </div>
             </div>
           )}
@@ -399,9 +399,9 @@ export default function GameTopUpPage() {
 
       {/* Step 3 — Konfirmasi & Bayar */}
       {step === 'confirm' && selectedProduct && (
-        <div className="rounded-xl border border-[#1e2d4a]/50 p-6 space-y-4" style={{ background: 'rgba(10,15,30,0.85)' }}>
-          <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-sky-500 text-white text-xs font-bold mr-2">3</span>Konfirmasi &amp; Pembayaran</h2>
-          <div className="rounded-xl border border-[#1e2d4a]/40 overflow-hidden">
+        <div className="rounded-xl border border-[var(--color-border)] p-6 space-y-4" style={{ background: 'var(--color-surface-dark)' }}>
+          <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">3</span>Konfirmasi &amp; Pembayaran</h2>
+          <div className="rounded-xl border border-[var(--color-border)] overflow-hidden">
             {[
               { label: 'Game', value: gameInfo.label },
               { label: 'Produk', value: selectedProduct.product_name },
@@ -409,19 +409,19 @@ export default function GameTopUpPage() {
               ...(nickname ? [{ label: 'Nickname', value: nickname }] : []),
               { label: 'Total Bayar', value: formatCurrency(selectedProduct.price), highlight: true },
             ].map((item) => (
-              <div key={item.label} className={`flex justify-between items-center px-4 py-3 border-b border-slate-800/60 last:border-0 ${'highlight' in item && item.highlight ? 'bg-sky-500/5' : ''}`}>
-                <span className="text-[#a8c4d4] text-sm">{item.label}</span>
-                <span className={`text-sm font-semibold ${'highlight' in item && item.highlight ? 'text-[#e4f0f6] text-base' : 'text-white'}`}>{item.value}</span>
+              <div key={item.label} className={`flex justify-between items-center px-4 py-3 border-b border-[var(--color-border)]/60 last:border-0 ${'highlight' in item && item.highlight ? 'bg-[var(--color-info-bg)]' : ''}`}>
+                <span className="text-[var(--color-muted)] text-sm">{item.label}</span>
+                <span className={`text-sm font-semibold ${'highlight' in item && item.highlight ? 'text-[var(--color-frost)] text-base' : 'text-white'}`}>{item.value}</span>
               </div>
             ))}
           </div>
 
-          {inputError && <p className="text-red-400 text-sm">{inputError}</p>}
+{inputError && <p className="text-[var(--color-error)] text-sm">{inputError}</p>}
 
-          <p className="text-[#5a8099] text-xs">Pastikan ID sudah benar. Transaksi yang sudah diproses tidak dapat dibatalkan.</p>
+          <p className="text-[var(--color-muted-strong)] text-xs">Pastikan ID sudah benar. Transaksi yang sudah diproses tidak dapat dibatalkan.</p>
           <button onClick={handleConfirm} disabled={creating}
-            className="w-full py-3.5 rounded-xl font-semibold text-sm text-white transition-all disabled:opacity-60"
-            style={{ background: '#e4f0f6', boxShadow: '0 0 20px rgba(14,165,233,0.3)' }}>
+            className="w-full py-3.5 rounded-xl font-semibold text-sm text-[var(--color-button-text)] transition-all disabled:opacity-60"
+            style={{ background: 'var(--color-button-bg)', boxShadow: '0 0 20px var(--color-glow)' }}>
             {creating ? (
               <span className="flex items-center justify-center gap-2">
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>

@@ -37,8 +37,8 @@ export default function AdminUserActions({
       disabled={loading}
       className={`px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors disabled:opacity-50 whitespace-nowrap ${
         currentRole === 'ADMIN'
-          ? 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20'
-          : 'bg-violet-500/10 border-violet-500/20 text-violet-400 hover:bg-violet-500/20'
+          ? 'bg-[var(--color-error-bg)] border-[var(--color-error-border)] text-[var(--color-error)] hover:bg-[var(--color-error-bg)]'
+          : 'bg-[var(--color-violet-bg)] border-[var(--color-violet-border)] text-[var(--color-violet)] hover:bg-[var(--color-violet-bg)]'
       }`}
     >
       {loading ? '...' : currentRole === 'ADMIN' ? 'Set User' : 'Set Admin'}

@@ -41,7 +41,7 @@ export default function EditNameForm({ currentName }: { currentName: string }) {
     return (
       <button
         onClick={() => setEditing(true)}
-        className="inline-flex items-center gap-1.5 text-xs text-[#5a8099] hover:text-[#e4f0f6] transition-colors mt-1"
+        className="inline-flex items-center gap-1.5 text-xs text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] transition-colors mt-1"
       >
         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -61,23 +61,23 @@ export default function EditNameForm({ currentName }: { currentName: string }) {
           onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); if (e.key === 'Escape') setEditing(false) }}
           maxLength={50}
           autoFocus
-          className="flex-1 px-3 py-1.5 rounded-lg bg-[#111827]/60 border border-slate-600/50 text-white text-sm focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500/50 transition-all"
+          className="flex-1 px-3 py-1.5 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]/50 text-[var(--color-frost)] text-sm focus:outline-none focus:border-[var(--color-info)] focus:ring-1 focus:ring-[var(--color-info-ring)] transition-all"
         />
         <button
           onClick={handleSave}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-sky-500/20 border border-sky-500/30 text-[#e4f0f6] hover:bg-sky-500/30 transition-colors disabled:opacity-50"
+          className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] hover:bg-[var(--color-info-bg)] transition-colors disabled:opacity-50"
         >
           {loading ? '...' : 'Simpan'}
         </button>
         <button
           onClick={() => { setEditing(false); setName(currentName); setError('') }}
-          className="px-3 py-1.5 rounded-lg text-xs text-[#5a8099] hover:text-[#e4f0f6] border border-[#1e2d4a]/50 hover:border-slate-600 transition-colors"
+          className="px-3 py-1.5 rounded-lg text-xs text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] border border-[var(--color-border)]/50 hover:border-[var(--color-border)] transition-colors"
         >
           Batal
         </button>
       </div>
-      {error && <p className="text-red-400 text-xs">{error}</p>}
+      {error && <p className="text-[var(--color-error)] text-xs">{error}</p>}
     </div>
   )
 }
