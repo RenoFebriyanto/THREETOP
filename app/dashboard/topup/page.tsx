@@ -64,22 +64,22 @@ export default function TopUpPage() {
           </button>
         </div>
       ) : (
-        <div className="flex flex-wrap gap-4 justify-center">
+        <div className="flex flex-wrap gap-4 justify-center items-stretch">
           {filtered.map(([key, game]) => (
             <Link key={key} href={`/dashboard/topup/${key}`}
-              className="group relative flex-none basis-[calc(50%-0.75rem)] sm:basis-[calc(50%-0.75rem)] md:basis-[calc(33.333%-1rem)] lg:basis-[calc(25%-1rem)] rounded-lg overflow-hidden border border-[var(--color-border)] hover:border-[var(--color-border)]/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl min-w-0">
+              className="group relative flex flex-col justify-between h-full flex-none basis-[calc(50%-0.75rem)] sm:basis-[calc(50%-0.75rem)] md:basis-[calc(33.333%-1rem)] lg:basis-[calc(25%-1rem)] max-w-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] md:max-w-[calc(33.333%-1rem)] lg:max-w-[calc(25%-1rem)] min-h-[170px] sm:min-h-[180px] rounded-lg overflow-hidden border border-[var(--color-border)] hover:border-[var(--color-border)]/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl min-w-0">
               <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-20 group-hover:opacity-35 transition-opacity duration-200`} />
-              <div className="relative p-6 flex flex-col gap-4" style={{ background: 'var(--color-surface-dark)' }}>
+              <div className="relative p-4 sm:p-5 flex flex-col gap-3" style={{ background: 'var(--color-surface-dark)' }}>
                 <div className="flex items-start justify-between">
-                  <GameIcon image={game.image} fallback={game.icon} label={game.label} size={48} className="rounded-lg" />
+                  <GameIcon image={game.image} fallback={game.icon} label={game.label} size={40} className="rounded-lg" />
                   <span className="text-xs font-semibold px-2 py-1 rounded-full bg-[var(--color-surface-dark)] text-[var(--color-muted)] border border-[var(--color-border)]">
                     {game.tag}
                   </span>
                 </div>
                 <div className="flex items-end justify-between">
                   <div>
-                    <h2 className="text-white font-bold text-base leading-tight">{game.label}</h2>
-                    <p className="text-[var(--color-muted-strong)] text-xs mt-1">Top Up Sekarang</p>
+                    <h2 className="text-white font-bold text-sm leading-tight">{game.label}</h2>
+                    <p className="text-[var(--color-muted-strong)] text-[0.7rem] mt-1">Top Up Sekarang</p>
                   </div>
                   <div className="w-8 h-8 rounded-full bg-[var(--color-surface-muted)] border border-[var(--color-border)] flex items-center justify-center group-hover:bg-[var(--color-info-bg)] group-hover:border-[var(--color-info-border)] transition-all shrink-0">
                     <svg className="w-4 h-4 text-[var(--color-muted-strong)] group-hover:text-[var(--color-frost)] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
