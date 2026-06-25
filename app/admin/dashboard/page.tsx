@@ -126,10 +126,10 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Status breakdown + Recent orders */}
-      <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:gap-6">
+      <div className="flex flex-col gap-6">
 
         {/* Status breakdown */}
-        <div className="rounded-lg border border-[var(--color-border)] p-6 space-y-4 md:basis-[60%] md:h-[min(55vh,520px)]" style={{ background: 'var(--color-surface-dark)' }}>
+        <div className="rounded-lg border border-[var(--color-border)] p-6 space-y-4" style={{ background: 'var(--color-surface-dark)' }}>
           <h2 className="text-white font-semibold">Status Transaksi</h2>
           {[
             { label: 'Sukses', count: successOrders, color: 'bg-[var(--color-success)]' },
@@ -155,7 +155,7 @@ export default async function AdminDashboardPage() {
         </div>
 
         {/* Recent orders */}
-        <div className="rounded-lg border border-[var(--color-border)] p-6 md:basis-[40%] md:h-[min(55vh,520px)]" style={{ background: 'var(--color-surface-dark)' }}>
+        <div className="rounded-lg border border-[var(--color-border)] p-6" style={{ background: 'var(--color-surface-dark)' }}>
           <div className="flex items-center justify-between mb-5">
             <h2 className="text-white font-semibold">Transaksi Terbaru</h2>
             <Link href="/admin/orders" className="text-[var(--color-violet)] text-sm hover:text-[var(--color-violet)]/80 transition-colors">Lihat semua →</Link>
@@ -163,7 +163,7 @@ export default async function AdminDashboardPage() {
           {recentOrders.length === 0 ? (
             <p className="text-[var(--color-muted-strong)] text-sm text-center py-8">Belum ada transaksi</p>
           ) : (
-            <div className="space-y-2 overflow-y-auto pr-1 max-h-[min(55vh,520px)]">
+            <div className="space-y-2">
               {recentOrders.map((order) => {
                 const status = STATUS_CONFIG[order.status as keyof typeof STATUS_CONFIG]
                 return (
