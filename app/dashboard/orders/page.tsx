@@ -34,7 +34,7 @@ export default async function OrdersPage() {
   return (
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
         <div>
           <h1 className="text-2xl font-bold text-[var(--color-frost)]">Riwayat Transaksi</h1>
           <p className="text-[var(--color-muted)] text-sm mt-1">
@@ -42,7 +42,7 @@ export default async function OrdersPage() {
             {processingCount > 0 && <span className="ml-2 text-[var(--color-warning)]">· {processingCount} sedang diproses</span>}
           </p>
         </div>
-        <Link href="/dashboard/topup" className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] text-sm font-medium hover:bg-[var(--color-info-bg)] transition-colors">
+        <Link href="/dashboard/topup" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] text-xs sm:text-sm font-medium hover:bg-[var(--color-info-bg)] transition-colors w-full sm:w-auto justify-center">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
           Top Up Lagi
         </Link>
