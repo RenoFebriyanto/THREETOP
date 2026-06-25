@@ -83,7 +83,7 @@ export default function DashboardSidebar({ user }: { user: User }) {
         <div className="flex items-center gap-2.5 px-6 py-5 border-b border-[#1e2d4a]">
           <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain shrink-0" />
           <span className="text-xl font-black text-[#e4f0f6] tracking-tight">
-            THREE<span className="text-sky-400">TOP</span>
+            THREE<span className="text-[#e4f0f6]">TOP</span>
           </span>
         </div>
 
@@ -96,7 +96,7 @@ export default function DashboardSidebar({ user }: { user: User }) {
               href={item.href}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                 isActive(item.href, item.exact)
-                  ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20'
+                  ? 'bg-sky-500/10 text-[#e4f0f6] border border-sky-500/20'
                   : 'text-[#a8c4d4] hover:text-[#e4f0f6] hover:bg-[#111827]'
               }`}
             >

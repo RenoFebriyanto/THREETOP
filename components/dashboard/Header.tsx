@@ -59,7 +59,7 @@ export default function DashboardHeader({ user }: { user: User }) {
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center gap-2">
             <img src="/threetop-32x32.png" alt="ThreeTop" className="w-7 h-7 rounded object-contain" />
-            <span className="text-base font-black text-[#e4f0f6]">THREE<span className="text-sky-400">TOP</span></span>
+            <span className="text-base font-black text-[#e4f0f6]">THREE<span className="text-[#e4f0f6]">TOP</span></span>
           </div>
 
           {/* Desktop page title */}
@@ -70,7 +70,7 @@ export default function DashboardHeader({ user }: { user: User }) {
         <div className="flex items-center gap-3">
           <Link
             href="/dashboard/topup"
-            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium text-sky-400 border border-sky-500/20 bg-sky-500/5 hover:bg-sky-500/10 transition-colors"
+            className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium text-[#e4f0f6] border border-sky-500/20 bg-sky-500/5 hover:bg-sky-500/10 transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -117,7 +117,7 @@ export default function DashboardHeader({ user }: { user: User }) {
             <div className="flex items-center justify-between px-5 py-4 border-b border-[#1e2d4a]">
               <div className="flex items-center gap-2">
                 <img src="/threetop-32x32.png" alt="ThreeTop" className="w-7 h-7 rounded object-contain" />
-                <span className="text-lg font-black text-[#e4f0f6]">THREE<span className="text-sky-400">TOP</span></span>
+                <span className="text-lg font-black text-[#e4f0f6]">THREE<span className="text-[#e4f0f6]">TOP</span></span>
               </div>
               <button onClick={() => setMobileMenuOpen(false)} className="text-slate-500 hover:text-[#e4f0f6]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,7 +135,7 @@ export default function DashboardHeader({ user }: { user: User }) {
                   onClick={() => setMobileMenuOpen(false)}
                   className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-colors ${
                     isActive(item.href, item.exact)
-                      ? 'bg-sky-500/10 text-sky-400 border border-sky-500/20'
+                      ? 'bg-sky-500/10 text-[#e4f0f6] border border-sky-500/20'
                       : 'text-[#a8c4d4] hover:text-[#e4f0f6] hover:bg-[#111827]/60'
                   }`}
                 >
