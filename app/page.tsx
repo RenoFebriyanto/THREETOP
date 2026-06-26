@@ -192,18 +192,18 @@ export default async function HomePage() {
           </div>
           <div className="flex flex-wrap justify-center gap-4">
             {[
-              { title: 'Proses Instan', desc: 'Transaksi diproses otomatis. Item langsung masuk tanpa menunggu.' },
-              { title: 'Harga Terbaik', desc: 'Harga kompetitif dari supplier resmi tanpa biaya tersembunyi.' },
-              { title: 'Aman & Terpercaya', desc: 'Pembayaran via Midtrans berlisensi Bank Indonesia.' },
-              { title: 'Banyak Metode Bayar', desc: 'QRIS, Virtual Account, GoPay, OVO, Dana, dan lainnya.' },
-              { title: 'Riwayat Lengkap', desc: 'Pantau seluruh transaksi dari dashboard kapan saja.' },
-              { title: 'Support 24/7', desc: 'Tim siap membantu setiap hari, kapanpun kamu butuhkan.' },
+              { title: 'Proses Instan', desc: 'Transaksi diproses otomatis. Item langsung masuk tanpa menunggu.', icon: '/icons/instant.png' },
+              { title: 'Harga Terbaik', desc: 'Harga kompetitif dari supplier resmi tanpa biaya tersembunyi.', icon: '/icons/sale.png' },
+              { title: 'Aman & Terpercaya', desc: 'Pembayaran via Midtrans berlisensi Bank Indonesia.', icon: '/icons/verify.png' },
+              { title: 'Banyak Metode Bayar', desc: 'QRIS, Virtual Account, GoPay, OVO, Dana, dan lainnya.', icon: '/icons/credit-card.png' },
+              { title: 'Riwayat Lengkap', desc: 'Pantau seluruh transaksi dari dashboard kapan saja.', icon: '/icons/history.png' },
+              { title: 'Support 24/7', desc: 'Tim siap membantu setiap hari, kapanpun kamu butuhkan.', icon: '/icons/customer-service.png' },
             ].map((item) => (
               <div key={item.title} className="rounded-xl p-6"
                 style={{ flex: '1 1 220px', minWidth: '220px', maxWidth: '300px', border: `1px solid ${theme.border}`, background: theme.surfaceStrong }}>
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4"
                   style={{ background: 'var(--color-surface-strong)', border: '1px solid var(--color-border-subtle)' }}>
-                  <div className="w-4 h-4 rounded-full" style={{ background: theme.foreground }} />
+                  <img src={item.icon} alt={item.title} className="w-6 h-6 object-contain" />
                 </div>
                 <h3 className="font-semibold mb-2" style={{ color: theme.foreground }}>{item.title}</h3>
                 <p className="text-sm leading-relaxed" style={{ color: theme.muted }}>{item.desc}</p>
