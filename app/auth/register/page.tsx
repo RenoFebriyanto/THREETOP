@@ -76,9 +76,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full py-3">
       {/* Logo & Header */}
-      <div className="text-center mb-6">
+      <div className="text-center mb-4">
         <div className="inline-flex items-center gap-2 mb-4">
           <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
           <span
@@ -94,13 +94,13 @@ export default function RegisterPage() {
 
       {/* Card */}
       <div
-        className="rounded-lg p-6 border border-[var(--color-border-subtle)] shadow-2xl"
+        className="rounded-lg p-4 border border-[var(--color-border-subtle)] shadow-2xl"
         style={{
           background: 'linear-gradient(135deg, var(--color-overlay-gradient-start) 0%, var(--color-overlay-gradient-end) 100%)',
           backdropFilter: 'blur(20px)',
         }}
       >
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-2">
 
           {/* Alert Error */}
           {error && (
@@ -140,7 +140,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Masukkan nama Anda"
                 disabled={loading}
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
               />
             </div>
           </div>
@@ -163,7 +163,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="email@contoh.com"
                 disabled={loading}
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
+                className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
               />
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Min. 8 karakter"
                 disabled={loading}
-                className="w-full pl-10 pr-11 py-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
+                className="w-full pl-10 pr-11 py-2.5 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
               />
               <button
                 type="button"
@@ -257,7 +257,7 @@ export default function RegisterPage() {
                 onChange={handleChange}
                 placeholder="Ulangi password"
                 disabled={loading}
-                className={`w-full pl-10 pr-11 py-3 rounded-lg bg-[var(--color-surface)] border text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:ring-1 transition-all duration-200 disabled:opacity-50 ${
+                className={`w-full pl-10 pr-11 py-2.5 rounded-lg bg-[var(--color-surface)] border text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:ring-1 transition-all duration-200 disabled:opacity-50 ${
                   form.confirmPassword.length > 0 && form.password !== form.confirmPassword
                     ? 'border-[var(--color-error-border)] focus:border-[var(--color-error)] focus:ring-[var(--color-error-ring)]'
                     : form.confirmPassword.length > 0 && form.password === form.confirmPassword
@@ -289,7 +289,7 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-lg font-semibold text-sm text-[var(--color-button-text)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden"
+            className="w-full py-3 rounded-lg font-semibold text-sm text-[var(--color-button-text)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed relative overflow-hidden"
             style={{
               background: loading
                 ? 'var(--color-accent-loading)'
@@ -312,7 +312,7 @@ export default function RegisterPage() {
         </form>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-6">
+        <div className="flex items-center gap-3 my-3">
           <div className="flex-1 h-px bg-[var(--color-separator)]" />
           <span className="text-[var(--color-muted-strong)] text-xs">atau</span>
           <div className="flex-1 h-px bg-[var(--color-separator)]" />
@@ -331,7 +331,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Footer note */}
-      <p className="text-center text-xs text-[var(--color-muted)] mt-6">
+      <p className="text-center text-xs text-[var(--color-muted)] mt-3">
         Dengan mendaftar, kamu menyetujui{' '}
         <a href="/terms" target="_blank" className="text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] underline transition-colors">
           syarat &amp; ketentuan

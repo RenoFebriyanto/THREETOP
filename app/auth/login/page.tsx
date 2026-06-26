@@ -228,10 +228,10 @@ function LoginForm() {
 
   // ── Form login utama ──────────────────────────────────────────────────────
   return (
-    <div className="w-full py-5">
+    <div className="w-full py-3">
       {/* Logo & Header */}
-      <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 mb-4">
+      <div className="text-center mb-4">
+        <div className="inline-flex items-center gap-2 mb-3">
           <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
           <span className="text-2xl font-black tracking-tight text-[var(--color-frost)]"
             style={{ fontFamily: "'Rajdhani', 'Bebas Neue', sans-serif", letterSpacing: '-0.02em' }}>
@@ -243,7 +243,7 @@ function LoginForm() {
       </div>
 
       {/* Card */}
-      <div className="rounded-lg p-8 border border-[var(--color-border-subtle)] shadow-2xl"
+      <div className="rounded-lg p-4 border border-[var(--color-border-subtle)] shadow-2xl"
         style={{ background: 'linear-gradient(135deg, var(--color-overlay-gradient-start) 0%, var(--color-overlay-gradient-end) 100%)', backdropFilter: 'blur(20px)' }}>
 
         {/* Error dari query param NextAuth */}
@@ -256,7 +256,7 @@ function LoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-5">
+        <form onSubmit={handleSubmit} noValidate className="space-y-2">
           {error && (
             <div className="flex items-start gap-3 px-4 py-3 rounded-lg bg-[var(--color-error-bg)] border border-[var(--color-error-border)] text-[var(--color-error)] text-sm">
               <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -277,7 +277,7 @@ function LoginForm() {
               </div>
               <input type="email" name="email" value={form.email} onChange={handleChange}
                 placeholder="email@contoh.com" disabled={loading || loadingGoogle} autoComplete="email"
-                className="w-full pl-10 pr-4 py-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
               />
             </div>
           </div>
@@ -303,7 +303,7 @@ function LoginForm() {
               <input type={showPassword ? 'text' : 'password'} name="password" value={form.password}
                 onChange={handleChange} placeholder="Masukkan password"
                 disabled={loading || loadingGoogle} autoComplete="current-password"
-                className="w-full pl-10 pr-11 py-3 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
+                className="w-full pl-10 pr-11 py-2 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border)] text-[var(--color-frost)] placeholder-[var(--color-muted)] text-sm focus:outline-none focus:border-[var(--color-focus-border)] focus:ring-1 focus:ring-[var(--color-focus-ring)] transition-all duration-200 disabled:opacity-50"
               />
               <button type="button" onClick={() => setShowPassword(v => !v)}
                 className="absolute inset-y-0 right-3.5 flex items-center text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] transition-colors" tabIndex={-1}>
@@ -317,7 +317,7 @@ function LoginForm() {
 
           {/* Submit */}
           <button type="submit" disabled={loading || loadingGoogle}
-            className="w-full py-3.5 rounded-lg font-semibold text-sm text-[var(--color-button-text)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-3 rounded-lg font-semibold text-sm text-[var(--color-button-text)] transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
             style={{ background: loading ? 'var(--color-disabled-bg)' : 'var(--color-button-bg)', boxShadow: loading ? 'none' : '0 0 20px var(--color-glow)' }}>
             {loading
               ? <span className="flex items-center justify-center gap-2"><svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Masuk...</span>
@@ -325,7 +325,7 @@ function LoginForm() {
           </button>
         </form>
 
-        <div className="flex items-center gap-3 my-6">
+        <div className="flex items-center gap-3 my-3">
           <div className="flex-1 h-px bg-[var(--color-separator)]" />
           <span className="text-[var(--color-muted-strong)] text-xs">atau lanjutkan dengan</span>
           <div className="flex-1 h-px bg-[var(--color-separator)]" />
@@ -340,7 +340,7 @@ function LoginForm() {
           }
         </button>
 
-        <p className="text-center text-sm text-[var(--color-muted)] mt-6">
+        <p className="text-center text-sm text-[var(--color-muted)] mt-3">
           Belum punya akun?{' '}
           <Link href="/auth/register" className="text-[var(--color-frost)] hover:text-[var(--color-frost)] font-medium transition-colors">
             Daftar gratis
@@ -348,7 +348,7 @@ function LoginForm() {
         </p>
       </div>
 
-      <p className="text-center text-xs text-[var(--color-muted)] mt-6">
+      <p className="text-center text-xs text-[var(--color-muted)] mt-3">
         Dengan login, kamu menyetujui{' '}
         <a href="/terms" target="_blank" className="text-[var(--color-muted-strong)] hover:text-[var(--color-muted)] underline transition-colors">
           syarat &amp; ketentuan
