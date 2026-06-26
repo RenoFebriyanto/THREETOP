@@ -7,15 +7,16 @@ import { signIn } from 'next-auth/react'
 
 // Map error code dari NextAuth ke pesan Indonesia
 const AUTH_ERRORS: Record<string, string> = {
-  OAuthSignin:       'Terjadi kesalahan saat menghubungkan ke Google.',
-  OAuthCallback:     'Gagal menerima respons dari Google. Coba lagi.',
-  OAuthCreateAccount:'Gagal membuat akun Google. Email mungkin sudah dipakai.',
-  EmailCreateAccount:'Gagal membuat akun. Coba lagi.',
-  Callback:          'Terjadi kesalahan autentikasi. Coba lagi.',
-  OAuthAccountNotLinked: 'Email ini sudah terdaftar dengan cara lain. Login dengan email & password.',
-  CredentialsSignin: 'Email atau password salah.',
-  SessionRequired:   'Sesi kamu telah berakhir. Silakan login kembali.',
-  Default:           'Terjadi kesalahan. Silakan coba lagi.',
+  OAuthSignin:          'Terjadi kesalahan saat menghubungkan ke Google.',
+  OAuthCallback:        'Gagal menerima respons dari Google. Coba lagi.',
+  OAuthCreateAccount:   'Gagal membuat akun Google. Email mungkin sudah dipakai.',
+  EmailCreateAccount:   'Gagal membuat akun. Coba lagi.',
+  Callback:             'Terjadi kesalahan autentikasi. Coba lagi.',
+  OAuthAccountNotLinked:'Email ini sudah terdaftar dengan cara lain. Login dengan email & password.',
+  Configuration:        'Konfigurasi Google OAuth bermasalah. Periksa client ID, secret, dan callback URL.',
+  CredentialsSignin:    'Email atau password salah.',
+  SessionRequired:      'Sesi kamu telah berakhir. Silakan login kembali.',
+  Default:              'Terjadi kesalahan. Silakan coba lagi.',
 }
 
 // Validasi callbackUrl — hanya izinkan path internal
@@ -101,8 +102,21 @@ function LoginForm() {
     setError('')
     try {
       const callbackUrl = getSafeCallbackUrl(rawCallback)
-      await signIn('google', { callbackUrl })
-      // Tidak perlu setLoadingGoogle(false) — halaman akan redirect
+      const result = await signIn('google', { callbackUrl, redirect: false })
+
+      if (result?.error) {
+        setError(AUTH_ERRORS[result.error as string] ?? AUTH_ERRORS.Default)
+        setLoadingGoogle(false)
+        return
+      }
+
+      if (result?.url) {
+        router.push(result.url)
+        return
+      }
+
+      setError('Login dengan Google gagal. Coba lagi.')
+      setLoadingGoogle(false)
     } catch {
       setError('Login dengan Google gagal. Coba lagi.')
       setLoadingGoogle(false)
