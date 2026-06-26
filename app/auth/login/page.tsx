@@ -228,7 +228,7 @@ function LoginForm() {
 
   // ── Form login utama ──────────────────────────────────────────────────────
   return (
-    <div className="w-full">
+    <div className="w-full py-5">
       {/* Logo & Header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 mb-4">
