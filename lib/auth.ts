@@ -7,35 +7,13 @@ import { prisma } from './db'
 
 export type UserRole = 'USER' | 'ADMIN'
 
-// Support apps that define AUTH_URL but not NEXTAUTH_URL.
-process.env.NEXTAUTH_URL = process.env.NEXTAUTH_URL ?? process.env.AUTH_URL
-
-if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-  throw new Error('Google OAuth environment variables are missing: GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET')
-}
-if (!process.env.NEXTAUTH_URL) {
-  throw new Error('Missing NEXTAUTH_URL environment variable for NextAuth callback URL generation')
-}
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
-  logger: {
-    error(error) {
-      console.error('[next-auth:error]', error)
-    },
-    warn(code) {
-      console.warn('[next-auth:warn]', code)
-    },
-    debug(code, metadata) {
-      console.debug('[next-auth:debug]', code, metadata)
-    },
-  },
   pages: {
     signIn: '/auth/login',
     error: '/auth/login',
   },
-  useSecureCookies: process.env.NODE_ENV === 'production',
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,

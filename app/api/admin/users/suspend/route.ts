@@ -29,11 +29,7 @@ export async function POST(req: NextRequest) {
     data.suspendedUntil = d
   }
 
-  const user = await prisma.user.update({
-    where: { id: userId },
-    data,
-    select: { suspendedUntil: true },
-  })
+  const user = await prisma.user.update({ where: { id: userId }, data })
 
   return NextResponse.json({ success: true, suspendedUntil: user.suspendedUntil })
 }
