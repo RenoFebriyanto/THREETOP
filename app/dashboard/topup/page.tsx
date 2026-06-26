@@ -64,10 +64,10 @@ export default function TopUpPage() {
           </button>
         </div>
       ) : (
-        <div className="flex flex-wrap gap-4 justify-center items-stretch">
+        <div className="flex flex-wrap gap-6 justify-center items-stretch">
           {filtered.map(([key, game]) => (
             <Link key={key} href={`/dashboard/topup/${key}`}
-              className="group relative flex flex-col justify-between h-full flex-none basis-[calc(50%-0.75rem)] sm:basis-[calc(50%-0.75rem)] md:basis-[calc(33.333%-1rem)] lg:basis-[calc(25%-1rem)] max-w-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] md:max-w-[calc(33.333%-1rem)] lg:max-w-[calc(25%-1rem)] min-h-[170px] sm:min-h-[180px] rounded-lg overflow-hidden border border-[var(--color-border)] hover:border-[var(--color-border)]/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl min-w-0 bg-[var(--color-surface-dark)]">
+              className="group relative flex flex-col justify-between h-full flex-none basis-[calc(50%-0.75rem)] sm:basis-[calc(50%-1rem)] md:basis-[calc(33.333%-1.25rem)] lg:basis-[calc(25%-1.5rem)] max-w-[calc(50%-0.75rem)] sm:max-w-[calc(50%-1rem)] md:max-w-[calc(33.333%-1.25rem)] lg:max-w-[calc(25%-1.5rem)] min-h-[170px] sm:min-h-[180px] rounded-lg overflow-hidden border border-[var(--color-border)] hover:border-[var(--color-border)]/60 transition-all duration-200 hover:-translate-y-1 hover:shadow-2xl min-w-0 bg-[var(--color-surface-dark)]">
               <div className={`absolute inset-0 bg-gradient-to-br ${game.color} opacity-20 group-hover:opacity-35 transition-opacity duration-200`} />
               <div className="relative p-4 sm:p-5 flex flex-col gap-3 h-full">
                 <div className="flex items-start justify-between">
