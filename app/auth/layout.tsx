@@ -11,7 +11,7 @@ export default function AuthLayout({
   children: React.ReactNode
 }) {
   return (
-    <div className="h-screen flex items-center justify-center bg-[var(--color-abyss)] relative py-2 sm:py-3">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--color-abyss)] relative overflow-hidden">
       {/* Background pattern */}
       <div
         className="absolute inset-0 opacity-[0.03]"
@@ -29,7 +29,7 @@ export default function AuthLayout({
       {/* Glow bottom-right */}
       <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-[var(--color-surface-icon)] rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 w-full max-w-md px-4 py-3 sm:py-4">
+      <div className="relative z-10 w-full max-w-md px-4">
         {children}
       </div>
     </div>

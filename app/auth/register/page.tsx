@@ -78,8 +78,8 @@ export default function RegisterPage() {
   return (
     <div className="w-full">
       {/* Logo & Header */}
-      <div className="text-center mb-4">
-        <div className="inline-flex items-center gap-2 mb-2">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-2 mb-4">
           <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
           <span
             className="text-2xl font-black tracking-tight text-[var(--color-frost)]"
@@ -94,13 +94,13 @@ export default function RegisterPage() {
 
       {/* Card */}
       <div
-        className="rounded-xl p-5 border border-[var(--color-border-subtle)] shadow-2xl"
+        className="rounded-xl p-8 border border-[var(--color-border-subtle)] shadow-2xl"
         style={{
           background: 'linear-gradient(135deg, var(--color-overlay-gradient-start) 0%, var(--color-overlay-gradient-end) 100%)',
           backdropFilter: 'blur(20px)',
         }}
       >
-        <form onSubmit={handleSubmit} noValidate className="space-y-3">
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
 
           {/* Alert Error */}
           {error && (
@@ -312,7 +312,7 @@ export default function RegisterPage() {
         </form>
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-4">
+        <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-[var(--color-separator)]" />
           <span className="text-[var(--color-muted-strong)] text-xs">atau</span>
           <div className="flex-1 h-px bg-[var(--color-separator)]" />
@@ -331,7 +331,7 @@ export default function RegisterPage() {
       </div>
 
       {/* Footer note */}
-      <p className="text-center text-xs text-[var(--color-muted)] mt-4">
+      <p className="text-center text-xs text-[var(--color-muted)] mt-6">
         Dengan mendaftar, kamu menyetujui{' '}
         <a href="/terms" target="_blank" className="text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] underline transition-colors">
           syarat &amp; ketentuan

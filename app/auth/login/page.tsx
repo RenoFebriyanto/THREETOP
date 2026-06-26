@@ -141,8 +141,8 @@ function LoginForm() {
   if (showForgot) {
     return (
       <div className="w-full">
-        <div className="text-center mb-5">
-          <div className="inline-flex items-center gap-2 mb-2">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 mb-4">
             <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
             <span className="text-2xl font-black tracking-tight text-[var(--color-frost)]">
               THREE<span className="text-[var(--color-frost)]">TOP</span>
@@ -152,7 +152,7 @@ function LoginForm() {
           <p className="text-[var(--color-muted)] text-sm">Masukkan email untuk menerima link reset password</p>
         </div>
 
-        <div className="rounded-lg p-5 border border-[var(--color-border-subtle)] shadow-2xl"
+        <div className="rounded-lg p-8 border border-[var(--color-border-subtle)] shadow-2xl"
           style={{ background: 'linear-gradient(135deg, var(--color-overlay-gradient-start) 0%, var(--color-overlay-gradient-end) 100%)', backdropFilter: 'blur(20px)' }}>
 
           {forgotSent ? (
@@ -230,8 +230,8 @@ function LoginForm() {
   return (
     <div className="w-full">
       {/* Logo & Header */}
-      <div className="text-center mb-6">
-        <div className="inline-flex items-center gap-2 mb-3">
+      <div className="text-center mb-8">
+        <div className="inline-flex items-center gap-2 mb-4">
           <img src="/threetop-32x32.png" alt="ThreeTop" className="w-8 h-8 rounded object-contain" />
           <span className="text-2xl font-black tracking-tight text-[var(--color-frost)]"
             style={{ fontFamily: "'Rajdhani', 'Bebas Neue', sans-serif", letterSpacing: '-0.02em' }}>
@@ -243,7 +243,7 @@ function LoginForm() {
       </div>
 
       {/* Card */}
-      <div className="rounded-lg p-6 border border-[var(--color-border-subtle)] shadow-2xl"
+      <div className="rounded-lg p-8 border border-[var(--color-border-subtle)] shadow-2xl"
         style={{ background: 'linear-gradient(135deg, var(--color-overlay-gradient-start) 0%, var(--color-overlay-gradient-end) 100%)', backdropFilter: 'blur(20px)' }}>
 
         {/* Error dari query param NextAuth */}
@@ -256,7 +256,7 @@ function LoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="space-y-5">
           {error && (
             <div className="flex items-start gap-3 px-4 py-3 rounded-lg bg-[var(--color-error-bg)] border border-[var(--color-error-border)] text-[var(--color-error)] text-sm">
               <svg className="w-4 h-4 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -325,7 +325,7 @@ function LoginForm() {
           </button>
         </form>
 
-        <div className="flex items-center gap-3 my-4">
+        <div className="flex items-center gap-3 my-6">
           <div className="flex-1 h-px bg-[var(--color-separator)]" />
           <span className="text-[var(--color-muted-strong)] text-xs">atau lanjutkan dengan</span>
           <div className="flex-1 h-px bg-[var(--color-separator)]" />
@@ -340,7 +340,7 @@ function LoginForm() {
           }
         </button>
 
-        <p className="text-center text-sm text-[var(--color-muted)] mt-4">
+        <p className="text-center text-sm text-[var(--color-muted)] mt-6">
           Belum punya akun?{' '}
           <Link href="/auth/register" className="text-[var(--color-frost)] hover:text-[var(--color-frost)] font-medium transition-colors">
             Daftar gratis
@@ -348,7 +348,7 @@ function LoginForm() {
         </p>
       </div>
 
-      <p className="text-center text-xs text-[var(--color-muted)] mt-4">
+      <p className="text-center text-xs text-[var(--color-muted)] mt-6">
         Dengan login, kamu menyetujui{' '}
         <a href="/terms" target="_blank" className="text-[var(--color-muted-strong)] hover:text-[var(--color-muted)] underline transition-colors">
           syarat &amp; ketentuan
