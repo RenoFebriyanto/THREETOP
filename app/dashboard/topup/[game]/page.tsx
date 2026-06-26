@@ -301,17 +301,26 @@ export default function GameTopUpPage() {
           {products.length === 0 ? (
             <div className="rounded-xl border border-[var(--color-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}><p className="text-[var(--color-muted)] text-sm">Tidak ada produk tersedia saat ini.</p></div>
           ) : (
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap -mx-2">
               {products.map((product) => {
                 const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
                 return (
-                  <button key={product.buyer_sku_code} onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
-                    className={`relative rounded-xl border p-4 text-left transition-all duration-150 ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
-                    style={{ flex: '1 1 180px', minWidth: '180px', maxWidth: '260px', background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
-                    {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
-                    <p className="text-white font-semibold text-sm leading-tight">{product.product_name}</p>
-                    <p className="text-[var(--color-frost)] font-bold text-base mt-1">{formatCurrency(product.price)}</p>
-                  </button>
+                  <div key={product.buyer_sku_code} className="px-2 w-1/2 md:flex-1 md:basis-[180px] md:min-w-[180px] md:max-w-[260px]">
+                    <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
+                      className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
+                      style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
+                      {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 flex-shrink-0">
+                          <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={36} className="rounded-md" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-white font-semibold text-sm leading-tight">{product.product_name}</p>
+                          <p className="text-[var(--color-frost)] font-bold text-base mt-1">{formatCurrency(product.price)}</p>
+                        </div>
+                      </div>
+                    </button>
+                  </div>
                 )
               })}
             </div>
