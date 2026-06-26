@@ -21,8 +21,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   logger: {
-    error(code, metadata) {
-      console.error('[next-auth:error]', code, metadata)
+    error(error) {
+      console.error('[next-auth:error]', error)
     },
     warn(code) {
       console.warn('[next-auth:warn]', code)

@@ -102,21 +102,8 @@ function LoginForm() {
     setError('')
     try {
       const callbackUrl = getSafeCallbackUrl(rawCallback)
-      const result = await signIn('google', { callbackUrl, redirect: false })
-
-      if (result?.error) {
-        setError(AUTH_ERRORS[result.error as string] ?? AUTH_ERRORS.Default)
-        setLoadingGoogle(false)
-        return
-      }
-
-      if (result?.url) {
-        router.push(result.url)
-        return
-      }
-
-      setError('Login dengan Google gagal. Coba lagi.')
-      setLoadingGoogle(false)
+      await signIn('google', { callbackUrl })
+      // Tidak perlu setLoadingGoogle(false) — halaman akan redirect
     } catch {
       setError('Login dengan Google gagal. Coba lagi.')
       setLoadingGoogle(false)
