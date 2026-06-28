@@ -170,9 +170,6 @@ export default function PromoCarousel({
             <div className="absolute inset-0 bg-gradient-to-br from-slate-800 via-slate-900 to-[var(--color-abyss)]" />
           )}
 
-          {/* Overlay gelap untuk readability teks */}
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
-
           {/* Konten teks */}
           {/* Top-left badge + slide counter; slide remains clickable */}
           <Link href={s.href} className="absolute inset-0 flex items-start p-3 sm:p-5 lg:p-7 group" aria-label={s.title}>
