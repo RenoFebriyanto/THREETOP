@@ -312,19 +312,19 @@ export default function GameTopUpPage() {
                 const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
                 const productIcon = getProductIcon(product, gameKey)
                 return (
-                  <div key={product.buyer_sku_code} className="px-2 w-1/2 min-w-[140px] max-w-[220px] md:flex-1 md:basis-[180px] md:min-w-[180px] md:max-w-[260px]">
+                  <div key={product.buyer_sku_code} className="px-2 w-1/2 min-w-[150px] max-w-[240px] md:flex-1 md:basis-[200px] md:min-w-[190px] md:max-w-[280px]">
                     <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
                       className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
                       style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
                       {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 flex-shrink-0">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
                           <GameIcon
                             image={productIcon.image}
                             fallback={productIcon.fallback}
                             fallbackImage={productIcon.fallbackImage}
                             label={gameInfo.label}
-                            size={36}
+                            size={44}
                             className="rounded-md"
                           />
                         </div>

@@ -47,6 +47,7 @@ export type DigiflazzTransaction = {
 // Cache produk di memory — TTL 5 menit
 // Mencegah rate limit Digiflazz (rc: 83) akibat request terlalu sering
 let productsCache: { data: DigiflazzProduct[]; expiresAt: number } | null = null
+let productsFetchPromise: Promise<DigiflazzProduct[]> | null = null
 
 export async function getProducts(): Promise<DigiflazzProduct[]> {
   // Return cache jika masih valid
@@ -54,7 +55,13 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
     return productsCache.data
   }
 
-  const signature = createSignature('pricelist')
+  // Jika ada request berjalan, gunakan promise yang sama
+  if (productsFetchPromise) {
+    return productsFetchPromise
+  }
+
+  productsFetchPromise = (async () => {
+    const signature = createSignature('pricelist')
   const res = await fetch(`${BASE_URL}/price-list`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -101,6 +108,12 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
   // Simpan ke cache dengan TTL 5 menit
   productsCache = { data: products as DigiflazzProduct[], expiresAt: Date.now() + 5 * 60 * 1000 }
   return productsCache.data
+} finally {
+    productsFetchPromise = null
+  }
+})()
+
+  return productsFetchPromise
 }
 
 export async function checkBalance(): Promise<number> {
