@@ -190,6 +190,7 @@ export const SUPPORTED_GAMES: Record<string, {
   productIconFolder?: string
   productIconPrefix?: string
   productIconDefault?: string
+  productIconRanges?: Array<{ min: number; max: number; suffix: string }>
 }> = {
   mobile_legends: {
     label: 'Mobile Legends',
@@ -205,6 +206,15 @@ export const SUPPORTED_GAMES: Record<string, {
     productIconFolder: '/icons/products/mobile-legends',
     productIconPrefix: 'ml-',
     productIconDefault: '/icons/games/mobile-legends.png',
+    productIconRanges: [
+      { min: 5, max: 20, suffix: 'diamond-5-20' },
+      { min: 21, max: 50, suffix: 'diamond-21-50' },
+      { min: 50, max: 150, suffix: 'diamond-50-150' },
+      { min: 151, max: 250, suffix: 'diamond-151-250' },
+      { min: 251, max: 350, suffix: 'diamond-251-350' },
+      { min: 1001, max: 2499, suffix: 'diamond-1001-2499' },
+      { min: 2500, max: 6000, suffix: 'diamond-2500-6000' },
+    ],
   },
   free_fire: {
     label: 'Free Fire',
