@@ -187,6 +187,9 @@ export const SUPPORTED_GAMES: Record<string, {
   userIdPlaceholder: string
   userIdHint: string
   requireServer?: boolean
+  productIconFolder?: string
+  productIconPrefix?: string
+  productIconDefault?: string
 }> = {
   mobile_legends: {
     label: 'Mobile Legends',
@@ -199,6 +202,9 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdPlaceholder: '123456789',
     userIdHint: 'Temukan ID kamu di pojok kiri atas profil in-game',
     requireServer: true,
+    productIconFolder: '/icons/products/mobile-legends',
+    productIconPrefix: 'ml-',
+    productIconDefault: '/icons/games/mobile-legends.png',
   },
   free_fire: {
     label: 'Free Fire',
@@ -210,6 +216,9 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'Player ID',
     userIdPlaceholder: '123456789',
     userIdHint: 'Temukan Player ID di profil in-game',
+    productIconFolder: '/icons/products/free-fire',
+    productIconPrefix: 'ff-',
+    productIconDefault: '/icons/games/free-fire.png',
   },
   pubg_mobile: {
     label: 'PUBG Mobile',
@@ -221,6 +230,9 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'Player ID',
     userIdPlaceholder: '5123456789',
     userIdHint: 'Temukan Player ID di bagian profil in-game',
+    productIconFolder: '/icons/products/pubg-mobile',
+    productIconPrefix: 'pubg-',
+    productIconDefault: '/icons/games/pubg-mobile.png',
   },
   genshin_impact: {
     label: 'Genshin Impact',
@@ -232,6 +244,9 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'UID',
     userIdPlaceholder: '800000000',
     userIdHint: 'Temukan UID di pojok kanan bawah layar in-game',
+    productIconFolder: '/icons/products/genshin-impact',
+    productIconPrefix: 'gi-',
+    productIconDefault: '/icons/games/genshin-impact.png',
   },
   honor_of_kings: {
     label: 'Honor of Kings',
@@ -243,6 +258,9 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'Player ID',
     userIdPlaceholder: '123456789',
     userIdHint: 'Temukan Player ID di halaman profil in-game',
+    productIconFolder: '/icons/products/honor-of-kings',
+    productIconPrefix: 'hok-',
+    productIconDefault: '/icons/games/honor-of-kings.png',
   },
   valorant: {
     label: 'Valorant',
@@ -254,6 +272,9 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'Riot ID',
     userIdPlaceholder: 'Username#TAG',
     userIdHint: 'Masukkan Riot ID lengkap dengan tag (contoh: PlayerName#1234)',
+    productIconFolder: '/icons/products/valorant',
+    productIconPrefix: 'val-',
+    productIconDefault: '/icons/games/valorant.png',
   },
 }
 

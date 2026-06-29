@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { SUPPORTED_GAMES, type DigiflazzProduct } from '@/lib/digiflazz'
+import { getProductIcon } from '@/lib/productIcon'
 import GameIcon from '@/components/ui/GameIcon'
 import { openSnapPayment } from '@/components/ui/SnapPayment'
 
@@ -309,6 +310,7 @@ export default function GameTopUpPage() {
             <div className="flex flex-wrap -mx-2">
               {products.map((product) => {
                 const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
+                const productIcon = getProductIcon(product, gameKey)
                 return (
                   <div key={product.buyer_sku_code} className="px-2 w-1/2 min-w-[140px] max-w-[220px] md:flex-1 md:basis-[180px] md:min-w-[180px] md:max-w-[260px]">
                     <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
@@ -317,7 +319,14 @@ export default function GameTopUpPage() {
                       {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 flex-shrink-0">
-                          <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={36} className="rounded-md" />
+                          <GameIcon
+                            image={productIcon.image}
+                            fallback={productIcon.fallback}
+                            fallbackImage={productIcon.fallbackImage}
+                            label={gameInfo.label}
+                            size={36}
+                            className="rounded-md"
+                          />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
