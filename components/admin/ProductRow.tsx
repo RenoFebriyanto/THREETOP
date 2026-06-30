@@ -4,6 +4,7 @@ type Product = {
   buyer_sku_code: string
   product_name: string
   price: number
+  sell_price?: number
   unlimited_stock: boolean
   stock?: number
   buyer_product_status?: boolean
