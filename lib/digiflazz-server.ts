@@ -27,6 +27,60 @@ function getSellPrice(basePrice: number): number {
   return Math.round(basePrice * (1 + markupValue))
 }
 
+function normalizeString(value: unknown): string {
+  if (typeof value === 'string') return value.trim()
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value).trim()
+  return ''
+}
+
+function normalizeNumber(value: unknown): number {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0
+  if (typeof value === 'string') {
+    const parsed = Number(value.replace(/[^[0-9].-]+/g, ''))
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+  return 0
+}
+
+function normalizeBoolean(value: unknown): boolean {
+  if (typeof value === 'boolean') return value
+  if (typeof value === 'number') return value === 1
+  if (typeof value === 'string') {
+    const normalized = value.trim().toLowerCase()
+    return ['1', 'true', 'yes', 'aktif', 'available', 'on'].includes(normalized)
+  }
+  return false
+}
+
+function normalizeProductItem(value: unknown): DigiflazzProduct | null {
+  if (!value || typeof value !== 'object') return null
+  const item = value as Record<string, unknown>
+
+  const buyerSkuCode = normalizeString(item.buyer_sku_code ?? item.buyerSkuCode ?? item.code ?? item.sku)
+  const productName = normalizeString(item.product_name ?? item.productName ?? item.name)
+  const price = normalizeNumber(item.price ?? item.harga ?? item.amount)
+
+  if (!buyerSkuCode || !productName || price <= 0) return null
+
+  return {
+    product_name: productName,
+    category: normalizeString(item.category ?? item.category_name ?? item.type ?? item.group ?? ''),
+    brand: normalizeString(item.brand ?? item.brand_name ?? item.brandName ?? item.seller_name ?? item.sellerName ?? ''),
+    type: normalizeString(item.type ?? item.product_type ?? item.category ?? ''),
+    seller_name: normalizeString(item.seller_name ?? item.sellerName ?? item.supplier ?? ''),
+    price,
+    buyer_sku_code: buyerSkuCode,
+    buyer_product_status: normalizeBoolean(item.buyer_product_status ?? item.buyerProductStatus ?? item.status ?? item.isActive ?? item.active),
+    seller_product_status: normalizeBoolean(item.seller_product_status ?? item.sellerProductStatus ?? item.seller_status ?? item.sellerActive ?? item.seller_active),
+    unlimited_stock: normalizeBoolean(item.unlimited_stock ?? item.unlimitedStock ?? item.unlimited),
+    stock: normalizeNumber(item.stock ?? item.stok ?? item.quantity ?? item.qty),
+    multi: normalizeBoolean(item.multi ?? false),
+    start_cut_off: normalizeString(item.start_cut_off ?? item.startCutOff ?? item.start ?? ''),
+    end_cut_off: normalizeString(item.end_cut_off ?? item.endCutOff ?? item.end ?? ''),
+    desc: normalizeString(item.desc ?? item.description ?? item.detail ?? ''),
+  }
+}
+
 function enrichProductsWithSellPrice(products: DigiflazzProduct[]): DigiflazzProduct[] {
   return products.map((product) => ({
     ...product,
@@ -40,28 +94,22 @@ type DigiflazzPriceListResponse = {
   message?: string
 }
 
-function isPotentialProductItem(value: unknown): value is Record<string, unknown> {
-  if (!value || typeof value !== 'object') return false
-  const item = value as Record<string, unknown>
-  const hasSku = typeof item.buyer_sku_code === 'string' || typeof item.buyerSkuCode === 'string'
-  const hasName = typeof item.product_name === 'string' || typeof item.productName === 'string'
-  const priceValue = item.price ?? item.harga
-  const hasPrice = typeof priceValue === 'number' || (typeof priceValue === 'string' && priceValue.trim() !== '' && !Number.isNaN(Number(priceValue)))
-  return hasSku && hasName && hasPrice
-}
-
 function findProductArray(data: unknown): DigiflazzProduct[] | undefined {
   if (!data || typeof data !== 'object') return undefined
 
   if (Array.isArray(data)) {
-    const products = data.filter(isPotentialProductItem) as DigiflazzProduct[]
+    const products = data
+      .map(normalizeProductItem)
+      .filter((product): product is DigiflazzProduct => product !== null)
     return products.length > 0 ? products : undefined
   }
 
   const objectData = data as Record<string, unknown>
   for (const value of Object.values(objectData)) {
     if (Array.isArray(value)) {
-      const products = value.filter(isPotentialProductItem) as DigiflazzProduct[]
+      const products = value
+        .map(normalizeProductItem)
+        .filter((product): product is DigiflazzProduct => product !== null)
       if (products.length > 0) return products
     }
   }
@@ -76,7 +124,10 @@ function findProductArray(data: unknown): DigiflazzProduct[] | undefined {
 
 function normalizePriceListResponse(data: unknown): DigiflazzPriceListResponse {
   if (Array.isArray(data)) {
-    return { products: data }
+    const products = data
+      .map(normalizeProductItem)
+      .filter((product): product is DigiflazzProduct => product !== null)
+    return { products }
   }
 
   if (data && typeof data === 'object') {
@@ -86,7 +137,7 @@ function normalizePriceListResponse(data: unknown): DigiflazzPriceListResponse {
     const products = findProductArray(maybeData ?? body) ?? []
     return {
       products,
-      rc: typeof body.rc === 'string' ? body.rc : undefined,
+      rc: body.rc != null ? normalizeString(body.rc) : undefined,
       message: typeof body.message === 'string' ? body.message : undefined,
     }
   }
@@ -195,7 +246,9 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
   }
 
   const enrichedProducts = enrichProductsWithSellPrice(normalized.products)
-  await saveProductsToDb(enrichedProducts)
+  saveProductsToDb(enrichedProducts).catch((error) => {
+    console.error('[DIGIFLAZZ] DB cache save failed', error)
+  })
   return enrichedProducts
 }
 

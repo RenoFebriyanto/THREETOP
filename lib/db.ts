@@ -2,11 +2,13 @@ import { PrismaPg } from '@prisma/adapter-pg'
 import { PrismaClient } from '@prisma/client'
 import { Pool } from 'pg'
 
-// Prisma v7 dengan driver adapter (PrismaPg) tidak bisa menggunakan
-// import PrismaClient langsung dari generated path.
-// Solusi resmi: import dari '@prisma/client' dan inject adapter via constructor.
+// Create and export a properly typed PrismaClient instance.
+// The generated client lives under @prisma/client; when we inject the
+// PrismaPg adapter the runtime instance is still a PrismaClient. To
+// ensure TypeScript recognizes the model accessors (e.g. prisma.digiflazzProduct)
+// we cast the created instance to the generated `PrismaClient` type.
 
-function createPrismaClient() {
+function createPrismaClient(): PrismaClient {
   const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: process.env.NODE_ENV === 'production'
@@ -16,22 +18,18 @@ function createPrismaClient() {
 
   const adapter = new PrismaPg(pool)
 
+  // cast to PrismaClient to satisfy TS typing while preserving runtime adapter injection
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === 'development'
       ? ['query', 'error', 'warn']
       : ['error'],
-  })
+  }) as unknown as PrismaClient
 }
 
-type PrismaClientType = ReturnType<typeof createPrismaClient>
+const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient }
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClientType | undefined
-}
-
-export const prisma: PrismaClientType =
-  globalForPrisma.prisma ?? createPrismaClient()
+export const prisma: PrismaClient = globalForPrisma.prisma ?? createPrismaClient()
 
 if (process.env.NODE_ENV !== 'production') {
   globalForPrisma.prisma = prisma
