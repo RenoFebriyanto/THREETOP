@@ -27,7 +27,7 @@ export async function GET() {
         success: false,
         error: isRateLimit
           ? 'Layanan sedang sibuk. Coba lagi sebentar.'
-          : 'Gagal mengambil daftar produk.',
+          : msg || 'Gagal mengambil daftar produk.',
       },
       { status: isRateLimit ? 429 : 500 }
     )

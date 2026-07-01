@@ -59,6 +59,13 @@ function normalizePriceListResponse(data: unknown): DigiflazzPriceListResponse {
 
     if (maybeData && typeof maybeData === 'object') {
       const nested = maybeData as Record<string, unknown>
+      if (Array.isArray(nested.products)) {
+        return {
+          products: nested.products as DigiflazzProduct[],
+          rc: typeof nested.rc === 'string' ? nested.rc : typeof body.rc === 'string' ? body.rc : undefined,
+          message: typeof nested.message === 'string' ? nested.message : typeof body.message === 'string' ? body.message : undefined,
+        }
+      }
       if (Array.isArray(nested.data)) {
         return {
           products: nested.data as DigiflazzProduct[],
@@ -72,6 +79,13 @@ function normalizePriceListResponse(data: unknown): DigiflazzPriceListResponse {
           rc: typeof nested.rc === 'string' ? nested.rc : undefined,
           message: typeof nested.message === 'string' ? nested.message : undefined,
         }
+      }
+    }
+    if (Array.isArray(body.products)) {
+      return {
+        products: body.products as DigiflazzProduct[],
+        rc: typeof body.rc === 'string' ? body.rc : undefined,
+        message: typeof body.message === 'string' ? body.message : undefined,
       }
     }
 
@@ -137,15 +151,25 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
     })
 
     if (!res.ok) {
+      const bodyText = await res.text().catch(() => '')
       const saved = await getSavedProductsFromDb()
       if (saved) {
-        console.warn('[DIGIFLAZZ] Price list fetch failed, using DB cache', res.status)
+        console.warn('[DIGIFLAZZ] Price list fetch failed, using DB cache', res.status, bodyText)
         return saved
       }
-      throw new Error(`Digiflazz API error: ${res.status}`)
+      throw new Error(`Digiflazz API error: ${res.status}${bodyText ? ` - ${bodyText}` : ''}`)
     }
 
-    data = await res.json()
+    try {
+      data = await res.json()
+    } catch (parseError) {
+      const saved = await getSavedProductsFromDb()
+      if (saved) {
+        console.warn('[DIGIFLAZZ] Price list JSON parse failed, using DB cache', parseError)
+        return saved
+      }
+      throw new Error('Digiflazz returned invalid JSON response.')
+    }
   } catch (error) {
     const saved = await getSavedProductsFromDb()
     if (saved) {
