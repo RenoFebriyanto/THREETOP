@@ -345,57 +345,34 @@ export default function GameTopUpPage() {
           {products.length === 0 ? (
             <div className="rounded-xl border border-[var(--color-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}><p className="text-[var(--color-muted)] text-sm">Tidak ada produk tersedia saat ini.</p></div>
           ) : (
-            (() => {
-              const groupedByCategory = products.reduce((acc: Record<string, DigiflazzProduct[]>, product) => {
-                const category = getProductCategory(product)
-                acc[category] ||= []
-                acc[category].push(product)
-                return acc
-              }, {})
-
-              const categoryOrder = ['currency', 'membership', 'battlepass', 'voucher', 'bundle', 'other']
-              return categoryOrder.filter((key) => groupedByCategory[key]?.length > 0).map((categoryKey) => {
-                const categoryProducts = groupedByCategory[categoryKey]
+            <div className="flex flex-wrap gap-2">
+              {products.map((product) => {
+                const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
+                const productIcon = getProductIcon(product, gameKey)
                 return (
-                  <section key={categoryKey} className="space-y-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                      <div>
-                        <h3 className="text-white font-semibold">{getCategoryLabel(categoryKey)}</h3>
-                        <p className="text-[var(--color-muted)] text-sm mt-1">{categoryProducts.length} pilihan tersedia.</p>
+                  <div key={product.buyer_sku_code} className="flex-none basis-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] min-w-[130px] sm:basis-[calc(50%-0.5rem)] sm:max-w-[calc(50%-0.5rem)] md:flex-1 md:basis-[200px] md:min-w-[190px] md:max-w-[280px]">
+                    <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
+                      className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
+                      style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
+                      {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+                          <GameIcon
+                            image={productIcon.image}
+                            fallback={productIcon.fallback}
+                            fallbackImage={productIcon.fallbackImage}
+                            label={gameInfo.label}
+                            size={44}
+                            className="rounded-md"
+                          />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
+                          <p className="text-[var(--color-frost)] font-bold text-sm mt-1">{formatCurrency(getDisplayPrice(product))}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex flex-wrap gap-3">
-                      {categoryProducts.map((product) => {
-                        const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
-                        const productIcon = getProductIcon(product, gameKey)
-                        return (
-                          <div key={product.buyer_sku_code} className="flex-none basis-[calc(50%-0.75rem)] max-w-[calc(50%-0.75rem)] min-w-[140px] sm:basis-[calc(50%-0.75rem)] sm:max-w-[calc(50%-0.75rem)] md:basis-[calc(50%-0.75rem)] lg:basis-[calc(33.333%-1rem)] xl:basis-[calc(25%-1rem)]">
-                            <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
-                              className={`relative rounded-2xl border p-4 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
-                              style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
-                              {isSelected && <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
-                              <div className="flex items-center gap-3">
-                                <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
-                                  <GameIcon
-                                    image={productIcon.image}
-                                    fallback={productIcon.fallback}
-                                    fallbackImage={productIcon.fallbackImage}
-                                    label={gameInfo.label}
-                                    size={44}
-                                    className="rounded-md"
-                                  />
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
-                                  <p className="text-[var(--color-frost)] font-bold text-sm mt-1">{formatCurrency(getDisplayPrice(product))}</p>
-                                </div>
-                              </div>
-                            </button>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </section>
+                    </button>
+                  </div>
                 )
               })
             })()
