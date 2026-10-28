@@ -7,6 +7,11 @@ const MOBILE_LEGENDS_PRODUCT_ICONS: Record<string, string> = {
   mlepicbundle: 'monthly-epic-bundle',
 }
 
+const MOBILE_LEGENDS_DIAMOND_ICONS: Record<string, string> = {
+  ml429: 'diamond-351-1000',
+  ml875: 'diamond-351-1000',
+}
+
 export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const gameInfo = SUPPORTED_GAMES[gameKey]
   if (!gameInfo) {
@@ -38,8 +43,18 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
 
   const nameKey = normalizeKey(product.product_name)
   const skuKey = normalizeKey(product.buyer_sku_code)
+  const productSku = product.buyer_sku_code.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const normalizedProductName = normalizeKey(product.product_name)
+    .replace(/^mobile-legends-/, '')
   const mobileLegendsIcon = gameKey === 'mobile_legends'
-    ? MOBILE_LEGENDS_PRODUCT_ICONS[product.buyer_sku_code.toLowerCase()]
+    ? MOBILE_LEGENDS_PRODUCT_ICONS[productSku]
+      ?? (normalizedProductName.includes('monthly-epic')
+        ? 'monthly-epic-bundle'
+        : normalizedProductName.includes('starlight') || normalizedProductName.includes('startlight')
+          ? normalizedProductName.includes('plus') ? 'starlight-plus' : 'starlight'
+          : normalizedProductName.includes('twilight')
+            ? 'twilight-pass'
+            : undefined)
     : undefined
   const lowerName = product.product_name.toLowerCase()
   const hasDiamond = lowerName.includes('diamond')
@@ -57,6 +72,16 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
     )
   }
 
+  const mobileLegendsDiamondIcon = gameKey === 'mobile_legends'
+    ? MOBILE_LEGENDS_DIAMOND_ICONS[productSku]
+    : undefined
+  if (mobileLegendsDiamondIcon) {
+    candidates.push(
+      `${folder}/${prefix}${mobileLegendsDiamondIcon}.png`,
+      `${folder}/${prefix}${mobileLegendsDiamondIcon}.svg`
+    )
+  }
+
   if (hasWeekly) {
     candidates.push(`${folder}/${prefix}weekly.png`, `${folder}/${prefix}weekly.svg`)
   }
@@ -64,7 +89,8 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   if (hasDiamond && quantity && gameInfo.productIconRanges) {
     const match = gameInfo.productIconRanges.find((range) => quantity >= range.min && quantity <= range.max)
     if (match) {
-      candidates.push(`${folder}/${prefix}${match.suffix}.png`, `${folder}/${prefix}${match.suffix}.svg`)
+      const rangeIcon = `${folder}/${prefix}${match.suffix}`
+      candidates.push(`${rangeIcon}.png`, `${rangeIcon}.svg`)
     }
   }
 
