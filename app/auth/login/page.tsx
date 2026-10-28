@@ -15,6 +15,7 @@ const AUTH_ERRORS: Record<string, string> = {
   OAuthAccountNotLinked: 'Email ini sudah terdaftar dengan cara lain. Login dengan email & password.',
   CredentialsSignin: 'Email atau password salah.',
   SessionRequired:   'Sesi kamu telah berakhir. Silakan login kembali.',
+  Configuration:     'Login server belum dikonfigurasi. Admin perlu memeriksa AUTH_SECRET, AUTH_GOOGLE_ID, dan AUTH_GOOGLE_SECRET di Vercel.',
   Default:           'Terjadi kesalahan. Silakan coba lagi.',
 }
 
@@ -69,7 +70,6 @@ function LoginForm() {
 
     setLoading(true)
     try {
-      const callbackUrl = getSafeCallbackUrl(rawCallback)
       const result = await signIn('credentials', {
         email: form.email.trim().toLowerCase(),
         password: form.password,
@@ -77,7 +77,7 @@ function LoginForm() {
       })
 
       if (result?.ok) {
-        router.push(callbackUrl)
+        router.replace('/')
         router.refresh()
         return
       }

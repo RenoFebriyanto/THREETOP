@@ -7,7 +7,11 @@ import { prisma } from './db'
 
 export type UserRole = 'USER' | 'ADMIN'
 
+const googleClientId = process.env.AUTH_GOOGLE_ID ?? process.env.GOOGLE_CLIENT_ID
+const googleClientSecret = process.env.AUTH_GOOGLE_SECRET ?? process.env.GOOGLE_CLIENT_SECRET
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET,
   adapter: PrismaAdapter(prisma),
   session: { strategy: 'jwt' },
   pages: {
@@ -16,8 +20,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   providers: [
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
       // KRITIS: Izinkan linking akun Google ke akun email yang sudah ada
       // Tanpa ini, user yang daftar via email tidak bisa login Google
       allowDangerousEmailAccountLinking: true,

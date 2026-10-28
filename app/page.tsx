@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { auth } from '@/lib/auth'
 import GameIcon from '@/components/ui/GameIcon'
 import PromoCarousel from '@/components/ui/PromoCarousel'
+import HomeAccountMenu from '@/components/layout/HomeAccountMenu'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
 const GAME_CATEGORIES = [
@@ -24,14 +25,7 @@ export default async function HomePage() {
           </Link>
           <div className="flex items-center gap-2 sm:gap-4">
             {session ? (
-              <>
-                <Link href="/dashboard/orders" className="hidden text-sm text-[var(--color-muted)] transition hover:text-white sm:block">
-                  Order History
-                </Link>
-                <Link href="/dashboard/profile" className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm font-medium transition hover:bg-[var(--color-surface)]">
-                  {session.user.name?.split(' ')[0] ?? 'My Account'}
-                </Link>
-              </>
+              <HomeAccountMenu user={session.user} />
             ) : (
               <>
                 <Link href="/auth/login" className="px-3 py-2 text-sm font-medium text-[var(--color-muted)] transition hover:text-white">
