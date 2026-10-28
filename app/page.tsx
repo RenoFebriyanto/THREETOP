@@ -2,6 +2,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { auth } from '@/lib/auth'
 import GameIcon from '@/components/ui/GameIcon'
+import PromoCarousel from '@/components/ui/PromoCarousel'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
 const GAME_CATEGORIES = [
@@ -46,6 +47,10 @@ export default async function HomePage() {
       </header>
 
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-9 sm:px-6 sm:pt-12">
+        <div className="mb-9">
+          <PromoCarousel />
+        </div>
+
         <section className="mb-10 flex flex-col justify-between gap-5 border-b border-[var(--color-border)] pb-8 sm:flex-row sm:items-end">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-muted-strong)]">Top up game favoritmu</p>

@@ -22,7 +22,6 @@ const NAV_ITEMS = [
 
 const PAGE_TITLES: Record<string, string> = {
   '/dashboard': 'Home',
-  '/dashboard/topup': 'Top Up Game',
   '/dashboard/orders': 'Riwayat Transaksi',
   '/dashboard/profile': 'Profil Saya',
   '/admin/dashboard': 'Admin Panel',

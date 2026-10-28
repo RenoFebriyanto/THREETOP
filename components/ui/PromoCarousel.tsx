@@ -34,7 +34,7 @@ const DEFAULT_SLIDES: PromoSlide[] = [
     subtitle: 'Diamond instan, harga terbaik',
     badge: 'POPULER',
     badgeColor: 'bg-[var(--color-info)]',
-    href: '/dashboard/topup/mobile_legends',
+    href: '/topup/mobile_legends',
   },
   {
     id: 'ff-promo',
@@ -47,7 +47,7 @@ const DEFAULT_SLIDES: PromoSlide[] = [
     subtitle: 'Diamond FF langsung masuk',
     badge: 'PROMO',
     badgeColor: 'bg-[var(--color-warning)]',
-    href: '/dashboard/topup/free_fire',
+    href: '/topup/free_fire',
   },
   {
     id: 'pubg-promo',
@@ -60,7 +60,7 @@ const DEFAULT_SLIDES: PromoSlide[] = [
     subtitle: 'UC murah & cepat',
     badge: 'BARU',
     badgeColor: 'bg-[var(--color-success)]',
-    href: '/dashboard/topup/pubg_mobile',
+    href: '/topup/pubg_mobile',
   },
 ]
 
