@@ -137,7 +137,7 @@ export const SUPPORTED_GAMES: Record<string, {
       { min: 151, max: 250, suffix: 'diamond-151-250' },
       { min: 251, max: 350, suffix: 'diamond-251-350' },
       { min: 1001, max: 2499, suffix: 'diamond-1001-2499' },
-      { min: 2500, max: 6000, suffix: 'diamond-2500-6000' },
+      { min: 2500, max: Number.MAX_SAFE_INTEGER, suffix: 'diamond-2500-50000' },
     ],
   },
   free_fire: {

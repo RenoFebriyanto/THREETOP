@@ -1,5 +1,12 @@
 import { SUPPORTED_GAMES, type DigiflazzProduct } from '@/lib/digiflazz'
 
+const MOBILE_LEGENDS_PRODUCT_ICONS: Record<string, string> = {
+  mltwilight: 'twilight-pass',
+  mlstarlight: 'starlight',
+  mlstarlightplus: 'starlight-plus',
+  mlepicbundle: 'monthly-epic-bundle',
+}
+
 export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const gameInfo = SUPPORTED_GAMES[gameKey]
   if (!gameInfo) {
@@ -31,6 +38,9 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
 
   const nameKey = normalizeKey(product.product_name)
   const skuKey = normalizeKey(product.buyer_sku_code)
+  const mobileLegendsIcon = gameKey === 'mobile_legends'
+    ? MOBILE_LEGENDS_PRODUCT_ICONS[product.buyer_sku_code.toLowerCase()]
+    : undefined
   const lowerName = product.product_name.toLowerCase()
   const hasDiamond = lowerName.includes('diamond')
   const hasWeekly = lowerName.includes('weekly')
@@ -39,6 +49,13 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const quantity = rangeMatch ? Number(rangeMatch[1]) : undefined
 
   const candidates = [] as string[]
+
+  if (mobileLegendsIcon) {
+    candidates.push(
+      `${folder}/${prefix}${mobileLegendsIcon}.png`,
+      `${folder}/${prefix}${mobileLegendsIcon}.svg`
+    )
+  }
 
   if (hasWeekly) {
     candidates.push(`${folder}/${prefix}weekly.png`, `${folder}/${prefix}weekly.svg`)
@@ -69,15 +86,15 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
     )
   }
 
-  candidates.push(
-    `${folder}/${prefix}${skuKey}.png`,
-    `${folder}/${prefix}${skuKey}.svg`,
-    defaultImage
-  )
+  candidates.push(`${folder}/${prefix}${skuKey}.png`, `${folder}/${prefix}${skuKey}.svg`)
+
+  if (gameKey !== 'mobile_legends') {
+    candidates.push(defaultImage)
+  }
 
   return {
     image: candidates,
     fallback: gameInfo.icon,
-    fallbackImage: defaultImage,
+    fallbackImage: gameKey === 'mobile_legends' ? undefined : defaultImage,
   }
 }
