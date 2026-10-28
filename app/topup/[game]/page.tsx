@@ -3,7 +3,12 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { SUPPORTED_GAMES, type DigiflazzProduct } from '@/lib/digiflazz'
+import {
+  getMobileLegendsProductCategory,
+  MOBILE_LEGENDS_PRODUCT_CATEGORIES,
+  SUPPORTED_GAMES,
+  type DigiflazzProduct,
+} from '@/lib/digiflazz'
 import { getProductIcon } from '@/lib/productIcon'
 import GameIcon from '@/components/ui/GameIcon'
 import { openSnapPayment } from '@/components/ui/SnapPayment'
@@ -284,6 +289,14 @@ export default function GameTopUpPage() {
   }
 
   const customerNoDisplay = gameInfo.requireServer ? `${gameUserId.trim()} (Server: ${serverId.trim()})` : gameUserId.trim()
+  const productSections = gameKey === 'mobile_legends'
+    ? MOBILE_LEGENDS_PRODUCT_CATEGORIES.map((category) => ({
+        ...category,
+        products: products.filter(
+          (product) => getMobileLegendsProductCategory(product) === category.id
+        ),
+      })).filter((category) => category.products.length > 0)
+    : [{ id: 'all', label: '', products }]
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -312,36 +325,49 @@ export default function GameTopUpPage() {
           {products.length === 0 ? (
             <div className="rounded-xl border border-[var(--color-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}><p className="text-[var(--color-muted)] text-sm">Tidak ada produk tersedia saat ini.</p></div>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {products.map((product) => {
-                const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
-                const productIcon = getProductIcon(product, gameKey)
-                return (
-                  <div key={product.buyer_sku_code} className="flex-none basis-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] min-w-[130px] sm:basis-[calc(50%-0.5rem)] sm:max-w-[calc(50%-0.5rem)] md:flex-1 md:basis-[200px] md:min-w-[190px] md:max-w-[280px]">
-                    <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
-                      className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
-                      style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
-                      {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
-                          <GameIcon
-                            image={productIcon.image}
-                            fallback={productIcon.fallback}
-                            fallbackImage={productIcon.fallbackImage}
-                            label={gameInfo.label}
-                            size={44}
-                            className="rounded-md"
-                          />
+            <div className="space-y-6">
+              {productSections.map((section) => (
+                <section key={section.id} className="space-y-3">
+                  {section.label && (
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-sm font-semibold text-white">{section.label}</h3>
+                      <span className="text-xs text-[var(--color-muted-strong)]">{section.products.length} produk</span>
+                      <div className="h-px flex-1 bg-[var(--color-border)]" />
+                    </div>
+                  )}
+                  <div className="flex flex-wrap gap-2">
+                    {section.products.map((product) => {
+                      const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
+                      const productIcon = getProductIcon(product, gameKey)
+                      return (
+                        <div key={product.buyer_sku_code} className="flex-none basis-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] min-w-[130px] sm:basis-[calc(50%-0.5rem)] sm:max-w-[calc(50%-0.5rem)] md:flex-1 md:basis-[200px] md:min-w-[190px] md:max-w-[280px]">
+                          <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
+                            className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
+                            style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
+                            {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+                                <GameIcon
+                                  image={productIcon.image}
+                                  fallback={productIcon.fallback}
+                                  fallbackImage={productIcon.fallbackImage}
+                                  label={gameInfo.label}
+                                  size={44}
+                                  className="rounded-md"
+                                />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
+                                <p className="text-[var(--color-frost)] font-bold text-sm mt-1">{formatCurrency(getDisplayPrice(product))}</p>
+                              </div>
+                            </div>
+                          </button>
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
-                          <p className="text-[var(--color-frost)] font-bold text-sm mt-1">{formatCurrency(getDisplayPrice(product))}</p>
-                        </div>
-                      </div>
-                    </button>
+                      )
+                    })}
                   </div>
-                )
-              })}
+                </section>
+              ))}
             </div>
           )}
         </div>

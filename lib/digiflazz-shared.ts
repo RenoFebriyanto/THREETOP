@@ -31,6 +31,37 @@ export type DigiflazzTransaction = {
   wa: string
 }
 
+export const MOBILE_LEGENDS_PRODUCT_CATEGORIES = [
+  { id: 'diamond', label: 'Diamond' },
+  { id: 'weekly-diamond-pass', label: 'Weekly Diamond Pass' },
+  { id: 'special-item', label: 'Special Item' },
+] as const
+
+export type MobileLegendsProductCategory =
+  (typeof MOBILE_LEGENDS_PRODUCT_CATEGORIES)[number]['id']
+
+export function getMobileLegendsProductCategory(
+  product: DigiflazzProduct
+): MobileLegendsProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.category} ${product.buyer_sku_code}`
+  )
+
+  if (
+    searchableText.includes('twilight') ||
+    searchableText.includes('starlight') ||
+    searchableText.includes('monthly epic')
+  ) {
+    return 'special-item'
+  }
+
+  if (searchableText.includes('weekly')) {
+    return 'weekly-diamond-pass'
+  }
+
+  return 'diamond'
+}
+
 function normalizeText(value: string | undefined): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
