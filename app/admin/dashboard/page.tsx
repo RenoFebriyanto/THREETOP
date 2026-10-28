@@ -49,7 +49,14 @@ export default async function AdminDashboardPage() {
     prisma.order.findMany({
       orderBy: { createdAt: 'desc' },
       take: 8,
-      include: { user: { select: { name: true, email: true } } },
+      select: {
+        id: true,
+        productName: true,
+        amount: true,
+        status: true,
+        createdAt: true,
+        user: { select: { name: true, email: true } },
+      },
     }),
     prisma.order.count({
       where: { createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },

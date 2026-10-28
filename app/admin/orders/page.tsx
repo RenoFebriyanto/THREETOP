@@ -52,7 +52,19 @@ export default async function AdminOrdersPage({
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * PAGE_SIZE,
       take: PAGE_SIZE,
-      include: { user: { select: { name: true, email: true } } },
+      select: {
+        id: true,
+        game: true,
+        productName: true,
+        sn: true,
+        gameUserId: true,
+        amount: true,
+        status: true,
+        createdAt: true,
+        paymentStatus: true,
+        paymentUrl: true,
+        user: { select: { name: true, email: true } },
+      },
     }),
     prisma.order.count({ where }),
   ])
@@ -123,7 +135,6 @@ export default async function AdminOrdersPage({
 
                 <div className="divide-y divide-slate-800/40">
                   {orders.map((order) => (
-                    // @ts-ignore - order type from prisma
                     <OrderRow key={order.id} order={order} />
                   ))}
                 </div>
