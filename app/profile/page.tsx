@@ -1,8 +1,10 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { redirect } from 'next/navigation'
 import Image from 'next/image'
-import ChangePasswordForm from '@/components/dashboard/ChangePasswordForm'
-import EditNameForm from '@/components/dashboard/EditNameForm'
+import ChangePasswordForm from '@/components/profile/ChangePasswordForm'
+import EditNameForm from '@/components/profile/EditNameForm'
+import StorefrontLayout from '@/components/layout/StorefrontLayout'
 
 function formatDate(date: Date) {
   return new Intl.DateTimeFormat('id-ID', {
@@ -18,7 +20,8 @@ function formatCurrency(amount: number) {
 
 export default async function ProfilePage() {
   const session = await auth()
-  const user = session!.user
+  if (!session) redirect('/auth/login?callbackUrl=/profile')
+  const user = session.user
 
   const [totalOrders, successOrders, totalSpentResult, memberSince] = await Promise.all([
     prisma.order.count({ where: { userId: user.id } }),
@@ -52,7 +55,8 @@ export default async function ProfilePage() {
   ]
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 lg:px-0 space-y-6">
+    <StorefrontLayout user={user}>
+    <div className="w-full max-w-3xl mx-auto space-y-6">
 
       {/* Header */}
       <div>
@@ -147,5 +151,6 @@ export default async function ProfilePage() {
       </div>
 
     </div>
+    </StorefrontLayout>
   )
 }

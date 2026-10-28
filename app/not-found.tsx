@@ -24,7 +24,7 @@ export default function NotFound() {
               className="px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-all hover:scale-105"
               style={{ background: 'var(--color-button-bg)', boxShadow: '0 0 20px var(--color-glow)' }}
             >
-              Ke Dashboard
+              Ke Beranda
             </Link>
             <Link
               href="/"

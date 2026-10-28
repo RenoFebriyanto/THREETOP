@@ -36,6 +36,7 @@ export default function RetryButton({ orderId }: { orderId: string }) {
 
   return (
     <button
+      type="button"
       onClick={handleRetry}
       disabled={loading}
       className="px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--color-warning-bg)] border border-[var(--color-warning-border)] text-[var(--color-warning)] hover:bg-[var(--color-warning-bg)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

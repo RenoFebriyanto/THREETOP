@@ -255,7 +255,7 @@ export default function GameTopUpPage() {
           </div>
           <div className="p-6 pt-0 flex gap-3">
             <button onClick={handleReset} className="flex-1 py-3 rounded-xl text-sm font-semibold bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] hover:bg-[var(--color-info-border)] transition-colors">Top Up Lagi</button>
-            <Link href="/dashboard/orders" className="flex-1 py-3 rounded-xl text-sm font-semibold text-center bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-frost)] hover:bg-[var(--color-surface-muted)] transition-colors">Lihat Riwayat</Link>
+            <Link href="/orders" className="flex-1 py-3 rounded-xl text-sm font-semibold text-center bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-frost)] hover:bg-[var(--color-surface-muted)] transition-colors">Lihat Riwayat</Link>
           </div>
         </div>
       </div>

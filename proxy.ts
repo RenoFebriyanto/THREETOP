@@ -77,11 +77,26 @@ export default auth((req) => {
   const isLegacyAuthRoute =
     pathname === '/login' || pathname === '/register'
 
-  const isDashboard = pathname.startsWith('/dashboard')
   const isAdminRoute = pathname.startsWith('/admin')
+  const isAccountRoute =
+    pathname === '/profile' ||
+    pathname === '/orders' ||
+    pathname.startsWith('/orders/')
 
-  if (pathname === '/dashboard') {
-    return NextResponse.redirect(new URL('/', nextUrl))
+  if (pathname === '/dashboard' || pathname.startsWith('/dashboard/')) {
+    let destination = '/'
+
+    if (pathname === '/dashboard/profile') {
+      destination = '/profile'
+    } else if (pathname === '/dashboard/orders') {
+      destination = '/orders'
+    } else if (pathname.startsWith('/dashboard/orders/')) {
+      destination = `/orders${pathname.slice('/dashboard/orders'.length)}`
+    }
+
+    const redirectUrl = new URL(destination, nextUrl)
+    redirectUrl.search = nextUrl.search
+    return NextResponse.redirect(redirectUrl)
   }
 
   // Path legacy: satu kali redirect langsung
@@ -91,10 +106,10 @@ export default auth((req) => {
     return NextResponse.redirect(new URL(newPath, nextUrl))
   }
 
-  // Redirect ke login jika belum login dan akses dashboard/admin
-  if ((isDashboard || isAdminRoute) && !isLoggedIn) {
+  // Redirect ke login jika belum login dan mengakses area akun/admin
+  if ((isAccountRoute || isAdminRoute) && !isLoggedIn) {
     const loginUrl = new URL('/auth/login', nextUrl)
-    loginUrl.searchParams.set('callbackUrl', pathname)
+    loginUrl.searchParams.set('callbackUrl', pathname + nextUrl.search)
     return NextResponse.redirect(loginUrl)
   }
 
@@ -115,6 +130,8 @@ export const config = {
   matcher: [
     // Halaman yang butuh proteksi auth
     '/dashboard/:path*',
+    '/profile',
+    '/orders/:path*',
     '/admin/:path*',
     // Halaman auth (redirect jika sudah login)
     '/auth/login',

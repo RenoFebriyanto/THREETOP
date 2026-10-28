@@ -40,6 +40,7 @@ export default function EditNameForm({ currentName }: { currentName: string }) {
   if (!editing) {
     return (
       <button
+        aria-label="Ubah nama profil"
         onClick={() => setEditing(true)}
         className="inline-flex items-center gap-1.5 text-xs text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] transition-colors mt-1"
       >

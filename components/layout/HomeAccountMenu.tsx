@@ -85,7 +85,7 @@ export default function HomeAccountMenu({ user }: { user: User }) {
           </div>
           <nav className="p-2" aria-label="Menu akun">
             <Link
-              href="/dashboard/profile"
+              href="/profile"
               role="menuitem"
               onClick={() => setOpen(false)}
               className="block rounded-lg px-3 py-2.5 text-sm text-[var(--color-muted)] transition hover:bg-[var(--color-surface)] hover:text-white"
@@ -93,7 +93,7 @@ export default function HomeAccountMenu({ user }: { user: User }) {
               Profil saya
             </Link>
             <Link
-              href="/dashboard/orders"
+              href="/orders"
               role="menuitem"
               onClick={() => setOpen(false)}
               className="block rounded-lg px-3 py-2.5 text-sm text-[var(--color-muted)] transition hover:bg-[var(--color-surface)] hover:text-white"

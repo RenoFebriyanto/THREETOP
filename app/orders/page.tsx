@@ -1,10 +1,12 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import RetryButton from '@/components/dashboard/RetryButton'
+import RetryButton from '@/components/orders/RetryButton'
 import GameIcon from '@/components/ui/GameIcon'
 import CopyButton from '@/components/ui/CopyButton'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
+import StorefrontLayout from '@/components/layout/StorefrontLayout'
 
 type OrderStatus = 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED'
 
@@ -24,14 +26,16 @@ function formatDate(date: Date) {
 
 export default async function OrdersPage() {
   const session = await auth()
+  if (!session) redirect('/auth/login?callbackUrl=/orders')
   const orders = await prisma.order.findMany({
-    where: { userId: session!.user.id },
+    where: { userId: session.user.id },
     orderBy: { createdAt: 'desc' },
     take: 100,
   })
   const processingCount = orders.filter(o => o.status === 'PROCESSING' || o.status === 'PENDING').length
 
   return (
+    <StorefrontLayout user={session.user}>
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
@@ -74,7 +78,7 @@ export default async function OrdersPage() {
               <div key={order.id} className="rounded-lg border border-[var(--color-border)] p-5 transition-colors hover:border-[var(--color-border)]" style={{ background: 'var(--color-surface-dark)' }}>
                 <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
                   {/* Game icon */}
-                  <Link href={`/dashboard/orders/${order.id}`} className="w-12 h-12 rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border)] flex items-center justify-center shrink-0 overflow-hidden hover:border-[var(--color-info-border)] transition-colors">
+                  <Link href={`/orders/${order.id}`} className="w-12 h-12 rounded-lg bg-[var(--color-surface-dark)] border border-[var(--color-border)] flex items-center justify-center shrink-0 overflow-hidden hover:border-[var(--color-info-border)] transition-colors">
                     {gameInfo
                       ? <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={40} />
                       : <span className="text-xl">🎮</span>
@@ -82,7 +86,7 @@ export default async function OrdersPage() {
                   </Link>
 
                   {/* Info */}
-                  <Link href={`/dashboard/orders/${order.id}`} className="flex-1 min-w-0 hover:opacity-80 transition-opacity">
+                  <Link href={`/orders/${order.id}`} className="flex-1 min-w-0 hover:opacity-80 transition-opacity">
                     <p className="text-[var(--color-frost)] font-semibold text-sm truncate">{order.productName}</p>
                     <p className="text-[var(--color-muted)] text-xs mt-0.5 truncate">ID: {order.gameUserId}</p>
                     <p className="text-[var(--color-muted-strong)] text-xs mt-0.5">{formatDate(order.createdAt)}</p>
@@ -125,5 +129,6 @@ export default async function OrdersPage() {
 
       {orders.length === 100 && <p className="text-center text-[var(--color-muted-strong)] text-xs">Menampilkan 100 transaksi terbaru</p>}
     </div>
+    </StorefrontLayout>
   )
 }

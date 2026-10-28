@@ -67,9 +67,9 @@ export default function AdminSidebar({ user }: { user: User }) {
         <div className="pt-4 pb-2">
           <p className="text-[var(--color-muted-strong)] text-xs font-semibold uppercase tracking-widest px-3">User Area</p>
         </div>
-        <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:bg-[var(--color-surface)] transition-all">
+        <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:bg-[var(--color-surface)] transition-all">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-          Kembali ke Dashboard
+          Kembali ke Home
         </Link>
       </nav>
 

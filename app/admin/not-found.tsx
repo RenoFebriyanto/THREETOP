@@ -20,7 +20,7 @@ export default function AdminNotFound() {
         </Link>
         <Link href="/"
           className="px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--color-muted)] border border-[var(--color-border)] hover:text-[var(--color-frost)] hover:border-[var(--color-border)] transition-colors">
-          Dashboard User
+          Kembali ke Home
         </Link>
       </div>
     </div>

@@ -2,10 +2,11 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import RetryButton from '@/components/dashboard/RetryButton'
+import RetryButton from '@/components/orders/RetryButton'
 import GameIcon from '@/components/ui/GameIcon'
 import CopyButton from '@/components/ui/CopyButton'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
+import StorefrontLayout from '@/components/layout/StorefrontLayout'
 
 const STATUS_CONFIG = {
   SUCCESS:    { label: 'Sukses',    color: 'text-[var(--color-success)]', bg: 'bg-[var(--color-success-bg)] border-[var(--color-success-border)]',
@@ -43,9 +44,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     (order.status === 'PROCESSING' || order.status === 'FAILED')
 
   return (
+    <StorefrontLayout user={session.user}>
     <div className="max-w-2xl mx-auto space-y-6">
       {/* Back */}
-      <Link href="/dashboard/orders" className="inline-flex items-center gap-2 text-[var(--color-muted)] hover:text-[var(--color-frost)] text-sm transition-colors">
+      <Link href="/orders" className="inline-flex items-center gap-2 text-[var(--color-muted)] hover:text-[var(--color-frost)] text-sm transition-colors">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
         </svg>
@@ -132,7 +134,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
       {/* Tombol bawah */}
       <div className="flex gap-3">
-        <Link href="/dashboard/orders"
+        <Link href="/orders"
           className="flex-1 py-3 rounded-xl text-sm font-medium text-center border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:border-[var(--color-border)] transition-colors bg-[var(--color-surface-dark)]">
           Lihat Semua Riwayat
         </Link>
@@ -143,5 +145,6 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
         </Link>
       </div>
     </div>
+    </StorefrontLayout>
   )
 }

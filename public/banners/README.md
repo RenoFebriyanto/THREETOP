@@ -32,7 +32,7 @@ atau passing prop `slides` dari halaman untuk override default:
     subtitle: 'Diskon spesial untuk semua game',
     badge: 'LIMITED',
     badgeColor: 'bg-green-500',
-    href: '/dashboard/topup',
+    href: '/topup/mobile_legends',
     cta: 'Lihat Promo',
   },
 ]} />
