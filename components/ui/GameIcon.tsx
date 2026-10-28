@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 
 type Props = {
   image: string | string[]
@@ -13,32 +13,16 @@ type Props = {
 }
 
 export default function GameIcon({ image, fallbackImage, fallback, label, size = 40, className = '' }: Props) {
-  const [srcList, setSrcList] = useState<string[]>([])
-  const [index, setIndex] = useState(0)
-  const [errored, setErrored] = useState(false)
-
-  useEffect(() => {
+  const srcList = useMemo(() => {
     const candidates = Array.isArray(image) ? image : [image]
-    setSrcList(candidates)
-    setIndex(0)
-    setErrored(false)
-  }, [image])
+    return fallbackImage && !candidates.includes(fallbackImage)
+      ? [...candidates, fallbackImage]
+      : candidates
+  }, [image, fallbackImage])
+  const [failedSources, setFailedSources] = useState<Set<string>>(() => new Set())
+  const src = srcList.find((candidate) => !failedSources.has(candidate))
 
-  useEffect(() => {
-    if (fallbackImage && typeof fallbackImage === 'string' && !srcList.includes(fallbackImage)) {
-      setSrcList((prev) => [...prev, fallbackImage])
-    }
-  }, [fallbackImage, srcList])
-
-  function handleError() {
-    if (index < srcList.length - 1) {
-      setIndex((prev) => prev + 1)
-      return
-    }
-    setErrored(true)
-  }
-
-  if (errored || srcList.length === 0) {
+  if (!src) {
     return (
       <span
         className={`flex items-center justify-center bg-[var(--color-surface-muted)] text-[var(--color-muted)] font-bold rounded-lg ${className}`}
@@ -51,12 +35,13 @@ export default function GameIcon({ image, fallbackImage, fallback, label, size =
 
   return (
     <Image
-      src={srcList[index]}
+      src={src}
       alt={label}
       width={size}
       height={size}
+      sizes={`${size}px`}
       className={`object-contain ${className}`}
-      onError={handleError}
+      onError={() => setFailedSources((previous) => new Set(previous).add(src))}
     />
   )
 }

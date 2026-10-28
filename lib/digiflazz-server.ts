@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import { Prisma } from '@prisma/client'
 import { prisma } from '@/lib/db'
 import {
   type DigiflazzProduct,
@@ -170,7 +171,12 @@ function describePriceListResponse(data: unknown) {
   }
 }
 
-async function getSavedProductsFromDb(): Promise<DigiflazzProduct[] | null> {
+type SavedProductCache = {
+  products: DigiflazzProduct[]
+  cachedAt: number
+}
+
+async function getSavedProductsFromDb(): Promise<SavedProductCache | null> {
   try {
     const rows = await prisma.digiflazzProduct.findMany({
       orderBy: { updatedAt: 'desc' },
@@ -178,7 +184,10 @@ async function getSavedProductsFromDb(): Promise<DigiflazzProduct[] | null> {
     })
 
     if (!rows?.length) return null
-    return rows.map((row) => row.product as DigiflazzProduct)
+    return {
+      products: rows.map((row) => row.product as DigiflazzProduct),
+      cachedAt: rows[0].updatedAt.getTime(),
+    }
   } catch (error) {
     console.error('[DIGIFLAZZ] DB cache fetch failed', error)
     return null
@@ -186,41 +195,39 @@ async function getSavedProductsFromDb(): Promise<DigiflazzProduct[] | null> {
 }
 
 async function saveProductsToDb(products: DigiflazzProduct[]) {
-  const operations = products.map((product) =>
-    prisma.digiflazzProduct.upsert({
-      where: { buyerSkuCode: product.buyer_sku_code },
-      update: { product },
-      create: {
-        buyerSkuCode: product.buyer_sku_code,
-        game: product.brand,
-        product,
-      },
-    })
-  )
-  const results = await Promise.allSettled(operations)
-  const failures = results.filter((result) => result.status === 'rejected')
-  if (failures.length > 0) {
-    console.error(`[DIGIFLAZZ] Failed to save ${failures.length} of ${products.length} products to DB cache`)
+  const rows = products.map((product) => Prisma.sql`(
+    ${crypto.randomUUID()},
+    ${product.buyer_sku_code},
+    ${product.brand},
+    ${JSON.stringify(product)}::jsonb,
+    NOW()
+  )`)
+
+  try {
+    await prisma.$executeRaw(Prisma.sql`
+      INSERT INTO "DigiflazzProduct" ("id", "buyerSkuCode", "game", "product", "updatedAt")
+      VALUES ${Prisma.join(rows)}
+      ON CONFLICT ("buyerSkuCode") DO UPDATE SET
+        "game" = EXCLUDED."game",
+        "product" = EXCLUDED."product",
+        "updatedAt" = EXCLUDED."updatedAt"
+    `)
+  } catch (error) {
+    console.error('[DIGIFLAZZ] DB cache save failed', error)
   }
 }
 
-async function getFallbackProducts(): Promise<DigiflazzProduct[] | null> {
-  if (productCache?.products.length) return productCache.products
-
-  const saved = await getSavedProductsFromDb()
-  if (saved?.length) {
-    productCache = { products: saved, cachedAt: Date.now() }
-    return saved
-  }
-  return null
+async function getCachedProductsFallback(products: DigiflazzProduct[], reason: string): Promise<DigiflazzProduct[]> {
+  console.warn('[DIGIFLAZZ] Using cached products:', reason)
+  productCache = { products, cachedAt: Date.now() }
+  await saveProductsToDb(products)
+  return products
 }
 
-async function fetchProducts(): Promise<DigiflazzProduct[]> {
+async function fetchProducts(fallbackProducts: DigiflazzProduct[] | null): Promise<DigiflazzProduct[]> {
   if (!USERNAME || !API_KEY) {
-    const saved = await getFallbackProducts()
-    if (saved) {
-      console.warn('[DIGIFLAZZ] Credentials missing, using cached products')
-      return saved
+    if (fallbackProducts?.length) {
+      return getCachedProductsFallback(fallbackProducts, 'credentials missing')
     }
     throw new Error('Digiflazz credentials belum dikonfigurasi.')
   }
@@ -238,29 +245,23 @@ async function fetchProducts(): Promise<DigiflazzProduct[]> {
 
     if (!res.ok) {
       const bodyText = await res.text().catch(() => '')
-      const saved = await getFallbackProducts()
-      if (saved) {
-        console.warn('[DIGIFLAZZ] Price list fetch failed, using cached products', res.status, bodyText)
-        return saved
+      if (fallbackProducts?.length) {
+        return getCachedProductsFallback(fallbackProducts, `price list request failed (${res.status})`)
       }
       throw new Error(`Digiflazz API error: ${res.status}${bodyText ? ` - ${bodyText}` : ''}`)
     }
 
     try {
       data = await res.json()
-    } catch (parseError) {
-      const saved = await getFallbackProducts()
-      if (saved) {
-        console.warn('[DIGIFLAZZ] Price list JSON parse failed, using cached products', parseError)
-        return saved
+    } catch {
+      if (fallbackProducts?.length) {
+        return getCachedProductsFallback(fallbackProducts, 'invalid price list JSON')
       }
       throw new Error('Digiflazz returned invalid JSON response.')
     }
   } catch (error) {
-    const saved = await getFallbackProducts()
-    if (saved) {
-      console.warn('[DIGIFLAZZ] Fetch failed, using cached products', error)
-      return saved
+    if (fallbackProducts?.length) {
+      return getCachedProductsFallback(fallbackProducts, `price list request failed: ${error instanceof Error ? error.message : 'unknown error'}`)
     }
     throw new Error(error instanceof Error ? error.message : 'Gagal terhubung ke layanan Digiflazz.')
   }
@@ -268,19 +269,15 @@ async function fetchProducts(): Promise<DigiflazzProduct[]> {
   const normalized = normalizePriceListResponse(data)
 
   if (normalized.rc === '83') {
-    const saved = await getFallbackProducts()
-    if (saved) {
-      console.warn('[DIGIFLAZZ] Rate limited, using cached products')
-      return saved
+    if (fallbackProducts?.length) {
+      return getCachedProductsFallback(fallbackProducts, 'rate limited')
     }
     throw new Error('Rate limit Digiflazz: terlalu banyak request. Coba lagi sebentar.')
   }
 
   if (normalized.products.length === 0) {
-    const saved = await getFallbackProducts()
-    if (saved) {
-      console.warn('[DIGIFLAZZ] Empty product list, using cached products')
-      return saved
+    if (fallbackProducts?.length) {
+      return getCachedProductsFallback(fallbackProducts, 'empty product list')
     }
 
     const responseDetails = {
@@ -308,7 +305,17 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
   }
 
   if (!productsRequest) {
-    productsRequest = fetchProducts().finally(() => {
+    productsRequest = (async () => {
+      const saved = await getSavedProductsFromDb()
+      if (saved) {
+        productCache = saved
+        if (Date.now() - saved.cachedAt < PRODUCT_CACHE_TTL_MS) {
+          return saved.products
+        }
+      }
+
+      return fetchProducts(saved?.products ?? null)
+    })().finally(() => {
       productsRequest = null
     })
   }

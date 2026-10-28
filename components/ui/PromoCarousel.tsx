@@ -26,9 +26,9 @@ const DEFAULT_SLIDES: PromoSlide[] = [
   {
     id: 'ml-promo',
     images: {
-      mobile: '/banners/mobile-mobile-legends.png',
-      tablet: '/banners/tablet-mobile-legends.png',
-      desktop: '/banners/desktop-mobile-legends.png',
+      mobile: '/banners/mobile-mobile-legends.webp',
+      tablet: '/banners/tablet-mobile-legends.webp',
+      desktop: '/banners/desktop-mobile-legends.webp',
     },
     title: 'Mobile Legends',
     subtitle: 'Diamond instan, harga terbaik',
@@ -39,9 +39,9 @@ const DEFAULT_SLIDES: PromoSlide[] = [
   {
     id: 'ff-promo',
     images: {
-      mobile: '/banners/mobile-free-fire.png',
-      tablet: '/banners/tablet-free-fire.png',
-      desktop: '/banners/desktop-free-fire.png',
+      mobile: '/banners/mobile-free-fire.webp',
+      tablet: '/banners/tablet-free-fire.webp',
+      desktop: '/banners/desktop-free-fire.webp',
     },
     title: 'Free Fire',
     subtitle: 'Diamond FF langsung masuk',
@@ -52,9 +52,9 @@ const DEFAULT_SLIDES: PromoSlide[] = [
   {
     id: 'pubg-promo',
     images: {
-      mobile: '/banners/mobile-pubg-mobile.png',
-      tablet: '/banners/tablet-pubg-mobile.png',
-      desktop: '/banners/desktop-pubg-mobile.png',
+      mobile: '/banners/mobile-pubg-mobile.webp',
+      tablet: '/banners/tablet-pubg-mobile.webp',
+      desktop: '/banners/desktop-pubg-mobile.webp',
     },
     title: 'PUBG Mobile',
     subtitle: 'UC murah & cepat',
@@ -115,11 +115,12 @@ export default function PromoCarousel({
   function onTouchEnd(e: React.TouchEvent) {
     if (touchStart.current === null) return
     const diff = touchStart.current - e.changedTouches[0].clientX
-    if (Math.abs(diff) > 40) { diff > 0 ? next() : prev() }
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) next()
+      else prev()
+    }
     touchStart.current = null
   }
-
-  const slide = slides[current]
 
   return (
     <div
@@ -150,6 +151,9 @@ export default function PromoCarousel({
                     src={s.images.desktop ?? s.images.tablet ?? s.images.mobile}
                     alt={s.title}
                     className="w-full h-full object-cover"
+                    loading={i === current ? 'eager' : 'lazy'}
+                    fetchPriority={i === current ? 'high' : 'auto'}
+                    decoding="async"
                     onError={() => setImgErrors(p => ({ ...p, [s.id]: true }))}
                   />
                 </picture>

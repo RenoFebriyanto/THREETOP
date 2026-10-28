@@ -4,7 +4,7 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const gameInfo = SUPPORTED_GAMES[gameKey]
   if (!gameInfo) {
     return {
-      image: ['/icons/games/default.png'],
+      image: [],
       fallback: '🎮',
       fallbackImage: undefined,
     }
