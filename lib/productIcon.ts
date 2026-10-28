@@ -119,7 +119,9 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   }
 
   return {
-    image: candidates,
+    image: gameKey === 'mobile_legends'
+      ? candidates.map((candidate) => `${candidate}?v=20261029-1`)
+      : candidates,
     fallback: gameInfo.icon,
     fallbackImage: gameKey === 'mobile_legends' ? undefined : defaultImage,
   }
