@@ -39,14 +39,22 @@ export default async function AdminUsersPage({
         role: true,
         createdAt: true,
         _count: { select: { orders: true } },
-        orders: {
-          where: { status: 'SUCCESS' },
-          select: { amount: true },
-        },
       },
     }),
     prisma.user.count({ where }),
   ])
+
+  const spendingByUser = await prisma.order.groupBy({
+    by: ['userId'],
+    where: {
+      userId: { in: users.map((user) => user.id) },
+      status: 'SUCCESS',
+    },
+    _sum: { amount: true },
+  })
+  const totalSpendByUser = new Map(
+    spendingByUser.map((spending) => [spending.userId, spending._sum.amount ?? 0])
+  )
 
   const totalPages = Math.ceil(total / PAGE_SIZE)
 
@@ -70,7 +78,7 @@ export default async function AdminUsersPage({
       <div className="rounded-lg border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
         <div className="sm:hidden space-y-3 p-4">
           {users.map((user) => {
-            const totalSpend = user.orders.reduce((s, o) => s + o.amount, 0)
+            const totalSpend = totalSpendByUser.get(user.id) ?? 0
             return (
               <div key={user.id} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-dark)] p-4 space-y-3">
                 <div className="flex items-center gap-3">
@@ -120,8 +128,7 @@ export default async function AdminUsersPage({
 
             <div className="divide-y divide-slate-800/40">
               {users.map((user) => (
-                // @ts-ignore - user type from prisma
-                <UserRow key={user.id} user={user} />
+                <UserRow key={user.id} user={{ ...user, totalSpend: totalSpendByUser.get(user.id) ?? 0 }} />
               ))}
             </div>
           </div>

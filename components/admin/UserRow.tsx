@@ -9,7 +9,7 @@ type User = {
   createdAt: string | Date
   suspendedUntil?: string | Date | null
   _count: { orders: number }
-  orders: { amount: number }[]
+  totalSpend: number
 }
 
 function formatDate(d: string | Date) {
@@ -20,8 +20,6 @@ function formatCurrency(n: number) {
 }
 
 export default function UserRow({ user }: { user: User }) {
-  const totalSpend = user.orders.reduce((s, o) => s + o.amount, 0)
-
   return (
     <div className="flex items-center px-4 py-3 hover:bg-[var(--color-abyss)]/20 transition-colors gap-x-4">
       <div className="w-64">
@@ -52,7 +50,7 @@ export default function UserRow({ user }: { user: User }) {
       </div>
 
       <div className="w-20 text-white text-xs font-medium text-left">{user._count.orders}</div>
-      <div className="w-28 text-[var(--color-success)] text-xs font-medium">{formatCurrency(totalSpend)}</div>
+      <div className="w-28 text-[var(--color-success)] text-xs font-medium">{formatCurrency(user.totalSpend)}</div>
       <div className="w-32 text-[var(--color-muted-strong)] text-xs">{formatDate(user.createdAt)}</div>
       <div className="flex-1 pl-2">
         <AdminUserActions userId={user.id} currentRole={user.role as 'USER' | 'ADMIN'} suspendedUntil={user.suspendedUntil ?? null} />

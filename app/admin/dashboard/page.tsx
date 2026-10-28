@@ -1,14 +1,13 @@
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import Link from 'next/link'
-import { checkBalance, SUPPORTED_GAMES } from '@/lib/digiflazz-server'
+import { Suspense } from 'react'
+import { SUPPORTED_GAMES } from '@/lib/digiflazz-server'
 import AdminExportButton from '@/components/admin/ExportButton'
+import DigiflazzBalanceCard from '@/components/admin/DigiflazzBalanceCard'
 import GameIcon from '@/components/ui/GameIcon'
 
 export const dynamic = 'force-dynamic'
-
-// Threshold peringatan saldo Digiflazz (Rp 50.000)
-const LOW_BALANCE_THRESHOLD = 50_000
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(amount)
@@ -37,7 +36,6 @@ export default async function AdminDashboardPage() {
     revenueResult,
     recentOrders,
     todayOrders,
-    digiflazzBalance,
     revenueByGame,
   ] = await Promise.all([
     prisma.user.count(),
@@ -61,7 +59,6 @@ export default async function AdminDashboardPage() {
     prisma.order.count({
       where: { createdAt: { gte: new Date(new Date().setHours(0, 0, 0, 0)) } },
     }),
-    checkBalance().catch(() => null),
     // Revenue per game (top 6)
     prisma.order.groupBy({
       by: ['game'],
@@ -80,14 +77,12 @@ export default async function AdminDashboardPage() {
     { label: 'Total User', value: totalUsers.toLocaleString(), sub: 'terdaftar', accent: 'sky', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg> },
     { label: 'Total Transaksi', value: totalOrders.toLocaleString(), sub: `${todayOrders} hari ini`, accent: 'violet', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg> },
     { label: 'Total Revenue', value: formatCurrency(totalRevenue), sub: `${successRate}% success rate`, accent: 'emerald', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
-    { label: 'Saldo Digiflazz', value: digiflazzBalance !== null ? formatCurrency(digiflazzBalance) : '—', sub: processingOrders > 0 ? `${processingOrders} diproses` : 'semua selesai', accent: 'amber', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" /></svg> },
   ]
 
   const accentMap: Record<string, { icon: string; border: string }> = {
     sky:     { icon: 'text-[var(--color-frost)] bg-[var(--color-info-bg)]',     border: 'border-[var(--color-info-border)]' },
     violet:  { icon: 'text-[var(--color-violet)] bg-[var(--color-violet-bg)]', border: 'border-[var(--color-violet-border)]' },
     emerald: { icon: 'text-[var(--color-success)] bg-[var(--color-success-bg)]', border: 'border-[var(--color-success-border)]' },
-    amber:   { icon: 'text-[var(--color-warning)] bg-[var(--color-warning-bg)]',  border: 'border-[var(--color-warning-border)]' },
   }
 
   return (
@@ -101,21 +96,6 @@ export default async function AdminDashboardPage() {
         </div>
         <AdminExportButton />
       </div>
-
-      {/* Alert saldo rendah */}
-      {digiflazzBalance !== null && digiflazzBalance < LOW_BALANCE_THRESHOLD && (
-        <div className="rounded-lg border border-[var(--color-error-border)] p-4 flex items-start gap-3 bg-[var(--color-error-bg)]">
-          <svg className="w-5 h-5 text-[var(--color-error)] shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
-          <div>
-            <p className="text-[var(--color-error)] text-sm font-semibold">Saldo Digiflazz Hampir Habis</p>
-            <p className="text-[var(--color-error)]/70 text-xs mt-0.5">
-              Saldo saat ini <span className="font-bold">{new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(digiflazzBalance)}</span>. Segera deposit agar transaksi tidak terganggu.
-            </p>
-          </div>
-        </div>
-      )}
 
       {/* Stat cards (responsive: 2x2 on small, 4 on md+) */}
       <div className="flex flex-wrap gap-2 justify-between">
@@ -136,6 +116,9 @@ export default async function AdminDashboardPage() {
             </div>
           )
         })}
+        <Suspense fallback={<div className="h-28 animate-pulse rounded-lg bg-[var(--color-surface-muted)] flex-none basis-[calc(50%-0.5rem)] md:basis-[calc(25%-0.75rem)] max-w-[calc(50%-0.5rem)] md:max-w-[calc(25%-0.75rem)] min-w-[140px]" />}>
+          <DigiflazzBalanceCard processingOrders={processingOrders} />
+        </Suspense>
       </div>
 
       {/* Status breakdown + Recent orders */}
