@@ -149,6 +149,27 @@ function normalizePriceListResponse(data: unknown): DigiflazzPriceListResponse {
   return { products: [] }
 }
 
+function describePriceListResponse(data: unknown) {
+  if (Array.isArray(data)) {
+    return { type: 'array', length: data.length }
+  }
+  if (!data || typeof data !== 'object') {
+    return { type: typeof data }
+  }
+
+  const body = data as Record<string, unknown>
+  const payload = body.data
+  return {
+    type: 'object',
+    keys: Object.keys(body).slice(0, 12),
+    dataType: Array.isArray(payload) ? 'array' : payload === null ? 'null' : typeof payload,
+    dataLength: Array.isArray(payload) ? payload.length : undefined,
+    dataKeys: payload && typeof payload === 'object' && !Array.isArray(payload)
+      ? Object.keys(payload).slice(0, 12)
+      : undefined,
+  }
+}
+
 async function getSavedProductsFromDb(): Promise<DigiflazzProduct[] | null> {
   try {
     const rows = await prisma.digiflazzProduct.findMany({
@@ -261,7 +282,18 @@ async function fetchProducts(): Promise<DigiflazzProduct[]> {
       console.warn('[DIGIFLAZZ] Empty product list, using cached products')
       return saved
     }
-    throw new Error(`Digiflazz returned empty product list${normalized.rc ? ` (rc=${normalized.rc})` : ''}.`)
+
+    const responseDetails = {
+      rc: normalized.rc,
+      message: normalized.message,
+      shape: describePriceListResponse(data),
+    }
+    console.error('[DIGIFLAZZ] Empty price list response with no cached products', responseDetails)
+    const details = [
+      normalized.rc ? `rc=${normalized.rc}` : '',
+      normalized.message ? `message=${normalized.message}` : '',
+    ].filter(Boolean).join(', ')
+    throw new Error(`Digiflazz returned empty product list${details ? ` (${details})` : ''}.`)
   }
 
   const enrichedProducts = enrichProductsWithSellPrice(normalized.products)
