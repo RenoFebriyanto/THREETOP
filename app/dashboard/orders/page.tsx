@@ -42,7 +42,7 @@ export default async function OrdersPage() {
             {processingCount > 0 && <span className="ml-2 text-[var(--color-warning)]">· {processingCount} sedang diproses</span>}
           </p>
         </div>
-        <Link href="/dashboard/topup" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] text-xs sm:text-sm font-medium hover:bg-[var(--color-info-bg)] transition-colors w-full sm:w-auto justify-center">
+        <Link href="/topup" className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] text-xs sm:text-sm font-medium hover:bg-[var(--color-info-bg)] transition-colors w-full sm:w-auto justify-center">
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
           Top Up Lagi
         </Link>
@@ -56,7 +56,7 @@ export default async function OrdersPage() {
           </div>
           <p className="text-[var(--color-frost)] font-semibold mb-1">Belum ada transaksi</p>
           <p className="text-[var(--color-muted-strong)] text-sm mb-6">Mulai top up game pertamamu!</p>
-          <Link href="/dashboard/topup" className="px-5 py-2.5 rounded-lg text-sm font-semibold text-[var(--color-frost)]" style={{ background: 'var(--color-button-bg)' }}>
+          <Link href="/topup" className="px-5 py-2.5 rounded-lg text-sm font-semibold text-[var(--color-frost)]" style={{ background: 'var(--color-button-bg)' }}>
             Top Up Sekarang
           </Link>
         </div>

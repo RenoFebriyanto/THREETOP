@@ -136,7 +136,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           className="flex-1 py-3 rounded-xl text-sm font-medium text-center border border-[var(--color-border)] text-[var(--color-muted)] hover:text-[var(--color-frost)] hover:border-[var(--color-border)] transition-colors bg-[var(--color-surface-dark)]">
           Lihat Semua Riwayat
         </Link>
-        <Link href="/dashboard/topup"
+        <Link href="/topup"
           className="flex-1 py-3 rounded-xl text-sm font-semibold text-center text-[var(--color-button-text)]"
           style={{ background: 'var(--color-button-bg)' }}>
           Top Up Lagi

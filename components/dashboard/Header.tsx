@@ -14,14 +14,14 @@ type User = {
 }
 
 const NAV_ITEMS = [
-  { label: 'Dashboard', href: '/dashboard', exact: true },
-  { label: 'Top Up', href: '/dashboard/topup' },
+  { label: 'Home', href: '/', exact: true },
+  { label: 'Top Up', href: '/topup' },
   { label: 'Riwayat', href: '/dashboard/orders' },
   { label: 'Profil', href: '/dashboard/profile' },
 ]
 
 const PAGE_TITLES: Record<string, string> = {
-  '/dashboard': 'Dashboard',
+  '/dashboard': 'Home',
   '/dashboard/topup': 'Top Up Game',
   '/dashboard/orders': 'Riwayat Transaksi',
   '/dashboard/profile': 'Profil Saya',
@@ -69,7 +69,7 @@ export default function DashboardHeader({ user }: { user: User }) {
         {/* Right: Quick top up + user badge */}
         <div className="flex items-center gap-3">
           <Link
-            href="/dashboard/topup"
+            href="/topup"
             className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium text-[var(--color-frost)] border border-[var(--color-info-border)] bg-[var(--color-info-bg)] hover:bg-[var(--color-info-bg)] transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

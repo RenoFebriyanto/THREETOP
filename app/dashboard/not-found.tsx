@@ -13,12 +13,12 @@ export default function DashboardNotFound() {
         Halaman yang kamu cari tidak ada atau sudah dipindahkan.
       </p>
       <div className="flex items-center justify-center gap-3">
-        <Link href="/dashboard"
+        <Link href="/"
           className="px-5 py-2.5 rounded-lg text-sm font-semibold text-[var(--color-button-text)] transition-all hover:scale-105"
           style={{ background: 'var(--color-button-bg)' }}>
           Ke Dashboard
         </Link>
-        <Link href="/dashboard/topup"
+        <Link href="/topup"
           className="px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--color-muted)] border border-[var(--color-border)] hover:text-[var(--color-frost)] transition-colors">
           Top Up Game
         </Link>

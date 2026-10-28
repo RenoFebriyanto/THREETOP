@@ -50,7 +50,7 @@ model Session {
 
 model Order {
   id            String      @id @default(cuid())
-  userId        String
+  userId        String?
   game          String
   productName   String
   productCode   String
@@ -60,11 +60,12 @@ model Order {
   paymentStatus PaymentStatus @default(UNPAID)
   paymentToken  String?
   paymentUrl    String?
+  guestAccessToken String?  @unique
   digiflazzRef  String?
   sn            String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  user          User        @relation(fields: [userId], references: [id])
+  user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
 }
 
 enum Role {

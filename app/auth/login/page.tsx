@@ -20,16 +20,16 @@ const AUTH_ERRORS: Record<string, string> = {
 
 // Validasi callbackUrl — hanya izinkan path internal
 function getSafeCallbackUrl(raw: string | null): string {
-  if (!raw) return '/dashboard'
+  if (!raw) return '/'
   try {
     // Jika absolute URL, pastikan same-origin
     const url = new URL(raw, window.location.origin)
-    if (url.origin !== window.location.origin) return '/dashboard'
+    if (url.origin !== window.location.origin) return '/'
     return url.pathname + url.search
   } catch {
     // Jika bukan URL valid, anggap relative path
     if (raw.startsWith('/') && !raw.startsWith('//')) return raw
-    return '/dashboard'
+    return '/'
   }
 }
 

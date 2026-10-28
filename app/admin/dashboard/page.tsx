@@ -178,7 +178,7 @@ export default async function AdminDashboardPage() {
                   <div key={order.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 p-3 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
                     <div className="flex-1 min-w-0">
                       <p className="text-white text-xs font-medium truncate">{order.productName}</p>
-                      <p className="text-[var(--color-muted-strong)] text-xs truncate">{order.user.name ?? order.user.email}</p>
+                      <p className="text-[var(--color-muted-strong)] text-xs truncate">{order.user?.name ?? order.user?.email ?? 'Guest checkout'}</p>
                     </div>
                     <div className="flex flex-col sm:items-end items-start gap-2 shrink-0 min-w-0">
                       <p className="text-white text-xs font-semibold">{formatCurrency(order.amount)}</p>

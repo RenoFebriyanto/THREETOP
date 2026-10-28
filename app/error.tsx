@@ -37,7 +37,7 @@ export default function GlobalError({
             Coba Lagi
           </button>
           <a
-            href="/dashboard"
+            href="/"
             className="px-5 py-2.5 rounded-xl text-sm font-medium text-[var(--color-muted)] border border-[var(--color-border)]/50 hover:text-[var(--color-frost)] hover:border-[var(--color-border)] transition-colors"
           >
             Ke Dashboard

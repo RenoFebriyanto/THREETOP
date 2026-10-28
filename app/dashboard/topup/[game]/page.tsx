@@ -31,13 +31,15 @@ function formatProductLabel(productName: string) {
   return cleaned || productName
 }
 
-async function pollOrderStatus(orderId: string, onDone: (result: OrderResult) => void) {
+async function pollOrderStatus(orderId: string, accessToken: string | undefined, onDone: (result: OrderResult) => void) {
   const MAX_ATTEMPTS = 40
   let attempts = 0
   const interval = setInterval(async () => {
     attempts++
     try {
-      const res = await fetch(`/api/payment/status?orderId=${orderId}`)
+      const res = await fetch(`/api/payment/status?orderId=${orderId}`, {
+        headers: accessToken ? { 'x-order-access-token': accessToken } : undefined,
+      })
       const data = await res.json()
       if (!res.ok) { clearInterval(interval); return }
       const order = data.order
@@ -66,7 +68,6 @@ export default function GameTopUpPage() {
   const [serverId, setServerId] = useState('')
   const [inputError, setInputError] = useState('')
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
-  const [currentOrderId, setCurrentOrderId] = useState('')
   const [creating, setCreating] = useState(false)
   // Nickname auto-check
   const [nickname, setNickname] = useState<string | null>(null)
@@ -112,8 +113,9 @@ export default function GameTopUpPage() {
   }, [gameKey])
 
   useEffect(() => {
-    if (!gameInfo) { router.replace('/dashboard/topup'); return }
-    fetchProducts()
+    if (!gameInfo) { router.replace('/topup'); return }
+    const timer = setTimeout(() => { void fetchProducts() }, 0)
+    return () => clearTimeout(timer)
   }, [gameKey, gameInfo, fetchProducts, router])
 
   function resetNick() { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null) }
@@ -122,40 +124,6 @@ export default function GameTopUpPage() {
 
   function getDisplayPrice(product: DigiflazzProduct) {
     return product.sell_price ?? product.price
-  }
-
-  function getProductCategory(product: DigiflazzProduct) {
-    const category = `${product.category ?? ''}`.toLowerCase()
-    const type = `${product.type ?? ''}`.toLowerCase()
-    const name = `${product.product_name ?? ''}`.toLowerCase()
-
-    if (/(diamond|uc|vp|vcoin|gems|crystal|cash|coins|emerald|gold|silver|cash)/i.test(category) || /(diamond|uc|vp|gems|crystal|cash|coins)/i.test(name)) {
-      return 'currency'
-    }
-    if (/(membership|member|langganan|subscription|monthly|weekly|vip)/i.test(category) || /(membership|langganan|subscription|vip)/i.test(name)) {
-      return 'membership'
-    }
-    if (/(battlepass|bp)/i.test(category) || /(battlepass|bp)/i.test(name)) {
-      return 'battlepass'
-    }
-    if (/(voucher|ticket|token|card|code)/i.test(category) || /(voucher|ticket|token|card|code)/i.test(name)) {
-      return 'voucher'
-    }
-    if (/(skin|bundle|package|starter|elite|special|event)/i.test(category) || /(skin|bundle|package|starter|elite|special|event)/i.test(name)) {
-      return 'bundle'
-    }
-    return 'other'
-  }
-
-  function getCategoryLabel(key: string) {
-    return {
-      currency: 'Currency / Diamond',
-      membership: 'Membership',
-      battlepass: 'Battlepass',
-      voucher: 'Voucher',
-      bundle: 'Bundle & Paket',
-      other: 'Lainnya',
-    }[key] ?? 'Lainnya'
   }
 
   function handleInputSubmit() {
@@ -178,7 +146,6 @@ export default function GameTopUpPage() {
       const data = await res.json()
       if (!res.ok) { setInputError(data.error || 'Gagal membuat pembayaran.'); setStep('confirm'); setCreating(false); return }
 
-      setCurrentOrderId(data.orderId)
       setCreating(false)
       setStep('processing')
 
@@ -195,7 +162,7 @@ export default function GameTopUpPage() {
           })
           setStep('result')
           // Polling untuk update status final dari Digiflazz
-          pollOrderStatus(data.orderId, (result) => {
+          pollOrderStatus(data.orderId, data.accessToken, (result) => {
             setOrderResult(result)
           })
         } else if (snapStatus === 'PENDING') {
@@ -207,7 +174,7 @@ export default function GameTopUpPage() {
             status: 'PROCESSING',
           })
           setStep('result')
-          pollOrderStatus(data.orderId, (result) => {
+          pollOrderStatus(data.orderId, data.accessToken, (result) => {
             setOrderResult(result)
           })
         } else if (snapStatus === 'FAILED') {
@@ -233,7 +200,7 @@ export default function GameTopUpPage() {
 
   function handleReset() {
     setStep('select'); setSelectedProduct(null); setGameUserId(''); setServerId('')
-    setInputError(''); setOrderResult(null); setCurrentOrderId('')
+    setInputError(''); setOrderResult(null)
     resetNick()
   }
 
@@ -322,7 +289,7 @@ export default function GameTopUpPage() {
     <div className="max-w-4xl mx-auto space-y-6">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
-        <Link href="/dashboard/topup" className="text-[var(--color-muted)] hover:text-white transition-colors">Top Up</Link>
+        <Link href="/topup" className="text-[var(--color-muted)] hover:text-white transition-colors">Top Up</Link>
         <svg className="w-4 h-4 text-[var(--color-muted-strong)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
         <span className="text-white font-medium">{gameInfo.label}</span>
       </div>
@@ -374,8 +341,8 @@ export default function GameTopUpPage() {
                     </button>
                   </div>
                 )
-              })
-            })()
+              })}
+            </div>
           )}
         </div>
       )}

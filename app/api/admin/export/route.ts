@@ -111,8 +111,8 @@ export async function GET(req: NextRequest) {
 
     const rows = orders.map((o) => [
       o.id,
-      o.user.name ?? '',
-      o.user.email,
+      o.user?.name ?? 'Guest checkout',
+      o.user?.email ?? '',
       o.game,
       o.productName,
       o.gameUserId,

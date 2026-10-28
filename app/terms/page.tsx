@@ -147,7 +147,7 @@ export default function TermsPage() {
           <span className="text-[var(--color-muted)] text-sm">Syarat &amp; Ketentuan</span>
           <div className="ml-auto flex items-center gap-3">
             <Link href="/privacy" className="text-[var(--color-muted)] hover:text-[var(--color-frost)] text-xs transition-colors">Kebijakan Privasi</Link>
-            <Link href="/dashboard" className="text-[var(--color-frost)] hover:text-[var(--color-frost)] text-xs transition-colors">Dashboard</Link>
+            <Link href="/" className="text-[var(--color-frost)] hover:text-[var(--color-frost)] text-xs transition-colors">Home</Link>
           </div>
         </div>
       </div>
@@ -212,9 +212,9 @@ export default function TermsPage() {
                   className="px-5 py-2.5 rounded-xl text-sm font-medium text-[var(--color-muted)] border border-[var(--color-border)]/50 hover:text-[var(--color-frost)] hover:border-[var(--color-border)] transition-colors">
                   Kebijakan Privasi
                 </Link>
-                <Link href="/dashboard"
+                <Link href="/"
                   className="px-5 py-2.5 rounded-xl text-sm font-semibold text-[var(--color-button-text)] bg-[var(--color-button-bg)] transition-all hover:scale-105">
-                  Kembali ke Dashboard
+                  Kembali ke Home
                 </Link>
               </div>
             </div>

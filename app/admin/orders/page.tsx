@@ -38,8 +38,8 @@ export default async function AdminOrdersPage({
     ...(status ? { status } : {}),
     ...(q ? {
       OR: [
-        { user: { email: { contains: q, mode: 'insensitive' as const } } },
-        { user: { name: { contains: q, mode: 'insensitive' as const } } },
+        { user: { is: { email: { contains: q, mode: 'insensitive' as const } } } },
+        { user: { is: { name: { contains: q, mode: 'insensitive' as const } } } },
         { productName: { contains: q, mode: 'insensitive' as const } },
         { gameUserId: { contains: q, mode: 'insensitive' as const } },
       ],
@@ -144,7 +144,7 @@ export default async function AdminOrdersPage({
                       </div>
                       <div className="min-w-0 flex-1">
                         <p className="text-white text-sm font-semibold truncate">{order.productName}</p>
-                        <p className="text-[var(--color-muted)] text-xs truncate">{order.user.name ?? order.user.email}</p>
+                        <p className="text-[var(--color-muted)] text-xs truncate">{order.user?.name ?? order.user?.email ?? 'Guest checkout'}</p>
                         <p className="text-[var(--color-muted-strong)] text-xs truncate">ID: {order.gameUserId}</p>
                         <p className="text-[var(--color-muted-strong)] text-xs mt-1">{formatDate(order.createdAt)}</p>
                       </div>

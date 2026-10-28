@@ -80,9 +80,13 @@ export default auth((req) => {
   const isDashboard = pathname.startsWith('/dashboard')
   const isAdminRoute = pathname.startsWith('/admin')
 
+  if (pathname === '/dashboard') {
+    return NextResponse.redirect(new URL('/', nextUrl))
+  }
+
   // Path legacy: satu kali redirect langsung
   if (isLegacyAuthRoute) {
-    if (isLoggedIn) return NextResponse.redirect(new URL('/dashboard', nextUrl))
+    if (isLoggedIn) return NextResponse.redirect(new URL('/', nextUrl))
     const newPath = pathname === '/login' ? '/auth/login' : '/auth/register'
     return NextResponse.redirect(new URL(newPath, nextUrl))
   }
@@ -96,12 +100,12 @@ export default auth((req) => {
 
   // Redirect ke dashboard jika sudah login dan buka halaman auth
   if (isAuthRoute && isLoggedIn) {
-    return NextResponse.redirect(new URL('/dashboard', nextUrl))
+    return NextResponse.redirect(new URL('/', nextUrl))
   }
 
   // Blokir akses admin jika bukan ADMIN
   if (isAdminRoute && session?.user?.role !== 'ADMIN') {
-    return NextResponse.redirect(new URL('/dashboard', nextUrl))
+    return NextResponse.redirect(new URL('/', nextUrl))
   }
 
   return NextResponse.next()

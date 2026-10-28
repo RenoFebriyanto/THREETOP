@@ -8,7 +8,7 @@ type Order = {
   game: string
   productName: string
   sn?: string | null
-  user: { name?: string | null; email?: string | null }
+  user: { name?: string | null; email?: string | null } | null
   gameUserId?: string | null
   amount: number
   status: string
@@ -49,8 +49,8 @@ export default function OrderRow({ order }: { order: Order }) {
       </div>
 
       <div className="w-44 min-w-0">
-        <p className="text-[var(--color-frost)] text-xs truncate">{order.user.name ?? '—'}</p>
-        <p className="text-[var(--color-muted-strong)] text-xs truncate">{order.user.email}</p>
+        <p className="text-[var(--color-frost)] text-xs truncate">{order.user?.name ?? 'Guest checkout'}</p>
+        <p className="text-[var(--color-muted-strong)] text-xs truncate">{order.user?.email ?? ''}</p>
       </div>
 
       <div className="w-28 text-[var(--color-muted)] text-xs font-mono truncate">{order.gameUserId}</div>

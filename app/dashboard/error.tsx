@@ -34,7 +34,7 @@ export default function DashboardError({
           style={{ background: 'var(--color-button-bg)' }}>
           Coba Lagi
         </button>
-        <Link href="/dashboard"
+        <Link href="/"
           className="px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--color-muted)] border border-[var(--color-border)] hover:text-[var(--color-frost)] transition-colors">
           Dashboard
         </Link>

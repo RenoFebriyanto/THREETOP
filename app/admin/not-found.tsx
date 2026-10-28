@@ -18,7 +18,7 @@ export default function AdminNotFound() {
           style={{ background: 'linear-gradient(135deg, var(--color-violet), var(--color-info))' }}>
           Ke Admin Panel
         </Link>
-        <Link href="/dashboard"
+        <Link href="/"
           className="px-5 py-2.5 rounded-lg text-sm font-medium text-[var(--color-muted)] border border-[var(--color-border)] hover:text-[var(--color-frost)] hover:border-[var(--color-border)] transition-colors">
           Dashboard User
         </Link>
