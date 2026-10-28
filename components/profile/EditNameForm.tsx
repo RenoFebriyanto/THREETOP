@@ -1,0 +1,77 @@
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/ui/Toast'
+
+export default function EditNameForm({ currentName }: { currentName: string }) {
+  const router = useRouter()
+  const { toast } = useToast()
+  const [editing, setEditing] = useState(false)
+  const [name, setName] = useState(currentName)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleSave() {
+    setError('')
+    const trimmed = name.trim()
+    if (!trimmed || trimmed.length < 2) { setError('Nama minimal 2 karakter.'); return }
+    if (trimmed === currentName) { setEditing(false); return }
+
+    setLoading(true)
+    try {
+      const res = await fetch('/api/user/update-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: trimmed }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? 'Gagal menyimpan.'); return }
+      toast('Nama berhasil diperbarui!', 'success')
+      setEditing(false)
+      router.refresh()
+    } catch {
+      setError('Tidak dapat terhubung ke server.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!editing) {
+    return (
+      <button
+        aria-label="Ubah nama profil"
+        onClick={() => setEditing(true)}
+        className="inline-flex items-center gap-1.5 text-xs text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] transition-colors mt-1"
+      >
+        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+        </svg>
+        Ubah nama
+      </button>
+    )
+  }
+
+  return (
+    <div className="mt-2 space-y-2">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+        <input
+          type="text"
+          value={name}
+          onChange={(event) => { setName(event.target.value); setError('') }}
+          onKeyDown={(event) => { if (event.key === 'Enter') handleSave(); if (event.key === 'Escape') setEditing(false) }}
+          maxLength={50}
+          autoFocus
+          className="flex-1 min-w-0 px-3 py-1.5 rounded-lg bg-[var(--color-surface-muted)] border border-[var(--color-border)]/50 text-[var(--color-frost)] text-sm focus:outline-none focus:border-[var(--color-info)] focus:ring-1 focus:ring-[var(--color-info-ring)] transition-all"
+        />
+        <button onClick={handleSave} disabled={loading} className="w-full sm:w-auto px-3 py-1.5 rounded-lg text-xs font-medium bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] hover:bg-[var(--color-info-bg)] transition-colors disabled:opacity-50">
+          {loading ? '...' : 'Simpan'}
+        </button>
+        <button onClick={() => { setEditing(false); setName(currentName); setError('') }} className="w-full sm:w-auto px-3 py-1.5 rounded-lg text-xs text-[var(--color-muted-strong)] hover:text-[var(--color-frost)] border border-[var(--color-border)]/50 hover:border-[var(--color-border)] transition-colors">
+          Batal
+        </button>
+      </div>
+      {error && <p className="text-[var(--color-error)] text-xs">{error}</p>}
+    </div>
+  )
+}
