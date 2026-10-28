@@ -20,6 +20,10 @@ function createSignature(suffix: string): string {
 }
 
 const DEFAULT_PRICE_MARKUP_PERCENT = 0.10
+const PRODUCT_CACHE_TTL_MS = 5 * 60 * 1000
+
+let productCache: { products: DigiflazzProduct[]; cachedAt: number } | null = null
+let productsRequest: Promise<DigiflazzProduct[]> | null = null
 
 function getSellPrice(basePrice: number): number {
   const markupPercent = Number(process.env.PRICE_MARKUP_PERCENT ?? DEFAULT_PRICE_MARKUP_PERCENT)
@@ -172,14 +176,29 @@ async function saveProductsToDb(products: DigiflazzProduct[]) {
       },
     })
   )
-  await Promise.allSettled(operations)
+  const results = await Promise.allSettled(operations)
+  const failures = results.filter((result) => result.status === 'rejected')
+  if (failures.length > 0) {
+    console.error(`[DIGIFLAZZ] Failed to save ${failures.length} of ${products.length} products to DB cache`)
+  }
 }
 
-export async function getProducts(): Promise<DigiflazzProduct[]> {
+async function getFallbackProducts(): Promise<DigiflazzProduct[] | null> {
+  if (productCache?.products.length) return productCache.products
+
+  const saved = await getSavedProductsFromDb()
+  if (saved?.length) {
+    productCache = { products: saved, cachedAt: Date.now() }
+    return saved
+  }
+  return null
+}
+
+async function fetchProducts(): Promise<DigiflazzProduct[]> {
   if (!USERNAME || !API_KEY) {
-    const saved = await getSavedProductsFromDb()
+    const saved = await getFallbackProducts()
     if (saved) {
-      console.warn('[DIGIFLAZZ] Credentials missing, using DB cache')
+      console.warn('[DIGIFLAZZ] Credentials missing, using cached products')
       return saved
     }
     throw new Error('Digiflazz credentials belum dikonfigurasi.')
@@ -198,9 +217,9 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
 
     if (!res.ok) {
       const bodyText = await res.text().catch(() => '')
-      const saved = await getSavedProductsFromDb()
+      const saved = await getFallbackProducts()
       if (saved) {
-        console.warn('[DIGIFLAZZ] Price list fetch failed, using DB cache', res.status, bodyText)
+        console.warn('[DIGIFLAZZ] Price list fetch failed, using cached products', res.status, bodyText)
         return saved
       }
       throw new Error(`Digiflazz API error: ${res.status}${bodyText ? ` - ${bodyText}` : ''}`)
@@ -209,17 +228,17 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
     try {
       data = await res.json()
     } catch (parseError) {
-      const saved = await getSavedProductsFromDb()
+      const saved = await getFallbackProducts()
       if (saved) {
-        console.warn('[DIGIFLAZZ] Price list JSON parse failed, using DB cache', parseError)
+        console.warn('[DIGIFLAZZ] Price list JSON parse failed, using cached products', parseError)
         return saved
       }
       throw new Error('Digiflazz returned invalid JSON response.')
     }
   } catch (error) {
-    const saved = await getSavedProductsFromDb()
+    const saved = await getFallbackProducts()
     if (saved) {
-      console.warn('[DIGIFLAZZ] Fetch failed, using DB cache', error)
+      console.warn('[DIGIFLAZZ] Fetch failed, using cached products', error)
       return saved
     }
     throw new Error(error instanceof Error ? error.message : 'Gagal terhubung ke layanan Digiflazz.')
@@ -228,28 +247,40 @@ export async function getProducts(): Promise<DigiflazzProduct[]> {
   const normalized = normalizePriceListResponse(data)
 
   if (normalized.rc === '83') {
-    const saved = await getSavedProductsFromDb()
+    const saved = await getFallbackProducts()
     if (saved) {
-      console.warn('[DIGIFLAZZ] Rate limited, using DB cache')
+      console.warn('[DIGIFLAZZ] Rate limited, using cached products')
       return saved
     }
     throw new Error('Rate limit Digiflazz: terlalu banyak request. Coba lagi sebentar.')
   }
 
   if (normalized.products.length === 0) {
-    const saved = await getSavedProductsFromDb()
+    const saved = await getFallbackProducts()
     if (saved) {
-      console.warn('[DIGIFLAZZ] Empty product list, using DB cache')
+      console.warn('[DIGIFLAZZ] Empty product list, using cached products')
       return saved
     }
     throw new Error(`Digiflazz returned empty product list${normalized.rc ? ` (rc=${normalized.rc})` : ''}.`)
   }
 
   const enrichedProducts = enrichProductsWithSellPrice(normalized.products)
-  saveProductsToDb(enrichedProducts).catch((error) => {
-    console.error('[DIGIFLAZZ] DB cache save failed', error)
-  })
+  productCache = { products: enrichedProducts, cachedAt: Date.now() }
+  await saveProductsToDb(enrichedProducts)
   return enrichedProducts
+}
+
+export async function getProducts(): Promise<DigiflazzProduct[]> {
+  if (productCache && Date.now() - productCache.cachedAt < PRODUCT_CACHE_TTL_MS) {
+    return productCache.products
+  }
+
+  if (!productsRequest) {
+    productsRequest = fetchProducts().finally(() => {
+      productsRequest = null
+    })
+  }
+  return productsRequest
 }
 
 export async function checkBalance(): Promise<number> {
