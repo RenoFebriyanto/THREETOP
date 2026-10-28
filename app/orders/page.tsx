@@ -31,6 +31,18 @@ export default async function OrdersPage() {
     where: { userId: session.user.id },
     orderBy: { createdAt: 'desc' },
     take: 100,
+    select: {
+      id: true,
+      game: true,
+      productName: true,
+      gameUserId: true,
+      amount: true,
+      status: true,
+      paymentStatus: true,
+      paymentUrl: true,
+      sn: true,
+      createdAt: true,
+    },
   })
   const processingCount = orders.filter(o => o.status === 'PROCESSING' || o.status === 'PENDING').length
 

@@ -34,7 +34,23 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const session = await auth()
   if (!session) redirect('/auth/login')
 
-  const order = await prisma.order.findUnique({ where: { id } })
+  const order = await prisma.order.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      userId: true,
+      game: true,
+      productName: true,
+      gameUserId: true,
+      amount: true,
+      status: true,
+      paymentStatus: true,
+      paymentUrl: true,
+      createdAt: true,
+      digiflazzRef: true,
+      sn: true,
+    },
+  })
   if (!order) notFound()
   if (order.userId !== session.user.id && session.user.role !== 'ADMIN') notFound()
 
