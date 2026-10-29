@@ -7,6 +7,7 @@ import GameIcon from '@/components/ui/GameIcon'
 import CopyButton from '@/components/ui/CopyButton'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 import StorefrontLayout from '@/components/layout/StorefrontLayout'
+import GameRatingPanel from '@/components/topup/GameRatingPanel'
 
 const STATUS_CONFIG = {
   SUCCESS:    { label: 'Sukses',    color: 'text-[var(--color-success)]', bg: 'bg-[var(--color-success-bg)] border-[var(--color-success-border)]',
@@ -68,6 +69,9 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
   const gameInfo = SUPPORTED_GAMES[order.game]
   const canRetry = order.paymentStatus === 'PAID' &&
     (order.status === 'PROCESSING' || order.status === 'FAILED')
+  const canRateOrder = order.paymentStatus === 'PAID' &&
+    (order.status === 'SUCCESS' && order.items.length === 0 ||
+      order.items.some((item) => item.status === 'SUCCESS'))
 
   return (
     <StorefrontLayout user={session.user}>
@@ -166,6 +170,10 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           ))}
         </div>
       </div>
+
+      {canRateOrder && order.userId === session.user.id && (
+        <GameRatingPanel gameKey={order.game} orderId={order.id} />
+      )}
 
       {/* Lanjutkan bayar jika masih UNPAID */}
       {order.paymentStatus === 'UNPAID' && order.paymentUrl && (

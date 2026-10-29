@@ -14,6 +14,7 @@ import {
 import { getProductIcon } from '@/lib/productIcon'
 import GameIcon from '@/components/ui/GameIcon'
 import { openSnapPayment } from '@/components/ui/SnapPayment'
+import GameRatingPanel from '@/components/topup/GameRatingPanel'
 
 type Step = 'select' | 'input' | 'confirm' | 'processing' | 'result'
 
@@ -25,6 +26,7 @@ type OrderResult = {
   status: 'SUCCESS' | 'FAILED' | 'PROCESSING'
   paymentStatus?: string
   sn?: string | null
+  accessToken?: string
   items?: Array<{
     productName: string
     amount: number
@@ -58,7 +60,7 @@ async function pollOrderStatus(orderId: string, accessToken: string | undefined,
       const order = data.order
       if (order.status === 'SUCCESS' || order.status === 'FAILED' || order.paymentStatus === 'EXPIRED') {
         clearInterval(interval)
-        onDone({ id: order.id, productName: order.productName, gameUserId: order.gameUserId, amount: order.amount, status: order.status, paymentStatus: order.paymentStatus, sn: order.sn, items: order.items })
+        onDone({ id: order.id, productName: order.productName, gameUserId: order.gameUserId, amount: order.amount, status: order.status, paymentStatus: order.paymentStatus, sn: order.sn, items: order.items, accessToken })
       }
     } catch { /* silent */ }
     if (attempts >= MAX_ATTEMPTS) clearInterval(interval)
@@ -82,7 +84,6 @@ export default function GameTopUpPage() {
   const [inputError, setInputError] = useState('')
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
   const [creating, setCreating] = useState(false)
-  const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'error'>('idle')
   // Nickname auto-check
   const [nickname, setNickname] = useState<string | null>(null)
   const [nickCountry, setNickCountry] = useState<string | null>(null)
@@ -153,15 +154,6 @@ export default function GameTopUpPage() {
     setInputError('')
   }
 
-  async function handleCopyGameLink() {
-    try {
-      await navigator.clipboard.writeText(window.location.href)
-      setShareStatus('copied')
-    } catch {
-      setShareStatus('error')
-    }
-  }
-
   function getDisplayPrice(product: DigiflazzProduct) {
     return product.sell_price ?? product.price
   }
@@ -202,6 +194,7 @@ export default function GameTopUpPage() {
             gameUserId: customerNo,
             amount: selectedTotal,
             status: 'PROCESSING', // akan diupdate via polling
+            accessToken: data.accessToken,
             items: selectedProducts.map((product) => ({
               productName: product.product_name,
               amount: getDisplayPrice(product),
@@ -220,6 +213,7 @@ export default function GameTopUpPage() {
             gameUserId: customerNo,
             amount: selectedTotal,
             status: 'PROCESSING',
+            accessToken: data.accessToken,
             items: selectedProducts.map((product) => ({
               productName: product.product_name,
               amount: getDisplayPrice(product),
@@ -237,6 +231,7 @@ export default function GameTopUpPage() {
             gameUserId: customerNo,
             amount: selectedTotal,
             status: 'FAILED',
+            accessToken: data.accessToken,
             items: selectedProducts.map((product) => ({
               productName: product.product_name,
               amount: getDisplayPrice(product),
@@ -321,6 +316,11 @@ export default function GameTopUpPage() {
               </div>
             ))}
           </div>
+          {(orderResult.status === 'SUCCESS' || orderResult.items?.some((item) => item.status === 'SUCCESS')) && (
+            <div className="px-6 pb-6">
+              <GameRatingPanel gameKey={gameKey} orderId={orderResult.id} accessToken={orderResult.accessToken} />
+            </div>
+          )}
           <div className="p-6 pt-0 flex gap-3">
             <button onClick={handleReset} className="flex-1 py-3 rounded-xl text-sm font-semibold bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] hover:bg-[var(--color-info-border)] transition-colors">Top Up Lagi</button>
             <Link href="/orders" className="flex-1 py-3 rounded-xl text-sm font-semibold text-center bg-[var(--color-surface-muted)] border border-[var(--color-border)] text-[var(--color-frost)] hover:bg-[var(--color-surface-muted)] transition-colors">Lihat Riwayat</Link>
@@ -412,7 +412,7 @@ export default function GameTopUpPage() {
                         const productIcon = getProductIcon(product, gameKey)
                         return (
                           <div key={product.buyer_sku_code} className="flex-none basis-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] min-w-[130px] sm:basis-[calc(50%-0.5rem)] sm:max-w-[calc(50%-0.5rem)] md:flex-1 md:basis-[200px] md:min-w-[190px] md:max-w-[280px]">
-                            <button onClick={() => step === 'select' && toggleProduct(product)} disabled={step !== 'select'} aria-pressed={isSelected}
+                            <button onClick={() => { toggleProduct(product); if (step === 'select') setStep('input') }} disabled={step === 'confirm'} aria-pressed={isSelected}
                               className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
                               style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
                               {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
@@ -444,39 +444,7 @@ export default function GameTopUpPage() {
           </div>
 
           <aside aria-label="Informasi dan ringkasan top up" className="space-y-4 lg:sticky lg:top-24">
-            <section className="rounded-2xl border border-[var(--color-border)] p-5" style={{ background: 'var(--color-surface-dark)' }}>
-              <h2 className="text-base font-bold text-white">Ulasan dan rating</h2>
-              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-                <span className="text-5xl font-bold leading-none text-white">4.99</span>
-                <div>
-                  <div className="flex gap-1 text-yellow-300" aria-label="Rating 4.99 dari 5">
-                    {Array.from({ length: 5 }).map((_, index) => (
-                      <svg key={index} className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="m12 2.5 2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31l-5.8 3.06 1.1-6.47-4.7-4.58 6.5-.94L12 2.5Z" />
-                      </svg>
-                    ))}
-                  </div>
-                  <p className="mt-1 text-center text-sm font-semibold text-white">Berdasarkan total 15.24jt rating</p>
-                </div>
-              </div>
-            </section>
-
-            <div>
-              <button onClick={handleCopyGameLink} className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-surface-strong)]" style={{ background: 'var(--color-surface-strong)' }}>
-                {shareStatus === 'copied' ? 'Link berhasil disalin' : 'Salin Link untuk Dibagikan'}
-              </button>
-              {shareStatus === 'error' && <p role="status" className="mt-2 text-xs text-[var(--color-error)]">Link tidak dapat disalin. Periksa izin clipboard browser Anda.</p>}
-            </div>
-
-            <a href="mailto:threetopsupport@gmail.com" className="flex items-center gap-4 rounded-2xl border border-[var(--color-border)] p-5 transition hover:bg-[var(--color-surface-strong)]" style={{ background: 'var(--color-surface-dark)' }}>
-              <svg className="h-8 w-8 shrink-0 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.5 13v-1a7.5 7.5 0 0 1 15 0v1M4.5 13H6a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5.5A2.5 2.5 0 0 1 3 17.5v-2A2.5 2.5 0 0 1 5.5 13Zm15 0H18a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h.5a2.5 2.5 0 0 0 2.5-2.5v-2a2.5 2.5 0 0 0-2.5-2.5Z" />
-              </svg>
-              <span>
-                <span className="block font-semibold text-white">Butuh Bantuan?</span>
-                <span className="block text-sm text-[var(--color-frost)]">Kamu bisa hubungi admin di sini.</span>
-              </span>
-            </a>
+            <GameRatingPanel gameKey={gameKey} />
 
             <section aria-live="polite" className={`rounded-2xl border p-5 ${selectedProducts.length > 0 ? 'border-[var(--color-border)]' : 'border-dashed border-[var(--color-border)]'}`} style={{ background: 'var(--color-surface-strong)' }}>
               {selectedProducts.length > 0 ? (
@@ -494,7 +462,7 @@ export default function GameTopUpPage() {
                           <p className="text-sm font-semibold text-white">{formatProductLabel(product.product_name)}</p>
                           <p className="mt-1 text-sm font-bold text-[var(--color-frost)]">{formatCurrency(getDisplayPrice(product))}</p>
                         </div>
-                        {step === 'select' && (
+                        {step !== 'confirm' && (
                           <button type="button" onClick={() => toggleProduct(product)} className="shrink-0 text-xs text-[var(--color-muted)] hover:text-white" aria-label={`Hapus ${formatProductLabel(product.product_name)}`}>
                             Hapus
                           </button>
@@ -511,90 +479,87 @@ export default function GameTopUpPage() {
                       Lanjutkan
                     </button>
                   )}
+                  {step === 'input' && (
+                    <div className="space-y-4 border-t border-[var(--color-border)] pt-4">
+                      <div>
+                        <h2 className="text-sm font-semibold text-white">Masukkan {gameInfo.userIdLabel}</h2>
+                        <label className="mt-3 block text-xs font-medium text-[var(--color-frost)]">{gameInfo.userIdLabel}</label>
+                        <input
+                          type="text"
+                          value={gameUserId}
+                          onChange={(e) => {
+                            const val = e.target.value
+                            setGameUserId(val)
+                            setInputError('')
+                            resetNick()
+                            if (debounceRef.current) clearTimeout(debounceRef.current)
+                            debounceRef.current = setTimeout(() => autoCheckNickname(val, serverId), 800)
+                          }}
+                          placeholder={gameInfo.userIdPlaceholder}
+                          className="mt-2 w-full rounded-xl border border-[var(--color-border)]/70 bg-[var(--color-surface-muted)] px-4 py-3 text-sm text-white placeholder-[var(--color-muted-strong)] transition-all focus:border-[var(--color-info-border)] focus:outline-none focus:ring-1 focus:ring-[var(--color-info-ring)]"
+                        />
+                      </div>
+                      {gameInfo.requireServer && (
+                        <div>
+                          <label className="block text-xs font-medium text-[var(--color-frost)]">Server ID</label>
+                          <input
+                            type="text"
+                            value={serverId}
+                            onChange={(e) => {
+                              const val = e.target.value
+                              setServerId(val)
+                              setInputError('')
+                              resetNick()
+                              if (debounceRef.current) clearTimeout(debounceRef.current)
+                              debounceRef.current = setTimeout(() => autoCheckNickname(gameUserId, val), 800)
+                            }}
+                            placeholder="1234"
+                            className="mt-2 w-full rounded-xl border border-[var(--color-border)]/70 bg-[var(--color-surface-muted)] px-4 py-3 text-sm text-white placeholder-[var(--color-muted-strong)] transition-all focus:border-[var(--color-info-border)] focus:outline-none focus:ring-1 focus:ring-[var(--color-info-ring)]"
+                          />
+                        </div>
+                      )}
+                      <p className="flex items-start gap-1.5 text-xs text-[var(--color-muted-strong)]">
+                        <svg className="mt-0.5 h-3.5 w-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
+                        {gameInfo.userIdHint}
+                      </p>
+                      {nickLoading && <p className="text-sm text-[var(--color-muted)]">Memeriksa akun...</p>}
+                      {nickChecked && nickname && (
+                        <div className="rounded-xl border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-4 py-3">
+                          <p className="text-xs font-medium text-[var(--color-success)]">Akun ditemukan</p>
+                          <p className="text-sm font-bold text-white">{nickname}{nickCountry ? ` (${nickCountry})` : ''}</p>
+                        </div>
+                      )}
+                      {nickError && !nickLoading && <p className="text-sm text-[var(--color-error)]">{nickError}</p>}
+                      {inputError && <p className="text-sm text-[var(--color-error)]">{inputError}</p>}
+                      <button
+                        type="button"
+                        onClick={handleInputSubmit}
+                        disabled={!nickChecked}
+                        className="w-full rounded-xl py-3 text-sm font-semibold text-[var(--color-button-text)] transition-all disabled:cursor-not-allowed disabled:opacity-40"
+                        style={{ background: nickChecked ? 'var(--color-button-bg)' : 'var(--color-accent-disabled)' }}
+                      >
+                        Lanjutkan
+                      </button>
+                    </div>
+                  )}
+                  {step === 'confirm' && (
+                    <div className="space-y-3 border-t border-[var(--color-border)] pt-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs text-[var(--color-muted)]">{gameInfo.userIdLabel}</p>
+                          <p className="mt-1 break-all text-sm font-medium text-white">{customerNoDisplay}</p>
+                          {nickname && <p className="mt-1 text-xs text-[var(--color-success)]">{nickname}</p>}
+                        </div>
+                        <button type="button" onClick={() => setStep('input')} className="shrink-0 text-sm text-[var(--color-frost)] hover:text-white">Ubah</button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <p className="py-6 text-center text-sm text-[var(--color-frost)]">Belum ada item produk yang dipilih.</p>
               )}
             </section>
           </aside>
-        </div>
-      )}
-
-      {/* Step 2 — Input ID */}
-      {(step === 'input' || step === 'confirm') && selectedProducts.length > 0 && (
-        <div className="rounded-xl border border-[var(--color-border)] p-6 space-y-4" style={{ background: 'var(--color-surface-dark)' }}>
-          <div className="flex items-center justify-between">
-            <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">2</span>Masukkan {gameInfo.userIdLabel}</h2>
-            {step === 'confirm' && <button onClick={() => setStep('input')} className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">Ubah</button>}
-          </div>
-          {step === 'input' ? (
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-[var(--color-frost)] mb-2">{gameInfo.userIdLabel}</label>
-                <input type="text" value={gameUserId}
-                  onChange={(e) => {
-                    const val = e.target.value; setGameUserId(val); setInputError(''); resetNick()
-                    if (debounceRef.current) clearTimeout(debounceRef.current)
-                    debounceRef.current = setTimeout(() => autoCheckNickname(val, serverId), 800)
-                  }}
-                  placeholder={gameInfo.userIdPlaceholder}
-                    className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]/70 text-white placeholder-[var(--color-muted-strong)] text-sm focus:outline-none focus:border-[var(--color-info-border)] focus:ring-1 focus:ring-[var(--color-info-ring)] transition-all" />
-              </div>
-              {gameInfo.requireServer && (
-                <div>
-                  <label className="block text-sm font-medium text-[var(--color-frost)] mb-2">Server ID</label>
-                  <input type="text" value={serverId}
-                    onChange={(e) => {
-                      const val = e.target.value; setServerId(val); setInputError(''); resetNick()
-                      if (debounceRef.current) clearTimeout(debounceRef.current)
-                      debounceRef.current = setTimeout(() => autoCheckNickname(gameUserId, val), 800)
-                    }}
-                    placeholder="1234"
-                    className="w-full px-4 py-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]/70 text-white placeholder-[var(--color-muted-strong)] text-sm focus:outline-none focus:border-[var(--color-info-border)] focus:ring-1 focus:ring-[var(--color-info-ring)] transition-all" />
-                </div>
-              )}
-              <p className="text-[var(--color-muted-strong)] text-xs flex items-start gap-1.5">
-                <svg className="w-3.5 h-3.5 mt-0.5 shrink-0 text-[var(--color-muted-strong)]" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
-                {gameInfo.userIdHint}
-              </p>
-              {/* Auto nickname indicator */}
-              {nickLoading && (
-                <div className="flex items-center gap-2 text-[var(--color-muted)] text-sm">
-                  <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>
-                  Memeriksa akun...
-                </div>
-              )}
-              {nickChecked && nickname && (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-success-bg)] border border-[var(--color-success-border)]">
-                  <svg className="w-5 h-5 text-[var(--color-success)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                  <div>
-                    <p className="text-[var(--color-success)] text-xs font-medium">Akun Ditemukan</p>
-                    <p className="text-white text-sm font-bold">{nickname}{nickCountry ? <span className="text-[var(--color-muted)] font-normal text-xs ml-2">({nickCountry})</span> : ''}</p>
-                  </div>
-                </div>
-              )}
-              {nickError && !nickLoading && (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-error-bg)] border border-[var(--color-error-border)]">
-                  <svg className="w-4 h-4 text-[var(--color-error)] shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clipRule="evenodd"/></svg>
-                  <p className="text-[var(--color-error)] text-sm">{nickError}</p>
-                </div>
-              )}
-              {inputError && <p className="text-[var(--color-error)] text-sm">{inputError}</p>}
-              <button onClick={handleInputSubmit} disabled={!nickChecked}
-                className="w-full py-3 rounded-xl font-semibold text-sm text-[var(--color-button-text)] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                style={{ background: nickChecked ? 'var(--color-button-bg)' : 'var(--color-accent-disabled)', boxShadow: nickChecked ? '0 0 20px var(--color-glow)' : 'none' }}>
-                Lanjutkan
-              </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-[var(--color-surface-muted)] border border-[var(--color-border)]">
-              <svg className="w-4 h-4 text-[var(--color-muted-strong)] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
-              <div>
-                <span className="text-white text-sm">{customerNoDisplay}</span>
-                {nickname && <span className="text-[var(--color-success)] text-xs ml-2">· {nickname}</span>}
-              </div>
-            </div>
-          )}
         </div>
       )}
 

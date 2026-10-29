@@ -3,23 +3,24 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider = "postgresql"
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  password      String?
-  image         String?
-  role          Role      @default(USER)
-  createdAt     DateTime  @default(now())
+  id             String       @id @default(cuid())
+  name           String?
+  email          String       @unique
+  emailVerified  DateTime?
+  password       String?
+  image          String?
+  role           Role         @default(USER)
+  createdAt      DateTime     @default(now())
   suspendedUntil DateTime?
-  updatedAt     DateTime  @updatedAt
-  accounts      Account[]
-  sessions      Session[]
-  orders        Order[]
+  updatedAt      DateTime     @updatedAt
+  accounts       Account[]
+  sessions       Session[]
+  orders         Order[]
+  gameRatings    GameRating[]
 }
 
 model Account {
@@ -67,6 +68,7 @@ model Order {
   updatedAt        DateTime      @updatedAt
   user             User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
   items            OrderItem[]
+  rating           GameRating?
 }
 
 model OrderItem {
@@ -83,6 +85,19 @@ model OrderItem {
   order        Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([orderId])
+}
+
+model GameRating {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  userId    String?
+  game      String
+  rating    Int
+  createdAt DateTime @default(now())
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([game])
 }
 
 enum Role {
@@ -105,9 +120,9 @@ enum PaymentStatus {
 }
 
 model DigiflazzProduct {
-  id             String   @id @default(cuid())
-  buyerSkuCode   String   @unique
-  game           String
-  product        Json
-  updatedAt      DateTime @updatedAt
+  id           String   @id @default(cuid())
+  buyerSkuCode String   @unique
+  game         String
+  product      Json
+  updatedAt    DateTime @updatedAt
 }
