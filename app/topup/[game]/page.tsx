@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import Image from 'next/image'
 import {
   getHonorOfKingsProductCategory,
   getMobileLegendsProductCategory,
@@ -39,6 +40,60 @@ type DuitkuPaymentMethod = {
   paymentMethod: string
   paymentName: string
   totalFee: string | number
+}
+
+type PaymentCategory = 'bank' | 'ewallet' | 'qris' | 'retail' | 'card' | 'other'
+
+const PAYMENT_CATEGORY_ORDER: Array<{ id: PaymentCategory; label: string }> = [
+  { id: 'bank', label: 'Bank & Virtual Account' },
+  { id: 'ewallet', label: 'E-Wallet' },
+  { id: 'qris', label: 'QRIS' },
+  { id: 'retail', label: 'Gerai Retail' },
+  { id: 'card', label: 'Kartu Kredit' },
+  { id: 'other', label: 'Metode Lainnya' },
+]
+
+function getPaymentCategory(method: DuitkuPaymentMethod): PaymentCategory {
+  const name = method.paymentName.toUpperCase()
+  const code = method.paymentMethod.toUpperCase()
+
+  if (name.includes('QRIS') || ['NQ', 'SQ'].includes(code)) return 'qris'
+  if (/\b(OVO|DANA|GOPAY|GO-PAY|SHOPEE ?PAY|LINKAJA|JENIUS PAY|ASTRAPAY|ISAKU)\b/.test(name)) return 'ewallet'
+  if (/\b(RETAIL|INDOMARET|ALFAMART|ALFAMIDI|POS INDONESIA)\b/.test(name)) return 'retail'
+  if (/\b(CREDIT ?CARD|KARTU KREDIT)\b/.test(name) || ['VC', 'CC'].includes(code)) return 'card'
+  if (/\b(VA|BANK|VIRTUAL ACCOUNT|ATM)\b/.test(name) || ['BC', 'M2', 'I1', 'B1', 'BT', 'BR', 'BV'].includes(code)) return 'bank'
+  return 'other'
+}
+
+function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; category: PaymentCategory }) {
+  const [imageFailed, setImageFailed] = useState(false)
+  const iconPath = `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
+  const fallbackLabel: Record<PaymentCategory, string> = {
+    bank: 'BANK',
+    ewallet: 'WALLET',
+    qris: 'QR',
+    retail: 'GERAI',
+    card: 'CARD',
+    other: method.paymentMethod.slice(0, 5),
+  }
+
+  return (
+    <span className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--color-border)] bg-white p-1">
+      {!imageFailed ? (
+        <Image
+          src={iconPath}
+          alt={`Logo ${method.paymentName}`}
+          width={52}
+          height={36}
+          sizes="56px"
+          className="h-full w-full object-contain"
+          onError={() => setImageFailed(true)}
+        />
+      ) : (
+        <span className="text-center text-[9px] font-bold leading-tight text-slate-700">{fallbackLabel[category]}</span>
+      )}
+    </span>
+  )
 }
 
 function formatCurrency(amount: number) {
@@ -185,6 +240,12 @@ export default function GameTopUpPage() {
   }, [gameKey])
 
   const selectedTotal = selectedProducts.reduce((total, product) => total + getDisplayPrice(product), 0)
+  const paymentMethodGroups = PAYMENT_CATEGORY_ORDER
+    .map((category) => ({
+      ...category,
+      methods: paymentMethods.filter((method) => getPaymentCategory(method) === category.id),
+    }))
+    .filter((category) => category.methods.length > 0)
 
   useEffect(() => {
     if (!gameInfo) { router.replace('/'); return }
@@ -680,24 +741,37 @@ export default function GameTopUpPage() {
             {!paymentMethodsLoading && !paymentMethodsError && paymentMethods.length === 0 && (
               <p className="text-sm text-[var(--color-muted)]">Tidak ada metode pembayaran Duitku yang tersedia.</p>
             )}
-            {!paymentMethodsLoading && paymentMethods.map((method) => (
-              <label key={method.paymentMethod} className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-[var(--color-border)] p-3">
-                <span className="flex items-center gap-3">
-                  <input
-                    type="radio"
-                    name="duitku-payment-method"
-                    value={method.paymentMethod}
-                    checked={selectedPaymentMethod === method.paymentMethod}
-                    onChange={() => setSelectedPaymentMethod(method.paymentMethod)}
-                  />
-                  <span className="text-sm font-medium text-white">{method.paymentName}</span>
-                </span>
-                {Number(method.totalFee) > 0 && (
-                  <span className="text-right text-xs text-[var(--color-muted)]">
-                    Biaya {formatCurrency(Number(method.totalFee))}
-                  </span>
-                )}
-              </label>
+            {!paymentMethodsLoading && paymentMethodGroups.map((group) => (
+              <div key={group.id} className="space-y-2">
+                <h4 className="pt-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">{group.label}</h4>
+                {group.methods.map((method) => (
+                  <label
+                    key={method.paymentMethod}
+                    className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-3 transition-colors ${
+                      selectedPaymentMethod === method.paymentMethod
+                        ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]'
+                        : 'border-[var(--color-border)]'
+                    }`}
+                  >
+                    <span className="flex min-w-0 items-center gap-3">
+                      <input
+                        type="radio"
+                        name="duitku-payment-method"
+                        value={method.paymentMethod}
+                        checked={selectedPaymentMethod === method.paymentMethod}
+                        onChange={() => setSelectedPaymentMethod(method.paymentMethod)}
+                      />
+                      <PaymentMethodIcon method={method} category={group.id} />
+                      <span className="text-sm font-medium text-white">{method.paymentName}</span>
+                    </span>
+                    {Number(method.totalFee) > 0 && (
+                      <span className="shrink-0 text-right text-xs text-[var(--color-muted)]">
+                        Biaya {formatCurrency(Number(method.totalFee))}
+                      </span>
+                    )}
+                  </label>
+                ))}
+              </div>
             ))}
           </section>
 
