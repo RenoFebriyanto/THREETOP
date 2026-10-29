@@ -75,14 +75,18 @@ export function getHonorOfKingsProductCategory(
   product: DigiflazzProduct
 ): HonorOfKingsProductCategory {
   const productType = normalizeText(product.type)
-  const searchableText = normalizeText(`${product.product_name} ${product.type}`)
+  const searchableText = normalizeText(`${product.product_name} ${product.type} ${product.category}`)
+
+  if (
+    searchableText.includes('kombinasi') ||
+    searchableText.includes('combination') ||
+    searchableText.includes('combo')
+  ) {
+    return 'token-package'
+  }
 
   if (productType.includes('membership')) {
     return 'membership'
-  }
-
-  if (searchableText.includes('kombinasi')) {
-    return 'token-package'
   }
 
   return 'tokens'

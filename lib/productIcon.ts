@@ -12,6 +12,18 @@ const MOBILE_LEGENDS_DIAMOND_ICONS: Record<string, string> = {
   ml875: 'diamond-351-1000',
 }
 
+const HONOR_OF_KINGS_TOKEN_ICONS = [
+  { max: 20, file: 'token0-20.png' },
+  { max: 80, file: 'token21-80.png' },
+  { max: 240, file: 'token81-240.png' },
+  { max: 400, file: 'token241-400.png' },
+  { max: 560, file: 'token401-560.png' },
+  { max: 1200, file: 'token561-1200.png' },
+  { max: 2400, file: 'token1201-2400.png' },
+  { max: 4000, file: 'token2401-4000.png' },
+  { max: Number.POSITIVE_INFINITY, file: 'token4001-8000.png' },
+]
+
 export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const gameInfo = SUPPORTED_GAMES[gameKey]
   if (!gameInfo) {
@@ -25,6 +37,28 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const folder = gameInfo.productIconFolder
   const prefix = gameInfo.productIconPrefix
   const defaultImage = gameInfo.productIconDefault ?? gameInfo.image
+
+  if (gameKey === 'honor_of_kings' && folder) {
+    const searchableText = `${product.product_name} ${product.type} ${product.category}`.toLowerCase()
+    let iconFile: string
+
+    if (searchableText.includes('kombinasi') || searchableText.includes('combination') || searchableText.includes('combo')) {
+      iconFile = 'Kombinasi.png'
+    } else if (searchableText.includes('weekly') || searchableText.includes('membership')) {
+      iconFile = searchableText.includes('plus') ? 'Weekly Card Plus.png' : 'Weekly Card.png'
+    } else {
+      const tokenCount = product.product_name.match(/\d[\d,]*/)?.[0]
+      const amount = tokenCount ? Number(tokenCount.replace(/,/g, '')) : 0
+      iconFile = HONOR_OF_KINGS_TOKEN_ICONS.find((range) => amount <= range.max)?.file
+        ?? 'token0-20.png'
+    }
+
+    return {
+      image: [`${folder}/${encodeURIComponent(iconFile)}`],
+      fallback: gameInfo.icon,
+      fallbackImage: defaultImage,
+    }
+  }
 
   if (!folder || !prefix) {
     return {
