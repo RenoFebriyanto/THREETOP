@@ -62,6 +62,32 @@ export function getMobileLegendsProductCategory(
   return 'diamond'
 }
 
+export const HONOR_OF_KINGS_PRODUCT_CATEGORIES = [
+  { id: 'tokens', label: 'Tokens' },
+  { id: 'membership', label: 'Membership' },
+  { id: 'token-package', label: 'Paket Token' },
+] as const
+
+export type HonorOfKingsProductCategory =
+  (typeof HONOR_OF_KINGS_PRODUCT_CATEGORIES)[number]['id']
+
+export function getHonorOfKingsProductCategory(
+  product: DigiflazzProduct
+): HonorOfKingsProductCategory {
+  const productType = normalizeText(product.type)
+  const searchableText = normalizeText(`${product.product_name} ${product.type}`)
+
+  if (productType.includes('membership')) {
+    return 'membership'
+  }
+
+  if (searchableText.includes('kombinasi')) {
+    return 'token-package'
+  }
+
+  return 'tokens'
+}
+
 function normalizeText(value: string | undefined): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }

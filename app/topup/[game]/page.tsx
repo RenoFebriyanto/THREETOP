@@ -4,7 +4,9 @@ import { useState, useEffect, useCallback, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import {
+  getHonorOfKingsProductCategory,
   getMobileLegendsProductCategory,
+  HONOR_OF_KINGS_PRODUCT_CATEGORIES,
   MOBILE_LEGENDS_PRODUCT_CATEGORIES,
   SUPPORTED_GAMES,
   type DigiflazzProduct,
@@ -306,7 +308,14 @@ export default function GameTopUpPage() {
           (product) => getMobileLegendsProductCategory(product) === category.id
         ),
       })).filter((category) => category.products.length > 0)
-    : [{ id: 'all', label: '', products }]
+    : gameKey === 'honor_of_kings'
+      ? HONOR_OF_KINGS_PRODUCT_CATEGORIES.map((category) => ({
+          ...category,
+          products: products.filter(
+            (product) => getHonorOfKingsProductCategory(product) === category.id
+          ),
+        })).filter((category) => category.products.length > 0)
+      : [{ id: 'all', label: '', products }]
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 pt-4">
