@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import SiteFooter from '@/components/layout/SiteFooter'
 
 export const metadata: Metadata = {
   title: 'Syarat & Ketentuan — ThreeTop',
@@ -221,6 +222,7 @@ export default function TermsPage() {
           </div>
         </div>
       </div>
+      <SiteFooter />
     </div>
   )
 }

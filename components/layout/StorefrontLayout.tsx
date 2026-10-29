@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import HomeAccountMenu from '@/components/layout/HomeAccountMenu'
+import SiteFooter from '@/components/layout/SiteFooter'
 
 type User = {
   name?: string | null
@@ -17,7 +18,7 @@ export default function StorefrontLayout({
   user?: User | null
 }) {
   return (
-    <main className="min-h-screen bg-[var(--color-abyss)] text-[var(--color-frost)]">
+    <main className="flex min-h-screen flex-col bg-[var(--color-abyss)] text-[var(--color-frost)]">
       <header className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-overlay-sticky)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <Link href="/" className="flex shrink-0 items-center gap-2.5" aria-label="ThreeTop home">
@@ -41,16 +42,10 @@ export default function StorefrontLayout({
         </div>
       </header>
 
-      <div className="mx-auto max-w-6xl px-4 pb-16 pt-9 sm:px-6 sm:pt-12">
+      <div className="mx-auto w-full max-w-6xl flex-1 px-4 pb-16 pt-9 sm:px-6 sm:pt-12">
         {children}
-        <footer className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-[var(--color-border)] pt-5 text-xs text-[var(--color-muted-strong)]">
-          <span>© 2026 ThreeTop</span>
-          <div className="flex gap-4">
-            <Link href="/terms" className="transition hover:text-white">Terms</Link>
-            <Link href="/privacy" className="transition hover:text-white">Privacy</Link>
-          </div>
-        </footer>
       </div>
+      <SiteFooter />
     </main>
   )
 }

@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import SiteFooter from '@/components/layout/SiteFooter'
 
 export const metadata: Metadata = {
   title: 'Kebijakan Privasi — ThreeTop',
@@ -252,6 +253,7 @@ export default function PrivacyPage() {
           </div>
         </div>
       </div>
+      <SiteFooter />
     </div>
   )
 }
