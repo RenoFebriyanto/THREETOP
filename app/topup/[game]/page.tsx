@@ -7,8 +7,10 @@ import Image from 'next/image'
 import {
   getHonorOfKingsProductCategory,
   getMobileLegendsProductCategory,
+  getPubgMobileProductCategory,
   HONOR_OF_KINGS_PRODUCT_CATEGORIES,
   MOBILE_LEGENDS_PRODUCT_CATEGORIES,
+  PUBG_MOBILE_PRODUCT_CATEGORIES,
   SUPPORTED_GAMES,
   type DigiflazzProduct,
 } from '@/lib/digiflazz'
@@ -567,6 +569,13 @@ export default function GameTopUpPage() {
           ...category,
           products: products.filter(
             (product) => getHonorOfKingsProductCategory(product) === category.id
+          ),
+        })).filter((category) => category.products.length > 0)
+    : gameKey === 'pubg_mobile'
+      ? PUBG_MOBILE_PRODUCT_CATEGORIES.map((category) => ({
+          ...category,
+          products: products.filter(
+            (product) => getPubgMobileProductCategory(product) === category.id
           ),
         })).filter((category) => category.products.length > 0)
       : [{ id: 'all', label: '', products }]

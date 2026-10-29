@@ -92,6 +92,57 @@ export function getHonorOfKingsProductCategory(
   return 'tokens'
 }
 
+export const PUBG_MOBILE_PRODUCT_CATEGORIES = [
+  { id: 'uc', label: 'Unknown Cash (UC)' },
+  { id: 'membership', label: 'Membership' },
+  { id: 'royale-pass', label: 'Royale Pass' },
+  { id: 'uc-package', label: 'Paket UC' },
+  { id: 'special-item', label: 'Item Spesial' },
+] as const
+
+export type PubgMobileProductCategory =
+  (typeof PUBG_MOBILE_PRODUCT_CATEGORIES)[number]['id']
+
+export function getPubgMobileProductCategory(
+  product: DigiflazzProduct
+): PubgMobileProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code}`
+  )
+
+  if (
+    searchableText.includes('prime') ||
+    searchableText.includes('membership') ||
+    searchableText.includes('subscription')
+  ) {
+    return 'membership'
+  }
+
+  if (searchableText.includes('royale pass') || searchableText.includes('royal pass')) {
+    return 'royale-pass'
+  }
+
+  if (
+    searchableText.includes('kombinasi') ||
+    searchableText.includes('combination') ||
+    searchableText.includes('combo') ||
+    searchableText.includes('bundle') ||
+    searchableText.includes('package')
+  ) {
+    return 'uc-package'
+  }
+
+  if (
+    /\buc\b/.test(searchableText) ||
+    searchableText.includes('unknown cash') ||
+    searchableText.includes('unknowncash')
+  ) {
+    return 'uc'
+  }
+
+  return 'special-item'
+}
+
 function normalizeText(value: string | undefined): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
