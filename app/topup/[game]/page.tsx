@@ -76,6 +76,7 @@ export default function GameTopUpPage() {
   const [inputError, setInputError] = useState('')
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
   const [creating, setCreating] = useState(false)
+  const [shareStatus, setShareStatus] = useState<'idle' | 'copied' | 'error'>('idle')
   // Nickname auto-check
   const [nickname, setNickname] = useState<string | null>(null)
   const [nickCountry, setNickCountry] = useState<string | null>(null)
@@ -138,6 +139,15 @@ export default function GameTopUpPage() {
   function resetNick() { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null) }
 
   function handleSelectProduct(product: DigiflazzProduct) { setSelectedProduct(product); setStep('input'); setInputError('') }
+
+  async function handleCopyGameLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href)
+      setShareStatus('copied')
+    } catch {
+      setShareStatus('error')
+    }
+  }
 
   function getDisplayPrice(product: DigiflazzProduct) {
     return product.sell_price ?? product.price
@@ -225,7 +235,7 @@ export default function GameTopUpPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6 pt-4">
+      <div className="max-w-6xl mx-auto space-y-6 pt-4">
         <div className="h-8 w-48 rounded-xl bg-[var(--color-surface-muted)] animate-pulse" />
         <div className="flex flex-wrap justify-center gap-3">
           {Array.from({ length: 6 }).map((_, i) => <div key={i} className="rounded-xl bg-[var(--color-surface-muted)] animate-pulse" style={{ flex: '1 1 140px', minWidth: '140px', maxWidth: '200px', height: '100px' }} />)}
@@ -336,59 +346,116 @@ export default function GameTopUpPage() {
 
       {/* Step 1 — Pilih nominal */}
       {(step === 'select' || step === 'input' || step === 'confirm') && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">1</span>Pilih Nominal</h2>
-            {step !== 'select' && <button onClick={() => { setStep('select'); setSelectedProduct(null) }} className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">Ubah</button>}
-          </div>
-          {products.length === 0 ? (
-            <div className="rounded-xl border border-[var(--color-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}><p className="text-[var(--color-muted)] text-sm">Tidak ada produk tersedia saat ini.</p></div>
-          ) : (
-            <div className="space-y-6">
-              {productSections.map((section) => (
-                <section key={section.id} className="space-y-3">
-                  {section.label && (
-                    <div className="flex items-center gap-3">
-                      <h3 className="text-sm font-semibold text-white">{section.label}</h3>
-                      <span className="text-xs text-[var(--color-muted-strong)]">{section.products.length} produk</span>
-                      <div className="h-px flex-1 bg-[var(--color-border)]" />
-                    </div>
-                  )}
-                  <div className="flex flex-wrap gap-2">
-                    {section.products.map((product) => {
-                      const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
-                      const productIcon = getProductIcon(product, gameKey)
-                      return (
-                        <div key={product.buyer_sku_code} className="flex-none basis-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] min-w-[130px] sm:basis-[calc(50%-0.5rem)] sm:max-w-[calc(50%-0.5rem)] md:flex-1 md:basis-[200px] md:min-w-[190px] md:max-w-[280px]">
-                          <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
-                            className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
-                            style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
-                            {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
-                            <div className="flex items-center gap-3">
-                              <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
-                                <GameIcon
-                                  image={productIcon.image}
-                                  fallback={productIcon.fallback}
-                                  fallbackImage={productIcon.fallbackImage}
-                                  label={gameInfo.label}
-                                  size={44}
-                                  className="rounded-md"
-                                />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
-                                <p className="text-[var(--color-frost)] font-bold text-sm mt-1">{formatCurrency(getDisplayPrice(product))}</p>
-                              </div>
-                            </div>
-                          </button>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </section>
-              ))}
+        <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">1</span>Pilih Nominal</h2>
+              {step !== 'select' && <button onClick={() => { setStep('select'); setSelectedProduct(null) }} className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">Ubah</button>}
             </div>
-          )}
+            {products.length === 0 ? (
+              <div className="rounded-xl border border-[var(--color-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}><p className="text-[var(--color-muted)] text-sm">Tidak ada produk tersedia saat ini.</p></div>
+            ) : (
+              <div className="space-y-6">
+                {productSections.map((section) => (
+                  <section key={section.id} className="space-y-3">
+                    {section.label && (
+                      <div className="flex items-center gap-3">
+                        <h3 className="text-sm font-semibold text-white">{section.label}</h3>
+                        <span className="text-xs text-[var(--color-muted-strong)]">{section.products.length} produk</span>
+                        <div className="h-px flex-1 bg-[var(--color-border)]" />
+                      </div>
+                    )}
+                    <div className="flex flex-wrap gap-2">
+                      {section.products.map((product) => {
+                        const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
+                        const productIcon = getProductIcon(product, gameKey)
+                        return (
+                          <div key={product.buyer_sku_code} className="flex-none basis-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] min-w-[130px] sm:basis-[calc(50%-0.5rem)] sm:max-w-[calc(50%-0.5rem)] md:flex-1 md:basis-[200px] md:min-w-[190px] md:max-w-[280px]">
+                            <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
+                              className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
+                              style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
+                              {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
+                              <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 sm:w-14 sm:h-14 flex-shrink-0">
+                                  <GameIcon
+                                    image={productIcon.image}
+                                    fallback={productIcon.fallback}
+                                    fallbackImage={productIcon.fallbackImage}
+                                    label={gameInfo.label}
+                                    size={44}
+                                    className="rounded-md"
+                                  />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
+                                  <p className="text-[var(--color-frost)] font-bold text-sm mt-1">{formatCurrency(getDisplayPrice(product))}</p>
+                                </div>
+                              </div>
+                            </button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </section>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <aside aria-label="Informasi dan ringkasan top up" className="space-y-4 lg:sticky lg:top-24">
+            <section className="rounded-2xl border border-[var(--color-border)] p-5" style={{ background: 'var(--color-surface-dark)' }}>
+              <h2 className="text-base font-bold text-white">Ulasan dan rating</h2>
+              <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+                <span className="text-5xl font-bold leading-none text-white">4.99</span>
+                <div>
+                  <div className="flex gap-1 text-yellow-300" aria-label="Rating 4.99 dari 5">
+                    {Array.from({ length: 5 }).map((_, index) => (
+                      <svg key={index} className="h-8 w-8" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="m12 2.5 2.9 5.88 6.49.94-4.7 4.58 1.11 6.47L12 17.31l-5.8 3.06 1.1-6.47-4.7-4.58 6.5-.94L12 2.5Z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="mt-1 text-center text-sm font-semibold text-white">Berdasarkan total 15.24jt rating</p>
+                </div>
+              </div>
+            </section>
+
+            <div>
+              <button onClick={handleCopyGameLink} className="w-full rounded-xl border border-[var(--color-border)] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[var(--color-surface-strong)]" style={{ background: 'var(--color-surface-strong)' }}>
+                {shareStatus === 'copied' ? 'Link berhasil disalin' : 'Salin Link untuk Dibagikan'}
+              </button>
+              {shareStatus === 'error' && <p role="status" className="mt-2 text-xs text-[var(--color-error)]">Link tidak dapat disalin. Periksa izin clipboard browser Anda.</p>}
+            </div>
+
+            <a href="mailto:threetopsupport@gmail.com" className="flex items-center gap-4 rounded-2xl border border-[var(--color-border)] p-5 transition hover:bg-[var(--color-surface-strong)]" style={{ background: 'var(--color-surface-dark)' }}>
+              <svg className="h-8 w-8 shrink-0 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M4.5 13v-1a7.5 7.5 0 0 1 15 0v1M4.5 13H6a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5.5A2.5 2.5 0 0 1 3 17.5v-2A2.5 2.5 0 0 1 5.5 13Zm15 0H18a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h.5a2.5 2.5 0 0 0 2.5-2.5v-2a2.5 2.5 0 0 0-2.5-2.5Z" />
+              </svg>
+              <span>
+                <span className="block font-semibold text-white">Butuh Bantuan?</span>
+                <span className="block text-sm text-[var(--color-frost)]">Kamu bisa hubungi admin di sini.</span>
+              </span>
+            </a>
+
+            <section aria-live="polite" className={`rounded-2xl border p-5 ${selectedProduct ? 'border-[var(--color-border)]' : 'border-dashed border-[var(--color-border)]'}`} style={{ background: 'var(--color-surface-strong)' }}>
+              {selectedProduct ? (
+                <div className="flex items-center gap-3">
+                  <GameIcon
+                    {...getProductIcon(selectedProduct, gameKey)}
+                    label={gameInfo.label}
+                    size={48}
+                    className="shrink-0 rounded-md"
+                  />
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-white">{formatProductLabel(selectedProduct.product_name)}</p>
+                    <p className="mt-1 text-sm font-bold text-[var(--color-frost)]">{formatCurrency(getDisplayPrice(selectedProduct))}</p>
+                  </div>
+                </div>
+              ) : (
+                <p className="py-6 text-center text-sm text-[var(--color-frost)]">Belum ada item produk yang dipilih.</p>
+              )}
+            </section>
+          </aside>
         </div>
       )}
 
