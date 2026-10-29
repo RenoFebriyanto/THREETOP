@@ -85,6 +85,16 @@ export default function GameTopUpPage() {
   const autoCheckNickname = useCallback(async (uid: string, sid: string) => {
     if (!uid.trim()) { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null); return }
     if (gameInfo?.requireServer && !sid.trim()) { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null); return }
+    if (gameKey === 'valorant') {
+      const separator = uid.lastIndexOf('#')
+      if (separator <= 0 || uid.slice(separator + 1).trim().length < 3) {
+        setNickname(null)
+        setNickChecked(false)
+        setNickCountry(null)
+        setNickError('Masukkan Riot ID lengkap dengan format Nama#Tag.')
+        return
+      }
+    }
     setNickLoading(true); setNickError(''); setNickname(null); setNickChecked(false); setNickCountry(null)
     try {
       const res = await fetch('/api/digiflazz/check-nickname', {

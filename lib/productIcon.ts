@@ -34,6 +34,14 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
     }
   }
 
+  if (gameKey === 'valorant') {
+    return {
+      image: [`${folder}/valorant_points.png`],
+      fallback: gameInfo.icon,
+      fallbackImage: defaultImage,
+    }
+  }
+
   const normalizeKey = (value: string) =>
     value
       .toLowerCase()
