@@ -213,7 +213,7 @@ export default function GameTopUpPage() {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto space-y-6">
+      <div className="max-w-4xl mx-auto space-y-6 pt-4">
         <div className="h-8 w-48 rounded-xl bg-[var(--color-surface-muted)] animate-pulse" />
         <div className="flex flex-wrap justify-center gap-3">
           {Array.from({ length: 6 }).map((_, i) => <div key={i} className="rounded-xl bg-[var(--color-surface-muted)] animate-pulse" style={{ flex: '1 1 140px', minWidth: '140px', maxWidth: '200px', height: '100px' }} />)}
@@ -224,7 +224,7 @@ export default function GameTopUpPage() {
 
   if (error) {
     return (
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto pt-4">
         <div className="rounded-xl border border-[var(--color-error-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}>
           <p className="text-[var(--color-error)] text-sm mb-4">{error}</p>
           <button onClick={fetchProducts} className="px-4 py-2 rounded-xl bg-[var(--color-info-bg)] border border-[var(--color-info-border)] text-[var(--color-frost)] text-sm hover:bg-[var(--color-info-border)] transition-colors">Coba Lagi</button>
@@ -238,7 +238,7 @@ export default function GameTopUpPage() {
     const isSuccess = orderResult.status === 'SUCCESS'
     const isPending = orderResult.status === 'PROCESSING'
     return (
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md mx-auto pt-4">
         <div className="rounded-xl border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
           <div className={`p-6 text-center border-b ${isSuccess ? 'bg-[var(--color-success-bg)] border-[var(--color-success-border)]' : isPending ? 'bg-[var(--color-warning-bg)] border-[var(--color-warning-border)]' : 'bg-[var(--color-error-bg)] border-[var(--color-error-border)]'}`}>
             <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 ${isSuccess ? 'bg-[var(--color-success-bg)]' : isPending ? 'bg-[var(--color-warning-bg)]' : 'bg-[var(--color-error-bg)]'}`}>
@@ -270,7 +270,7 @@ export default function GameTopUpPage() {
   // Processing screen — snap popup sedang terbuka
   if (step === 'processing') {
     return (
-      <div className="max-w-md mx-auto">
+      <div className="max-w-md mx-auto pt-4">
         <div className="rounded-xl border border-[var(--color-border)] p-12 flex flex-col items-center text-center" style={{ background: 'var(--color-surface-dark)' }}>
           <div className="w-16 h-16 rounded-full bg-[var(--color-info-bg)] border border-[var(--color-info-border)] flex items-center justify-center mb-4">
             <svg className="animate-spin w-8 h-8 text-[var(--color-frost)]" fill="none" viewBox="0 0 24 24">
@@ -299,7 +299,7 @@ export default function GameTopUpPage() {
     : [{ id: 'all', label: '', products }]
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 pt-4">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <Link href="/" className="text-[var(--color-muted)] hover:text-white transition-colors">Home</Link>
