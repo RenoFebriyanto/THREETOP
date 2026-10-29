@@ -180,3 +180,7 @@ export function verifyDuitkuCallbackSignature(
 export function isDuitkuMerchantCode(value: string) {
   return value === MERCHANT_CODE
 }
+
+export function isDuitkuProduction() {
+  return IS_PRODUCTION
+}

@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/lib/auth'
 
 // Semua endpoint menggunakan api.isan.eu.org — terbukti support ALL region
 // Format: GET https://api.isan.eu.org/nickname/{game}?id={userId}&zone={zoneId}
 
 const ISAN_BASE = 'https://api.isan.eu.org/nickname'
 const RIOT_API_KEY = process.env.RIOT_API_KEY
-const RIOT_REGIONS = ['americas', 'asia', 'europe', 'sea'] as const
 const VALORANT_LOOKUP_LIMIT = 10
 const VALORANT_LOOKUP_WINDOW_MS = 60_000
+const RIOT_REGIONS = ['americas', 'asia', 'europe', 'sea'] as const
+const LOOKUP_LIMIT = 30
+const LOOKUP_WINDOW_MS = 60_000
+const lookupLimits = new Map<string, { count: number; resetAt: number }>()
 const valorantLookupLimits = new Map<string, { count: number; resetAt: number }>()
 
 type RiotAccount = {
@@ -21,22 +23,33 @@ function isRiotAccount(value: unknown): value is RiotAccount {
   return typeof value === 'object' && value !== null
 }
 
-function checkValorantLookupLimit(ip: string): boolean {
+function checkLookupLimit(
+  ip: string,
+  limits: Map<string, { count: number; resetAt: number }>,
+  limit: number,
+  windowMs: number,
+): boolean {
   const now = Date.now()
-  for (const [key, entry] of valorantLookupLimits) {
-    if (now >= entry.resetAt) valorantLookupLimits.delete(key)
+  for (const [key, entry] of limits) {
+    if (now >= entry.resetAt) limits.delete(key)
   }
 
-  const current = valorantLookupLimits.get(ip)
+  const current = limits.get(ip)
 
   if (!current || now >= current.resetAt) {
-    valorantLookupLimits.set(ip, { count: 1, resetAt: now + VALORANT_LOOKUP_WINDOW_MS })
+    limits.set(ip, { count: 1, resetAt: now + windowMs })
     return true
   }
 
-  if (current.count >= VALORANT_LOOKUP_LIMIT) return false
+  if (current.count >= limit) return false
   current.count += 1
   return true
+}
+
+function getClientIp(req: NextRequest) {
+  return req.headers.get('x-real-ip')
+    ?? req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    ?? 'unknown'
 }
 
 async function findValorantAccount(riotId: string) {
@@ -143,19 +156,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'gameKey dan userId wajib diisi.' }, { status: 400 })
     }
 
-    const session = await auth()
-    if (!session?.user?.id && gameKey !== 'valorant') {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const ip = getClientIp(req)
+    if (!checkLookupLimit(ip, lookupLimits, LOOKUP_LIMIT, LOOKUP_WINDOW_MS)) {
+      return NextResponse.json({
+        error: 'Terlalu banyak percobaan cek nickname. Coba lagi dalam 1 menit.',
+      }, { status: 429 })
     }
 
     const uid = String(userId).trim()
     const sid = serverId ? String(serverId).trim() : ''
 
     if (gameKey === 'valorant') {
-      const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-        ?? req.headers.get('x-real-ip')
-        ?? 'unknown'
-      if (!checkValorantLookupLimit(ip)) {
+      if (!checkLookupLimit(ip, valorantLookupLimits, VALORANT_LOOKUP_LIMIT, VALORANT_LOOKUP_WINDOW_MS)) {
         return NextResponse.json({
           error: 'Terlalu banyak percobaan cek Riot ID. Coba lagi dalam 1 menit.',
         }, { status: 429 })
@@ -188,9 +200,15 @@ export async function POST(req: NextRequest) {
     })
 
     if (!res.ok) {
+      console.error(`[CHECK_NICKNAME_UPSTREAM_ERROR] game=${gameKey} status=${res.status}`)
+      if (res.status === 429) {
+        return NextResponse.json({
+          error: 'Layanan cek nickname sedang sibuk. Coba lagi sebentar.',
+        }, { status: 503 })
+      }
       return NextResponse.json({
         error: 'Layanan cek nickname sedang tidak tersedia. Coba lagi.',
-      }, { status: 503 })
+      }, { status: 502 })
     }
 
     const data = await res.json()

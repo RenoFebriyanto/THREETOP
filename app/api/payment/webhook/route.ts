@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { isDuitkuMerchantCode, verifyDuitkuCallbackSignature } from '@/lib/duitku'
+import { isDuitkuMerchantCode, isDuitkuProduction, verifyDuitkuCallbackSignature } from '@/lib/duitku'
 import { createTransaction } from '@/lib/digiflazz-server'
 import { getAggregateOrderStatus } from '@/lib/order-status'
 
@@ -43,6 +43,11 @@ export async function POST(req: NextRequest) {
     if (!/^\d+$/.test(amount) || Number(amount) !== order.amount) {
       console.error('[DUITKU_WEBHOOK] Amount mismatch for order:', orderId)
       return NextResponse.json({ error: 'Amount mismatch' }, { status: 400 })
+    }
+
+    if (!isDuitkuProduction()) {
+      console.info('[DUITKU_WEBHOOK] Sandbox callback acknowledged without processing order:', orderId)
+      return callbackOk('Sandbox callback acknowledged; order not processed')
     }
 
     if (order.status === 'SUCCESS') {

@@ -96,6 +96,79 @@ function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; 
   )
 }
 
+function PaymentCategoryDropdown({
+  label,
+  category,
+  methods,
+  selectedPaymentMethod,
+  onSelect,
+}: {
+  label: string
+  category: PaymentCategory
+  methods: DuitkuPaymentMethod[]
+  selectedPaymentMethod: string
+  onSelect: (paymentMethod: string) => void
+}) {
+  const [isOpen, setIsOpen] = useState(() =>
+    methods.some((method) => method.paymentMethod === selectedPaymentMethod)
+  )
+
+  return (
+    <section className="overflow-hidden rounded-xl border border-[var(--color-border)]">
+      <button
+        type="button"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((open) => !open)}
+        className="flex w-full items-center justify-between gap-3 p-4 text-left hover:bg-[var(--color-surface-muted)]"
+      >
+        <span className="text-sm font-semibold text-white">{label}</span>
+        <span className="flex items-center gap-2 text-xs text-[var(--color-muted)]">
+          {methods.length} metode
+          <svg
+            className={`h-4 w-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            viewBox="0 0 20 20"
+            fill="currentColor"
+            aria-hidden="true"
+          >
+            <path fillRule="evenodd" d="M5.22 7.47a.75.75 0 0 1 1.06 0L10 11.19l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+          </svg>
+        </span>
+      </button>
+      {isOpen && (
+        <div className="space-y-2 border-t border-[var(--color-border)] p-3">
+          {methods.map((method) => (
+            <label
+              key={method.paymentMethod}
+              className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-3 transition-colors ${
+                selectedPaymentMethod === method.paymentMethod
+                  ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]'
+                  : 'border-[var(--color-border)]'
+              }`}
+            >
+              <span className="flex min-w-0 items-center gap-3">
+                <input
+                  type="radio"
+                  name="duitku-payment-method"
+                  value={method.paymentMethod}
+                  checked={selectedPaymentMethod === method.paymentMethod}
+                  onChange={() => onSelect(method.paymentMethod)}
+                />
+                <PaymentMethodIcon method={method} category={category} />
+                <span className="text-sm font-medium text-white">{method.paymentName}</span>
+              </span>
+              {Number(method.totalFee) > 0 && (
+                <span className="shrink-0 text-right text-xs text-[var(--color-muted)]">
+                  Biaya {formatCurrency(Number(method.totalFee))}
+                </span>
+              )}
+            </label>
+          ))}
+        </div>
+      )}
+    </section>
+  )
+}
+
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency', currency: 'IDR', minimumFractionDigits: 0,
@@ -742,36 +815,14 @@ export default function GameTopUpPage() {
               <p className="text-sm text-[var(--color-muted)]">Tidak ada metode pembayaran Duitku yang tersedia.</p>
             )}
             {!paymentMethodsLoading && paymentMethodGroups.map((group) => (
-              <div key={group.id} className="space-y-2">
-                <h4 className="pt-2 text-xs font-semibold uppercase tracking-wide text-[var(--color-muted)]">{group.label}</h4>
-                {group.methods.map((method) => (
-                  <label
-                    key={method.paymentMethod}
-                    className={`flex cursor-pointer items-center justify-between gap-3 rounded-xl border p-3 transition-colors ${
-                      selectedPaymentMethod === method.paymentMethod
-                        ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]'
-                        : 'border-[var(--color-border)]'
-                    }`}
-                  >
-                    <span className="flex min-w-0 items-center gap-3">
-                      <input
-                        type="radio"
-                        name="duitku-payment-method"
-                        value={method.paymentMethod}
-                        checked={selectedPaymentMethod === method.paymentMethod}
-                        onChange={() => setSelectedPaymentMethod(method.paymentMethod)}
-                      />
-                      <PaymentMethodIcon method={method} category={group.id} />
-                      <span className="text-sm font-medium text-white">{method.paymentName}</span>
-                    </span>
-                    {Number(method.totalFee) > 0 && (
-                      <span className="shrink-0 text-right text-xs text-[var(--color-muted)]">
-                        Biaya {formatCurrency(Number(method.totalFee))}
-                      </span>
-                    )}
-                  </label>
-                ))}
-              </div>
+              <PaymentCategoryDropdown
+                key={group.id}
+                label={group.label}
+                category={group.id}
+                methods={group.methods}
+                selectedPaymentMethod={selectedPaymentMethod}
+                onSelect={setSelectedPaymentMethod}
+              />
             ))}
           </section>
 
