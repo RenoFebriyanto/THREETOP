@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { createSnapToken } from '@/lib/midtrans'
+import { createDuitkuPayment } from '@/lib/duitku'
 import { getProducts, groupProductsByGame } from '@/lib/digiflazz-server'
 
 export async function POST(req: NextRequest) {
@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
     const session = await auth()
 
     const body = await req.json()
-    const { skuCodes, skuCode, gameUserId, gameKey } = body
+    const { skuCodes, skuCode, gameUserId, gameKey, paymentMethod, email } = body
     const selectedSkuCodes = Array.isArray(skuCodes) ? skuCodes : [skuCode]
 
     if (
@@ -18,10 +18,20 @@ export async function POST(req: NextRequest) {
       selectedSkuCodes.some((code) => typeof code !== 'string' || !code.trim()) ||
       !gameUserId || !gameKey ||
       typeof gameUserId !== 'string' ||
-      typeof gameKey !== 'string'
+      typeof gameKey !== 'string' ||
+      typeof paymentMethod !== 'string' ||
+      !/^[A-Z0-9]{2}$/.test(paymentMethod)
     ) {
       return NextResponse.json(
-        { error: 'Pilih minimal satu produk dan isi Game ID.' },
+        { error: 'Pilih minimal satu produk, metode pembayaran, dan isi Game ID.' },
+        { status: 400 }
+      )
+    }
+
+    const customerEmail = typeof email === 'string' ? email.trim() : session?.user?.email ?? ''
+    if (!customerEmail || customerEmail.length > 255 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail)) {
+      return NextResponse.json(
+        { error: 'Email yang valid wajib diisi untuk pembayaran Duitku.' },
         { status: 400 }
       )
     }
@@ -62,6 +72,12 @@ export async function POST(req: NextRequest) {
       )
     }
 
+    const appUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL ??
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : '')
+    if (!appUrl) {
+      throw new Error('AUTH_URL atau NEXTAUTH_URL harus dikonfigurasi untuk callback Duitku.')
+    }
+
     const primaryProduct = validProducts[0]
     const productName = validProducts.length === 1
       ? primaryProduct.product_name
@@ -89,34 +105,34 @@ export async function POST(req: NextRequest) {
       },
     })
 
-    // Buat Snap token Midtrans
-    const snapResult = await createSnapToken({
+    const duitkuResult = await createDuitkuPayment({
       orderId: order.id,
       amount: totalAmount,
-      customerName: session?.user?.name ?? 'Pelanggan',
-      customerEmail: session?.user?.email ?? '',
+      paymentMethod,
+      productDetails: productName,
+      customerName: session?.user?.name?.trim() || 'Pelanggan',
+      customerEmail,
+      callbackUrl: new URL('/api/payment/webhook', appUrl).toString(),
+      returnUrl: new URL(`/topup/${encodeURIComponent(gameKey)}?orderId=${encodeURIComponent(order.id)}`, appUrl).toString(),
       items: validProducts.map((product) => ({
-        id: product.buyer_sku_code,
+        name: product.product_name,
         price: product.sell_price ?? product.price,
         quantity: 1,
-        name: product.product_name.substring(0, 50),
       })),
     })
 
-    // Simpan token dan URL ke order
     await prisma.order.update({
       where: { id: order.id },
       data: {
-        paymentToken: snapResult.token,
-        paymentUrl: snapResult.redirect_url,
+        paymentToken: duitkuResult.reference,
+        paymentUrl: duitkuResult.paymentUrl,
       },
     })
 
     return NextResponse.json({
       success: true,
       orderId: order.id,
-      snapToken: snapResult.token,
-      paymentUrl: snapResult.redirect_url,
+      paymentUrl: duitkuResult.paymentUrl,
       ...(guestAccessToken ? { accessToken: guestAccessToken } : {}),
     })
   } catch (error) {
@@ -127,8 +143,8 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(
-      { error: 'Gagal membuat sesi pembayaran. Coba lagi nanti.' },
-      { status: 500 }
+      { error: error instanceof Error ? error.message : 'Gagal membuat sesi pembayaran. Coba lagi nanti.' },
+      { status: 502 }
     )
   }
 }

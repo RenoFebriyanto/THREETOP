@@ -20,6 +20,21 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Duitku Payments
+
+Configure these server-side environment variables in `.env.local` and in the deployment environment:
+
+```env
+DUITKU_MERCHANT_CODE=
+DUITKU_API_KEY=
+DUITKU_IS_PRODUCTION=false
+AUTH_URL=https://threetop.my.id
+```
+
+Use the sandbox merchant code and API key with `DUITKU_IS_PRODUCTION=false`. After Duitku approves the project, replace them with the production credentials and set `DUITKU_IS_PRODUCTION=true`. Do not expose the API key with a `NEXT_PUBLIC_` prefix.
+
+Set the Duitku project callback URL to `https://threetop.my.id/api/payment/webhook`. The application also sends this callback URL with each payment request. Duitku returns customers to the matching game top-up page after checkout.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:

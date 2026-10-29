@@ -35,7 +35,7 @@ const SECTIONS = [
       'Data Akun: password terenkripsi (tidak pernah disimpan dalam bentuk teks biasa), provider login (email/Google), waktu pendaftaran.',
       'Data Transaksi: riwayat pembelian, produk yang dibeli, User ID game yang dimasukkan, status transaksi, jumlah pembayaran, metode pembayaran.',
       'Data Teknis: alamat IP, jenis browser, sistem operasi, waktu akses, dan halaman yang dikunjungi. Data ini dikumpulkan secara otomatis melalui cookie dan log server.',
-      'Data yang TIDAK kami kumpulkan: nomor kartu kredit, data rekening bank, nomor KTP, atau informasi sensitif lainnya. Pembayaran diproses langsung oleh Midtrans.',
+      'Data yang TIDAK kami kumpulkan: nomor kartu kredit, data rekening bank, nomor KTP, atau informasi sensitif lainnya. Pembayaran diproses langsung oleh Duitku.',
     ],
   },
   {
@@ -68,7 +68,7 @@ const SECTIONS = [
     content: [
       'ThreeTop tidak menjual, menyewakan, atau memperdagangkan data pribadi Pengguna kepada pihak ketiga untuk tujuan komersial.',
       'Kami hanya berbagi data dengan pihak ketiga dalam kondisi berikut:',
-      'Midtrans (payment gateway): data minimum yang diperlukan untuk memproses pembayaran, meliputi nama dan email.',
+      'Duitku (payment gateway): data minimum yang diperlukan untuk memproses pembayaran, meliputi nama dan email.',
       'Digiflazz (supplier top up): User ID game dan kode produk yang diperlukan untuk memproses transaksi.',
       'Google (autentikasi OAuth): jika Pengguna memilih login dengan Google, kami menerima data profil dasar dari Google sesuai izin yang diberikan.',
       'Otoritas hukum: jika diwajibkan oleh hukum, perintah pengadilan, atau otoritas pemerintah yang berwenang.',

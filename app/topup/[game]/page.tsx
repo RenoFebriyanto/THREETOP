@@ -13,7 +13,6 @@ import {
 } from '@/lib/digiflazz'
 import { getProductIcon } from '@/lib/productIcon'
 import GameIcon from '@/components/ui/GameIcon'
-import { openSnapPayment } from '@/components/ui/SnapPayment'
 import GameRatingPanel from '@/components/topup/GameRatingPanel'
 
 type Step = 'select' | 'input' | 'confirm' | 'processing' | 'result'
@@ -23,8 +22,9 @@ type OrderResult = {
   productName: string
   gameUserId: string
   amount: number
-  status: 'SUCCESS' | 'FAILED' | 'PROCESSING'
+  status: 'PENDING' | 'SUCCESS' | 'FAILED' | 'PROCESSING'
   paymentStatus?: string
+  paymentUrl?: string | null
   sn?: string | null
   accessToken?: string
   items?: Array<{
@@ -33,6 +33,12 @@ type OrderResult = {
     status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED'
     sn?: string | null
   }>
+}
+
+type DuitkuPaymentMethod = {
+  paymentMethod: string
+  paymentName: string
+  totalFee: string | number
 }
 
 function formatCurrency(amount: number) {
@@ -46,26 +52,60 @@ function formatProductLabel(productName: string) {
   return cleaned || productName
 }
 
-async function pollOrderStatus(orderId: string, accessToken: string | undefined, onDone: (result: OrderResult) => void) {
+function pollOrderStatus(
+  orderId: string,
+  accessToken: string | undefined,
+  onUpdate: (result: OrderResult) => void,
+  onError: (message: string) => void,
+) {
   const MAX_ATTEMPTS = 40
   let attempts = 0
-  const interval = setInterval(async () => {
+  let cancelled = false
+  let timer: ReturnType<typeof setTimeout>
+
+  const poll = async () => {
+    if (cancelled) return
     attempts++
     try {
-      const res = await fetch(`/api/payment/status?orderId=${orderId}`, {
+      const res = await fetch(`/api/payment/status?orderId=${encodeURIComponent(orderId)}`, {
         headers: accessToken ? { 'x-order-access-token': accessToken } : undefined,
       })
       const data = await res.json()
-      if (!res.ok) { clearInterval(interval); return }
-      const order = data.order
-      if (order.status === 'SUCCESS' || order.status === 'FAILED' || order.paymentStatus === 'EXPIRED') {
-        clearInterval(interval)
-        onDone({ id: order.id, productName: order.productName, gameUserId: order.gameUserId, amount: order.amount, status: order.status, paymentStatus: order.paymentStatus, sn: order.sn, items: order.items, accessToken })
+      if (!res.ok) {
+        onError(data.error || 'Gagal memuat status pembayaran.')
+        return
       }
-    } catch { /* silent */ }
-    if (attempts >= MAX_ATTEMPTS) clearInterval(interval)
-  }, 3000)
-  return () => clearInterval(interval)
+      const order = data.order
+      const result: OrderResult = {
+        id: order.id,
+        productName: order.productName,
+        gameUserId: order.gameUserId,
+        amount: order.amount,
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+        paymentUrl: order.paymentUrl,
+        sn: order.sn,
+        items: order.items,
+        accessToken,
+      }
+      onUpdate(result)
+      if (result.status === 'SUCCESS' || result.status === 'FAILED' || result.paymentStatus === 'EXPIRED') return
+    } catch (cause) {
+      console.error('[PAYMENT_STATUS_POLL_ERROR]', cause)
+    }
+
+    if (attempts >= MAX_ATTEMPTS) {
+      onError('Status belum final. Anda dapat melanjutkan pembayaran atau memeriksa riwayat pesanan.')
+      return
+    }
+    timer = setTimeout(() => { void poll() }, 3000)
+  }
+
+  void poll()
+  return () => {
+    cancelled = true
+    clearTimeout(timer)
+  }
 }
 
 export default function GameTopUpPage() {
@@ -84,6 +124,13 @@ export default function GameTopUpPage() {
   const [inputError, setInputError] = useState('')
   const [orderResult, setOrderResult] = useState<OrderResult | null>(null)
   const [creating, setCreating] = useState(false)
+  const [customerEmail, setCustomerEmail] = useState('')
+  const [paymentMethods, setPaymentMethods] = useState<DuitkuPaymentMethod[]>([])
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
+  const [paymentMethodsLoading, setPaymentMethodsLoading] = useState(false)
+  const [paymentMethodsError, setPaymentMethodsError] = useState('')
+  const [paymentMethodsAttempt, setPaymentMethodsAttempt] = useState(0)
+  const [paymentStatusMessage, setPaymentStatusMessage] = useState('')
   // Nickname auto-check
   const [nickname, setNickname] = useState<string | null>(null)
   const [nickCountry, setNickCountry] = useState<string | null>(null)
@@ -137,11 +184,71 @@ export default function GameTopUpPage() {
     } finally { setLoading(false) }
   }, [gameKey])
 
+  const selectedTotal = selectedProducts.reduce((total, product) => total + getDisplayPrice(product), 0)
+
   useEffect(() => {
     if (!gameInfo) { router.replace('/'); return }
     const timer = setTimeout(() => { void fetchProducts() }, 0)
     return () => clearTimeout(timer)
   }, [gameKey, gameInfo, fetchProducts, router])
+
+  useEffect(() => {
+    if (step !== 'confirm') return
+    const controller = new AbortController()
+    const loadMethods = async () => {
+      setPaymentMethodsLoading(true)
+      setPaymentMethodsError('')
+      setPaymentMethods([])
+      setSelectedPaymentMethod('')
+      try {
+        const response = await fetch(`/api/payment/methods?amount=${selectedTotal}`, {
+          cache: 'no-store',
+          signal: controller.signal,
+        })
+        const result = await response.json()
+        if (!response.ok) throw new Error(result.error || 'Gagal memuat metode pembayaran.')
+        const methods = result.methods as DuitkuPaymentMethod[]
+        setPaymentMethods(methods)
+        setSelectedPaymentMethod(methods[0]?.paymentMethod ?? '')
+      } catch (cause) {
+        if (!controller.signal.aborted) {
+          setPaymentMethodsError(cause instanceof Error ? cause.message : 'Gagal memuat metode pembayaran.')
+        }
+      } finally {
+        if (!controller.signal.aborted) setPaymentMethodsLoading(false)
+      }
+    }
+    void loadMethods()
+    return () => controller.abort()
+  }, [step, selectedTotal, paymentMethodsAttempt])
+
+  useEffect(() => {
+    const search = new URLSearchParams(window.location.search)
+    const orderId = search.get('orderId')
+    if (!orderId) return
+
+    let stopPolling: (() => void) | undefined
+    const timer = setTimeout(() => {
+      const accessToken = sessionStorage.getItem(`threetop:order-access:${orderId}`) || undefined
+      window.history.replaceState(null, '', window.location.pathname)
+      setPaymentStatusMessage('')
+      setStep('processing')
+      stopPolling = pollOrderStatus(
+        orderId,
+        accessToken,
+        (result) => {
+          setOrderResult(result)
+          setStep('result')
+        },
+        setPaymentStatusMessage,
+      )
+    }, 0)
+
+    return () => {
+      clearTimeout(timer)
+      stopPolling?.()
+    }
+  }, [])
 
   function resetNick() { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null) }
 
@@ -158,14 +265,16 @@ export default function GameTopUpPage() {
     return product.sell_price ?? product.price
   }
 
-  const selectedTotal = selectedProducts.reduce((total, product) => total + getDisplayPrice(product), 0)
-
   function handleInputSubmit() {
     setInputError('')
     if (selectedProducts.length === 0) { setInputError('Pilih minimal satu produk.'); return }
     if (!gameUserId.trim()) { setInputError(`${gameInfo.userIdLabel} wajib diisi.`); return }
     if (gameInfo.requireServer && !serverId.trim()) { setInputError('Server ID wajib diisi.'); return }
     if (!nickChecked) { setInputError('Harap tunggu verifikasi ID selesai.'); return }
+    if (!customerEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(customerEmail.trim())) {
+      setInputError('Email yang valid wajib diisi untuk bukti pembayaran.')
+      return
+    }
     setStep('confirm')
   }
 
@@ -176,74 +285,24 @@ export default function GameTopUpPage() {
     try {
       const res = await fetch('/api/payment/create', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ skuCodes: selectedProducts.map((product) => product.buyer_sku_code), gameUserId: customerNo, gameKey }),
+        body: JSON.stringify({
+          skuCodes: selectedProducts.map((product) => product.buyer_sku_code),
+          gameUserId: customerNo,
+          gameKey,
+          paymentMethod: selectedPaymentMethod,
+          email: customerEmail.trim(),
+        }),
       })
       const data = await res.json()
       if (!res.ok) { setInputError(data.error || 'Gagal membuat pembayaran.'); setStep('confirm'); setCreating(false); return }
 
-      setCreating(false)
-      setStep('processing')
-
-      // Buka Snap popup langsung di halaman ThreeTop
-      await openSnapPayment(data.snapToken, data.orderId, (snapStatus) => {
-        if (snapStatus === 'SUCCESS') {
-          // Langsung set result sukses
-          setOrderResult({
-            id: data.orderId,
-            productName: selectedProducts.length === 1 ? selectedProducts[0].product_name : `${selectedProducts.length} produk`,
-            gameUserId: customerNo,
-            amount: selectedTotal,
-            status: 'PROCESSING', // akan diupdate via polling
-            accessToken: data.accessToken,
-            items: selectedProducts.map((product) => ({
-              productName: product.product_name,
-              amount: getDisplayPrice(product),
-              status: 'PROCESSING',
-            })),
-          })
-          setStep('result')
-          // Polling untuk update status final dari Digiflazz
-          pollOrderStatus(data.orderId, data.accessToken, (result) => {
-            setOrderResult(result)
-          })
-        } else if (snapStatus === 'PENDING') {
-          setOrderResult({
-            id: data.orderId,
-            productName: selectedProducts.length === 1 ? selectedProducts[0].product_name : `${selectedProducts.length} produk`,
-            gameUserId: customerNo,
-            amount: selectedTotal,
-            status: 'PROCESSING',
-            accessToken: data.accessToken,
-            items: selectedProducts.map((product) => ({
-              productName: product.product_name,
-              amount: getDisplayPrice(product),
-              status: 'PROCESSING',
-            })),
-          })
-          setStep('result')
-          pollOrderStatus(data.orderId, data.accessToken, (result) => {
-            setOrderResult(result)
-          })
-        } else if (snapStatus === 'FAILED') {
-          setOrderResult({
-            id: data.orderId,
-            productName: selectedProducts.length === 1 ? selectedProducts[0].product_name : `${selectedProducts.length} produk`,
-            gameUserId: customerNo,
-            amount: selectedTotal,
-            status: 'FAILED',
-            accessToken: data.accessToken,
-            items: selectedProducts.map((product) => ({
-              productName: product.product_name,
-              amount: getDisplayPrice(product),
-              status: 'FAILED',
-            })),
-          })
-          setStep('result')
-        } else if (snapStatus === 'CLOSED') {
-          // User tutup popup — kembali ke konfirmasi
-          setStep('confirm')
-        }
-      })
+      if (!data.paymentUrl || !data.orderId) {
+        throw new Error('Duitku tidak memberikan tautan pembayaran.')
+      }
+      if (data.accessToken) {
+        sessionStorage.setItem(`threetop:order-access:${data.orderId}`, data.accessToken)
+      }
+      window.location.assign(data.paymentUrl)
     } catch (err) {
       setInputError(err instanceof Error ? err.message : 'Terjadi kesalahan. Coba lagi.')
       setStep('confirm')
@@ -252,8 +311,9 @@ export default function GameTopUpPage() {
   }
 
   function handleReset() {
+    if (orderResult) sessionStorage.removeItem(`threetop:order-access:${orderResult.id}`)
     setStep('select'); setSelectedProducts([]); setGameUserId(''); setServerId('')
-    setInputError(''); setOrderResult(null)
+    setInputError(''); setOrderResult(null); setPaymentStatusMessage('')
     resetNick()
   }
 
@@ -284,7 +344,8 @@ export default function GameTopUpPage() {
   // Result screen
   if (step === 'result' && orderResult) {
     const isSuccess = orderResult.status === 'SUCCESS'
-    const isPending = orderResult.status === 'PROCESSING'
+    const isPending = orderResult.status === 'PENDING' || orderResult.status === 'PROCESSING'
+    const awaitingPayment = orderResult.paymentStatus === 'UNPAID'
     return (
       <div className="max-w-md mx-auto pt-4">
         <div className="rounded-xl border border-[var(--color-border)] overflow-hidden" style={{ background: 'var(--color-surface-dark)' }}>
@@ -295,7 +356,7 @@ export default function GameTopUpPage() {
               : <svg className="w-8 h-8 text-[var(--color-error)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>}
             </div>
             <h2 className={`text-lg font-bold ${isSuccess ? 'text-[var(--color-success)]' : isPending ? 'text-[var(--color-warning)]' : 'text-[var(--color-error)]'}`}>
-              {isSuccess ? 'Top Up Berhasil!' : isPending ? 'Sedang Diproses' : 'Transaksi Gagal'}
+              {isSuccess ? 'Top Up Berhasil!' : awaitingPayment ? 'Menunggu Pembayaran' : isPending ? 'Sedang Diproses' : 'Transaksi Gagal'}
             </h2>
           </div>
           <div className="p-6 space-y-3">
@@ -316,6 +377,14 @@ export default function GameTopUpPage() {
               </div>
             ))}
           </div>
+          {awaitingPayment && orderResult.paymentUrl && (
+            <div className="px-6 pb-4">
+              <a href={orderResult.paymentUrl} className="block rounded-xl py-3 text-center text-sm font-semibold text-[var(--color-button-text)]" style={{ background: 'var(--color-button-bg)' }}>
+                Lanjutkan Pembayaran
+              </a>
+            </div>
+          )}
+          {paymentStatusMessage && <p role="status" className="px-6 pb-4 text-xs text-[var(--color-warning)]">{paymentStatusMessage}</p>}
           {(orderResult.status === 'SUCCESS' || orderResult.items?.some((item) => item.status === 'SUCCESS')) && (
             <div className="px-6 pb-6">
               <GameRatingPanel gameKey={gameKey} orderId={orderResult.id} accessToken={orderResult.accessToken} />
@@ -330,7 +399,7 @@ export default function GameTopUpPage() {
     )
   }
 
-  // Processing screen — snap popup sedang terbuka
+  // Loading screen while the user is at Duitku or returning from checkout
   if (step === 'processing') {
     return (
       <div className="max-w-md mx-auto pt-4">
@@ -341,11 +410,11 @@ export default function GameTopUpPage() {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
           </div>
-          <h2 className="text-white font-bold text-lg">Memuat Halaman Pembayaran</h2>
+          <h2 className="text-white font-bold text-lg">Memeriksa Status Pembayaran</h2>
           <p className="text-[var(--color-muted)] text-sm mt-2 max-w-xs">
-            Pilih metode pembayaran di popup yang muncul. Selesaikan pembayaran tanpa menutup halaman ini.
+            Status pesanan sedang diperbarui. Halaman ini akan menampilkan hasil setelah callback pembayaran diterima.
           </p>
-          <button onClick={handleReset} className="mt-6 text-[var(--color-muted)] text-xs hover:text-[var(--color-frost)] transition-colors">Batalkan</button>
+          {paymentStatusMessage && <p role="alert" className="mt-4 text-xs text-[var(--color-error)]">{paymentStatusMessage}</p>}
         </div>
       </div>
     )
@@ -518,6 +587,21 @@ export default function GameTopUpPage() {
                           />
                         </div>
                       )}
+                      <div>
+                        <label htmlFor="payment-email" className="block text-xs font-medium text-[var(--color-frost)]">Email untuk bukti pembayaran</label>
+                        <input
+                          id="payment-email"
+                          type="email"
+                          autoComplete="email"
+                          value={customerEmail}
+                          onChange={(event) => {
+                            setCustomerEmail(event.target.value)
+                            setInputError('')
+                          }}
+                          placeholder="nama@email.com"
+                          className="mt-2 w-full rounded-xl border border-[var(--color-border)]/70 bg-[var(--color-surface-muted)] px-4 py-3 text-sm text-white placeholder-[var(--color-muted-strong)] transition-all focus:border-[var(--color-info-border)] focus:outline-none focus:ring-1 focus:ring-[var(--color-info-ring)]"
+                        />
+                      </div>
                       <p className="flex items-start gap-1.5 text-xs text-[var(--color-muted-strong)]">
                         <svg className="mt-0.5 h-3.5 w-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" /></svg>
                         {gameInfo.userIdHint}
@@ -582,10 +666,45 @@ export default function GameTopUpPage() {
             ))}
           </div>
 
-{inputError && <p className="text-[var(--color-error)] text-sm">{inputError}</p>}
+          <section aria-label="Metode pembayaran" className="space-y-3">
+            <h3 className="text-sm font-semibold text-white">Pilih metode pembayaran</h3>
+            {paymentMethodsLoading && <p className="text-sm text-[var(--color-muted)]">Memuat metode pembayaran Duitku...</p>}
+            {paymentMethodsError && (
+              <div>
+                <p role="alert" className="text-sm text-[var(--color-error)]">{paymentMethodsError}</p>
+                <button type="button" onClick={() => setPaymentMethodsAttempt((attempt) => attempt + 1)} className="mt-2 text-sm text-[var(--color-frost)] hover:text-white">
+                  Coba muat ulang
+                </button>
+              </div>
+            )}
+            {!paymentMethodsLoading && !paymentMethodsError && paymentMethods.length === 0 && (
+              <p className="text-sm text-[var(--color-muted)]">Tidak ada metode pembayaran Duitku yang tersedia.</p>
+            )}
+            {!paymentMethodsLoading && paymentMethods.map((method) => (
+              <label key={method.paymentMethod} className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-[var(--color-border)] p-3">
+                <span className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    name="duitku-payment-method"
+                    value={method.paymentMethod}
+                    checked={selectedPaymentMethod === method.paymentMethod}
+                    onChange={() => setSelectedPaymentMethod(method.paymentMethod)}
+                  />
+                  <span className="text-sm font-medium text-white">{method.paymentName}</span>
+                </span>
+                {Number(method.totalFee) > 0 && (
+                  <span className="text-right text-xs text-[var(--color-muted)]">
+                    Biaya {formatCurrency(Number(method.totalFee))}
+                  </span>
+                )}
+              </label>
+            ))}
+          </section>
+
+          {inputError && <p className="text-[var(--color-error)] text-sm">{inputError}</p>}
 
           <p className="text-[var(--color-muted-strong)] text-xs">Pastikan ID sudah benar. Transaksi yang sudah diproses tidak dapat dibatalkan.</p>
-          <button onClick={handleConfirm} disabled={creating}
+          <button onClick={handleConfirm} disabled={creating || paymentMethodsLoading || !selectedPaymentMethod}
             className="w-full py-3.5 rounded-xl font-semibold text-sm text-[var(--color-button-text)] transition-all disabled:opacity-60"
             style={{ background: 'var(--color-button-bg)', boxShadow: '0 0 20px var(--color-glow)' }}>
             {creating ? (

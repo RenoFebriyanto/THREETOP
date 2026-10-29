@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
         amount: true,
         status: true,
         paymentStatus: true,
+        paymentUrl: true,
         sn: true,
         createdAt: true,
         items: {

@@ -66,7 +66,7 @@ const SECTIONS = [
     id: 'pembayaran',
     title: '5. Pembayaran',
     content: [
-      'Seluruh pembayaran diproses melalui Midtrans, payment gateway berlisensi Bank Indonesia. ThreeTop tidak menyimpan data kartu kredit atau informasi rekening bank Pengguna.',
+      'Pembayaran diproses melalui Duitku. ThreeTop tidak menyimpan data kartu kredit atau informasi rekening bank Pengguna.',
       'Harga yang tertera di platform adalah harga final termasuk biaya layanan. ThreeTop berhak mengubah harga sewaktu-waktu tanpa pemberitahuan sebelumnya.',
       'Pembayaran yang telah berhasil tidak dapat dibatalkan kecuali terdapat kegagalan proses di pihak ThreeTop.',
       'Pengguna bertanggung jawab atas seluruh pajak atau biaya tambahan yang mungkin dikenakan oleh bank atau penyedia layanan pembayaran.',

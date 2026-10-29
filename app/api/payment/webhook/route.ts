@@ -1,194 +1,172 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
-import { verifyMidtransSignature } from '@/lib/midtrans'
+import { isDuitkuMerchantCode, verifyDuitkuCallbackSignature } from '@/lib/duitku'
 import { createTransaction } from '@/lib/digiflazz-server'
 import { getAggregateOrderStatus } from '@/lib/order-status'
 
-// Midtrans mengirim notifikasi ke endpoint ini setelah pembayaran
+function callbackOk(message = 'OK') {
+  return new NextResponse(message, { status: 200 })
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
+    const form = await req.formData()
+    const merchantCode = String(form.get('merchantCode') ?? '')
+    const amount = String(form.get('amount') ?? '')
+    const orderId = String(form.get('merchantOrderId') ?? '')
+    const resultCode = String(form.get('resultCode') ?? '')
+    const signature = String(form.get('signature') ?? '')
 
-    const {
-      order_id,
-      transaction_status,
-      fraud_status,
-      status_code,
-      gross_amount,
-      signature_key,
-    } = body
-
-    if (!order_id || !transaction_status || !status_code || !gross_amount || !signature_key) {
+    if (!merchantCode || !amount || !orderId || !resultCode || !signature) {
       return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
     }
+    if (resultCode !== '00' && resultCode !== '01') {
+      return NextResponse.json({ error: 'Invalid result code' }, { status: 400 })
+    }
 
-    // Verifikasi signature untuk mencegah spoofing
-    const isValid = verifyMidtransSignature(
-      order_id,
-      status_code,
-      gross_amount,
-      signature_key
-    )
-
-    if (!isValid) {
-      console.error('[WEBHOOK] Invalid signature for order:', order_id)
+    if (!isDuitkuMerchantCode(merchantCode) ||
+      !verifyDuitkuCallbackSignature(merchantCode, amount, orderId, signature)) {
+      console.error('[DUITKU_WEBHOOK] Invalid signature or merchant code for order:', orderId)
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
     }
 
-    // Cari order di database
     const order = await prisma.order.findUnique({
-      where: { id: order_id },
+      where: { id: orderId },
       include: { items: true },
     })
 
     if (!order) {
-      console.error('[WEBHOOK] Order not found:', order_id)
+      console.error('[DUITKU_WEBHOOK] Order not found:', orderId)
       return NextResponse.json({ error: 'Order not found' }, { status: 404 })
     }
 
-    // Jika sudah SUCCESS, skip (idempotent)
-    if (order.status === 'SUCCESS') {
-      return NextResponse.json({ message: 'Already processed' })
+    if (!/^\d+$/.test(amount) || Number(amount) !== order.amount) {
+      console.error('[DUITKU_WEBHOOK] Amount mismatch for order:', orderId)
+      return NextResponse.json({ error: 'Amount mismatch' }, { status: 400 })
     }
 
-    // Tentukan apakah pembayaran berhasil
-    const isPaid =
-      transaction_status === 'capture' ||
-      transaction_status === 'settlement'
-    const isFraud = fraud_status === 'challenge' || fraud_status === 'deny'
-    const isExpired =
-      transaction_status === 'expire' || transaction_status === 'cancel'
-    const isFailed = transaction_status === 'deny' || transaction_status === 'failure'
+    if (order.status === 'SUCCESS') {
+      return callbackOk('Already processed')
+    }
 
-    if (isPaid && !isFraud) {
-      if (order.items.length > 0) {
-        await prisma.order.updateMany({
-          where: { id: order_id, paymentStatus: 'UNPAID' },
-          data: { paymentStatus: 'PAID', status: 'PROCESSING' },
-        })
-
-        const statusMap: Record<string, 'SUCCESS' | 'FAILED' | 'PROCESSING'> = {
-          Sukses: 'SUCCESS',
-          Gagal: 'FAILED',
-          Pending: 'PROCESSING',
-        }
-        const appUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL ?? ''
-
-        for (const [index, item] of order.items.entries()) {
-          if (item.status !== 'PENDING' || item.digiflazzRef) continue
-
-          const refId = `${order_id}-${index}-${Date.now()}`
-          const claimedItem = await prisma.orderItem.updateMany({
-            where: { id: item.id, status: 'PENDING', digiflazzRef: null },
-            data: { status: 'PROCESSING', digiflazzRef: refId },
-          })
-          if (claimedItem.count === 0) continue
-
-          try {
-            const txResult = await createTransaction({
-              skuCode: item.productCode,
-              customerNo: order.gameUserId,
-              refId,
-              callbackUrl: appUrl ? `${appUrl}/api/digiflazz/webhook` : undefined,
-            })
-
-            await prisma.orderItem.updateMany({
-              where: { id: item.id, status: 'PROCESSING' },
-              data: {
-                status: statusMap[txResult.status] ?? 'PROCESSING',
-                sn: txResult.sn || null,
-              },
-            })
-          } catch (txError) {
-            console.error(`[WEBHOOK] Digiflazz transaction failed for item ${item.id}:`, txError)
-            await prisma.orderItem.updateMany({
-              where: { id: item.id, status: 'PROCESSING' },
-              data: { status: 'FAILED' },
-            })
-          }
-        }
-
-        const updatedItems = await prisma.orderItem.findMany({
-          where: { orderId: order_id },
-          select: { status: true },
-        })
-        await prisma.order.update({
-          where: { id: order_id },
-          data: { status: getAggregateOrderStatus(updatedItems.map((item) => item.status)) },
-        })
-        return NextResponse.json({ message: 'OK' })
-      }
-
-      // Pembayaran berhasil → update paymentStatus, lalu proses top up ke Digiflazz
-      await prisma.order.update({
-        where: { id: order_id },
-        data: { paymentStatus: 'PAID', status: 'PROCESSING' },
-      })
-
-      // Proses transaksi ke Digiflazz
-      try {
-        const refId = `${order_id}-${Date.now()}`
-        // Kirim cb_url agar Digiflazz bisa callback ke endpoint webhook kita
-        const appUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL ?? ''
-        const txResult = await createTransaction({
-          skuCode: order.productCode,
-          customerNo: order.gameUserId,
-          refId,
-          callbackUrl: appUrl ? `${appUrl}/api/digiflazz/webhook` : undefined,
-        })
-
-        const statusMap: Record<string, 'SUCCESS' | 'FAILED' | 'PROCESSING'> = {
-          Sukses: 'SUCCESS',
-          Gagal: 'FAILED',
-          Pending: 'PROCESSING',
-        }
-        const finalStatus = statusMap[txResult.status] ?? 'PROCESSING'
-
-        await prisma.order.update({
-          where: { id: order_id },
-          data: {
-            status: finalStatus,
-            digiflazzRef: refId,
-            sn: txResult.sn || null,
-          },
-        })
-      } catch (txError) {
-        console.error('[WEBHOOK] Digiflazz transaction failed:', txError)
-        await prisma.order.update({
-          where: { id: order_id },
-          data: { status: 'FAILED' },
-        })
-      }
-    } else if (isExpired) {
-      await prisma.order.update({
-        where: { id: order_id },
-        data: { paymentStatus: 'EXPIRED', status: 'FAILED' },
-      })
-      if (order.items.length > 0) {
-        await prisma.orderItem.updateMany({
-          where: { orderId: order_id, status: 'PENDING' },
-          data: { status: 'FAILED' },
-        })
-      }
-    } else if (isFailed || isFraud) {
-      await prisma.order.update({
-        where: { id: order_id },
+    if (resultCode !== '00') {
+      const failedOrder = await prisma.order.updateMany({
+        where: { id: orderId, paymentStatus: 'UNPAID' },
         data: { status: 'FAILED' },
       })
-      if (order.items.length > 0) {
+      if (failedOrder.count > 0 && order.items.length > 0) {
         await prisma.orderItem.updateMany({
-          where: { orderId: order_id, status: 'PENDING' },
+          where: { orderId, status: 'PENDING' },
           data: { status: 'FAILED' },
         })
       }
+      return callbackOk()
     }
 
-    return NextResponse.json({ message: 'OK' })
+    if (order.paymentStatus !== 'PAID') {
+      const paymentClaim = await prisma.order.updateMany({
+        where: { id: orderId, paymentStatus: 'UNPAID' },
+        data: { paymentStatus: 'PAID', status: 'PROCESSING' },
+      })
+      if (paymentClaim.count === 0) {
+        return callbackOk('Already processed')
+      }
+    }
+
+    if (order.items.length > 0) {
+      const statusMap: Record<string, 'SUCCESS' | 'FAILED' | 'PROCESSING'> = {
+        Sukses: 'SUCCESS',
+        Gagal: 'FAILED',
+        Pending: 'PROCESSING',
+      }
+      const appUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL ?? ''
+
+      for (const [index, item] of order.items.entries()) {
+        if (item.status !== 'PENDING' || item.digiflazzRef) continue
+
+        const refId = `${orderId}-${index}-${Date.now()}`
+        const claimedItem = await prisma.orderItem.updateMany({
+          where: { id: item.id, status: 'PENDING', digiflazzRef: null },
+          data: { status: 'PROCESSING', digiflazzRef: refId },
+        })
+        if (claimedItem.count === 0) continue
+
+        try {
+          const txResult = await createTransaction({
+            skuCode: item.productCode,
+            customerNo: order.gameUserId,
+            refId,
+            callbackUrl: appUrl ? `${appUrl}/api/digiflazz/webhook` : undefined,
+          })
+
+          await prisma.orderItem.updateMany({
+            where: { id: item.id, status: 'PROCESSING', digiflazzRef: refId },
+            data: {
+              status: statusMap[txResult.status] ?? 'PROCESSING',
+              sn: txResult.sn || null,
+            },
+          })
+        } catch (txError) {
+          console.error(`[DUITKU_WEBHOOK] Digiflazz transaction failed for item ${item.id}:`, txError)
+          await prisma.orderItem.updateMany({
+            where: { id: item.id, status: 'PROCESSING', digiflazzRef: refId },
+            data: { status: 'FAILED' },
+          })
+        }
+      }
+
+      const updatedItems = await prisma.orderItem.findMany({
+        where: { orderId },
+        select: { status: true },
+      })
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: getAggregateOrderStatus(updatedItems.map((item) => item.status)) },
+      })
+      return callbackOk()
+    }
+
+    const refId = `${orderId}-${Date.now()}`
+    const claimedOrder = await prisma.order.updateMany({
+      where: { id: orderId, paymentStatus: 'PAID', digiflazzRef: null },
+      data: { status: 'PROCESSING', digiflazzRef: refId },
+    })
+    if (claimedOrder.count === 0) {
+      return callbackOk('Already processing')
+    }
+
+    try {
+      const appUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL ?? ''
+      const txResult = await createTransaction({
+        skuCode: order.productCode,
+        customerNo: order.gameUserId,
+        refId,
+        callbackUrl: appUrl ? `${appUrl}/api/digiflazz/webhook` : undefined,
+      })
+      const statusMap: Record<string, 'SUCCESS' | 'FAILED' | 'PROCESSING'> = {
+        Sukses: 'SUCCESS',
+        Gagal: 'FAILED',
+        Pending: 'PROCESSING',
+      }
+      await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          status: statusMap[txResult.status] ?? 'PROCESSING',
+          sn: txResult.sn || null,
+          digiflazzRef: refId,
+        },
+      })
+    } catch (txError) {
+      console.error('[DUITKU_WEBHOOK] Digiflazz transaction failed:', txError)
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'FAILED' },
+      })
+    }
+
+    return callbackOk()
   } catch (error) {
-    console.error('[WEBHOOK_ERROR]', error)
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    )
+    console.error('[DUITKU_WEBHOOK_ERROR]', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
