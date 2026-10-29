@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { prisma } from '@/lib/db'
 import { WEBHOOK_SECRET } from '@/lib/digiflazz-server'
+import { getAggregateOrderStatus } from '@/lib/order-status'
 
 // Digiflazz mengirim notifikasi update status transaksi ke endpoint ini
 // Payload: { data: { ref_id, buyer_sku_code, customer_no, status, sn, rc, message } }
@@ -30,6 +31,41 @@ export async function POST(req: NextRequest) {
     }
 
     const { ref_id, status, sn, rc } = payload
+
+    const orderItem = await prisma.orderItem.findUnique({
+      where: { digiflazzRef: ref_id },
+    })
+
+    if (orderItem) {
+      if (orderItem.status === 'SUCCESS' || orderItem.status === 'FAILED') {
+        return NextResponse.json({ message: 'Already processed' })
+      }
+
+      const statusMap: Record<string, 'SUCCESS' | 'FAILED' | 'PROCESSING'> = {
+        Sukses: 'SUCCESS',
+        Gagal: 'FAILED',
+        Pending: 'PROCESSING',
+      }
+      const finalStatus = statusMap[status] ?? 'PROCESSING'
+
+      await prisma.orderItem.update({
+        where: { id: orderItem.id },
+        data: { status: finalStatus, sn: sn || orderItem.sn || null },
+      })
+
+      const items = await prisma.orderItem.findMany({
+        where: { orderId: orderItem.orderId },
+        select: { status: true },
+      })
+      const aggregateStatus = getAggregateOrderStatus(items.map((item) => item.status))
+      await prisma.order.update({
+        where: { id: orderItem.orderId },
+        data: { status: aggregateStatus },
+      })
+
+      console.log(`[DIGIFLAZZ_WEBHOOK] Order item ${orderItem.id} updated to ${finalStatus}`)
+      return NextResponse.json({ message: 'OK' })
+    }
 
     // Cari order berdasarkan digiflazzRef
     const order = await prisma.order.findFirst({

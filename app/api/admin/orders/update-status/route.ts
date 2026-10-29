@@ -14,10 +14,24 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid payload' }, { status: 400 })
   }
 
-  const order = await prisma.order.update({
+  const existingOrder = await prisma.order.findUnique({
     where: { id: orderId },
-    data: { status },
+    select: { id: true },
   })
+  if (!existingOrder) {
+    return NextResponse.json({ error: 'Order not found' }, { status: 404 })
+  }
+
+  const [order] = await prisma.$transaction([
+    prisma.order.update({
+      where: { id: orderId },
+      data: { status },
+    }),
+    prisma.orderItem.updateMany({
+      where: { orderId },
+      data: { status },
+    }),
+  ])
 
   return NextResponse.json({ success: true, status: order.status })
 }

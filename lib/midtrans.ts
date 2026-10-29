@@ -31,7 +31,7 @@ export type CreateSnapTokenParams = {
   amount: number
   customerName: string
   customerEmail: string
-  item: MidtransItem
+  items: MidtransItem[]
 }
 
 export async function createSnapToken({
@@ -39,14 +39,14 @@ export async function createSnapToken({
   amount,
   customerName,
   customerEmail,
-  item,
+  items,
 }: CreateSnapTokenParams): Promise<{ token: string; redirect_url: string }> {
   const parameter = {
     transaction_details: {
       order_id: orderId,
       gross_amount: amount,
     },
-    item_details: [item],
+    item_details: items,
     customer_details: {
       first_name: customerName,
       email: customerEmail,

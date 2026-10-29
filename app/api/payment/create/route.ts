@@ -10,16 +10,25 @@ export async function POST(req: NextRequest) {
     const session = await auth()
 
     const body = await req.json()
-    const { skuCode, gameUserId, gameKey } = body
+    const { skuCodes, skuCode, gameUserId, gameKey } = body
+    const selectedSkuCodes = Array.isArray(skuCodes) ? skuCodes : [skuCode]
 
     if (
-      !skuCode || !gameUserId || !gameKey ||
-      typeof skuCode !== 'string' ||
+      selectedSkuCodes.length === 0 ||
+      selectedSkuCodes.some((code) => typeof code !== 'string' || !code.trim()) ||
+      !gameUserId || !gameKey ||
       typeof gameUserId !== 'string' ||
       typeof gameKey !== 'string'
     ) {
       return NextResponse.json(
-        { error: 'skuCode, gameUserId, dan gameKey wajib diisi.' },
+        { error: 'Pilih minimal satu produk dan isi Game ID.' },
+        { status: 400 }
+      )
+    }
+
+    if (new Set(selectedSkuCodes).size !== selectedSkuCodes.length) {
+      return NextResponse.json(
+        { error: 'Produk yang sama tidak boleh dipilih lebih dari sekali.' },
         { status: 400 }
       )
     }
@@ -28,17 +37,35 @@ export async function POST(req: NextRequest) {
     const products = await getProducts()
     const grouped = groupProductsByGame(products)
     const gameProducts = grouped[gameKey] ?? []
-    const product = gameProducts.find((p) => p.buyer_sku_code === skuCode)
+    const selectedProducts = selectedSkuCodes.map((code: string) =>
+      gameProducts.find((product) => product.buyer_sku_code === code)
+    )
 
-    if (!product) {
+    if (selectedProducts.some((product) => !product)) {
       return NextResponse.json(
-        { error: 'Produk tidak ditemukan atau tidak tersedia.' },
+        { error: 'Satu atau beberapa produk tidak ditemukan atau tidak tersedia.' },
         { status: 404 }
       )
     }
 
-    // Buat order dengan status PENDING dan paymentStatus UNPAID
-    const sellPrice = product.sell_price ?? product.price
+    const validProducts = selectedProducts.filter(
+      (product): product is NonNullable<typeof product> => product !== undefined
+    )
+    const totalAmount = validProducts.reduce(
+      (total, product) => total + (product.sell_price ?? product.price),
+      0
+    )
+    if (!Number.isSafeInteger(totalAmount) || totalAmount <= 0 || totalAmount > 2_147_483_647) {
+      return NextResponse.json(
+        { error: 'Total pembayaran tidak valid.' },
+        { status: 400 }
+      )
+    }
+
+    const primaryProduct = validProducts[0]
+    const productName = validProducts.length === 1
+      ? primaryProduct.product_name
+      : `${primaryProduct.product_name} + ${validProducts.length - 1} produk lainnya`
     const guestAccessToken = session?.user?.id ? null : crypto.randomBytes(32).toString('hex')
 
     const order = await prisma.order.create({
@@ -46,27 +73,34 @@ export async function POST(req: NextRequest) {
         ...(session?.user?.id ? { userId: session.user.id } : {}),
         guestAccessToken,
         game: gameKey,
-        productName: product.product_name,
-        productCode: skuCode,
+        productName,
+        productCode: primaryProduct.buyer_sku_code,
         gameUserId,
-        amount: sellPrice,
+        amount: totalAmount,
         status: 'PENDING',
         paymentStatus: 'UNPAID',
+        items: {
+          create: validProducts.map((product) => ({
+            productName: product.product_name,
+            productCode: product.buyer_sku_code,
+            amount: product.sell_price ?? product.price,
+          })),
+        },
       },
     })
 
     // Buat Snap token Midtrans
     const snapResult = await createSnapToken({
       orderId: order.id,
-      amount: sellPrice,
+      amount: totalAmount,
       customerName: session?.user?.name ?? 'Pelanggan',
       customerEmail: session?.user?.email ?? '',
-      item: {
-        id: skuCode,
-        price: sellPrice,
+      items: validProducts.map((product) => ({
+        id: product.buyer_sku_code,
+        price: product.sell_price ?? product.price,
         quantity: 1,
         name: product.product_name.substring(0, 50),
-      },
+      })),
     })
 
     // Simpan token dan URL ke order

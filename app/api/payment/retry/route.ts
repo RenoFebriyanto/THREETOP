@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { createTransaction, checkTransactionStatus } from '@/lib/digiflazz-server'
+import { getAggregateOrderStatus } from '@/lib/order-status'
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +18,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'orderId wajib diisi.' }, { status: 400 })
     }
 
-    const order = await prisma.order.findUnique({ where: { id: orderId } })
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    })
 
     if (!order) {
       return NextResponse.json({ error: 'Order tidak ditemukan.' }, { status: 404 })
@@ -44,6 +48,90 @@ export async function POST(req: NextRequest) {
       Sukses: 'SUCCESS',
       Gagal: 'FAILED',
       Pending: 'PROCESSING',
+    }
+
+    if (order.items.length > 0) {
+      const appUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL ?? ''
+
+      for (const [index, item] of order.items.entries()) {
+        if (item.status === 'SUCCESS') continue
+        let statusToRetry = item.status
+
+        if (item.digiflazzRef) {
+          try {
+            const txStatus = await checkTransactionStatus(
+              item.digiflazzRef,
+              item.productCode,
+              order.gameUserId,
+            )
+            const resolvedStatus = statusMap[txStatus.status] ?? 'PROCESSING'
+            const checkedItem = await prisma.orderItem.updateMany({
+              where: { id: item.id, status: item.status, digiflazzRef: item.digiflazzRef },
+              data: {
+                status: resolvedStatus,
+                sn: txStatus.sn || item.sn || null,
+              },
+            })
+            if (checkedItem.count === 0) continue
+            if (resolvedStatus !== 'FAILED') continue
+            statusToRetry = 'FAILED'
+          } catch (error) {
+            console.error(`[RETRY] Unable to check Digiflazz item ${item.id}:`, error)
+            return NextResponse.json(
+              { error: 'Status produk belum dapat dipastikan. Coba lagi beberapa saat.' },
+              { status: 502 }
+            )
+          }
+        }
+
+        const newRefId = `${order.id}-${index}-retry-${Date.now()}`
+        const retryClaim = await prisma.orderItem.updateMany({
+          where: { id: item.id, status: statusToRetry, digiflazzRef: item.digiflazzRef },
+          data: { status: 'PROCESSING', digiflazzRef: newRefId },
+        })
+        if (retryClaim.count === 0) continue
+
+        try {
+          const txResult = await createTransaction({
+            skuCode: item.productCode,
+            customerNo: order.gameUserId,
+            refId: newRefId,
+            callbackUrl: appUrl ? `${appUrl}/api/digiflazz/webhook` : undefined,
+          })
+          await prisma.orderItem.updateMany({
+            where: { id: item.id, status: 'PROCESSING', digiflazzRef: newRefId },
+            data: {
+              status: statusMap[txResult.status] ?? 'PROCESSING',
+              sn: txResult.sn || null,
+            },
+          })
+        } catch (error) {
+          console.error(`[RETRY] Digiflazz retry failed for item ${item.id}:`, error)
+          await prisma.orderItem.updateMany({
+            where: { id: item.id, status: 'PROCESSING', digiflazzRef: newRefId },
+            data: { status: 'FAILED' },
+          })
+        }
+      }
+
+      const updatedItems = await prisma.orderItem.findMany({
+        where: { orderId: order.id },
+        select: { status: true },
+      })
+      const aggregateStatus = getAggregateOrderStatus(updatedItems.map((item) => item.status))
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { status: aggregateStatus },
+      })
+      return NextResponse.json({
+        success: aggregateStatus === 'SUCCESS',
+        status: aggregateStatus,
+        message: aggregateStatus === 'PROCESSING'
+          ? 'Sebagian produk masih diproses.'
+          : aggregateStatus === 'FAILED'
+            ? 'Satu atau beberapa produk masih gagal diproses.'
+            : 'Semua produk berhasil diproses.',
+      })
     }
 
     // Jika sudah ada digiflazzRef → cek status dulu ke Digiflazz (idempotent)

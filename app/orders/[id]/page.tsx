@@ -49,6 +49,16 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
       createdAt: true,
       digiflazzRef: true,
       sn: true,
+      items: {
+        select: {
+          id: true,
+          productName: true,
+          amount: true,
+          status: true,
+          digiflazzRef: true,
+          sn: true,
+        },
+      },
     },
   })
   if (!order) notFound()
@@ -102,6 +112,27 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <p className="text-[var(--color-muted-strong)] text-xs">{gameInfo?.label ?? order.game}</p>
           </div>
         </div>
+
+        {order.items.length > 0 && (
+          <div className="divide-y divide-[var(--color-border)]/40 border-t border-[var(--color-border)]/60">
+            {order.items.map((item) => {
+              const itemStatus = STATUS_CONFIG[item.status]
+              return (
+                <div key={item.id} className="space-y-2 px-6 py-4">
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-[var(--color-frost)]">{item.productName}</p>
+                      <p className={`mt-1 text-xs ${itemStatus.color}`}>{itemStatus.label}</p>
+                    </div>
+                    <p className="shrink-0 text-sm font-medium text-[var(--color-frost)]">{formatCurrency(item.amount)}</p>
+                  </div>
+                  {item.digiflazzRef && <p className="break-all font-mono text-xs text-[var(--color-muted)]">Ref: {item.digiflazzRef}</p>}
+                  {item.sn && <p className="break-all font-mono text-xs text-[var(--color-success)]">SN: {item.sn}</p>}
+                </div>
+              )
+            })}
+          </div>
+        )}
 
         {/* Detail rows */}
         <div className="divide-y divide-[var(--color-border)]/40">

@@ -49,23 +49,40 @@ model Session {
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  userId        String?
-  game          String
-  productName   String
-  productCode   String
-  gameUserId    String
-  amount        Int
-  status        OrderStatus @default(PENDING)
-  paymentStatus PaymentStatus @default(UNPAID)
-  paymentToken  String?
-  paymentUrl    String?
-  guestAccessToken String?  @unique
-  digiflazzRef  String?
-  sn            String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  user          User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  id               String        @id @default(cuid())
+  userId           String?
+  game             String
+  productName      String
+  productCode      String
+  gameUserId       String
+  amount           Int
+  status           OrderStatus   @default(PENDING)
+  paymentStatus    PaymentStatus @default(UNPAID)
+  paymentToken     String?
+  paymentUrl       String?
+  guestAccessToken String?       @unique
+  digiflazzRef     String?
+  sn               String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  user             User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  items            OrderItem[]
+}
+
+model OrderItem {
+  id           String      @id @default(cuid())
+  orderId      String
+  productName  String
+  productCode  String
+  amount       Int
+  status       OrderStatus @default(PENDING)
+  digiflazzRef String?     @unique
+  sn           String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  order        Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
 }
 
 enum Role {

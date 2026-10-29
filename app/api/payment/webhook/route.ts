@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/db'
 import { verifyMidtransSignature } from '@/lib/midtrans'
 import { createTransaction } from '@/lib/digiflazz-server'
+import { getAggregateOrderStatus } from '@/lib/order-status'
 
 // Midtrans mengirim notifikasi ke endpoint ini setelah pembayaran
 export async function POST(req: NextRequest) {
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     // Cari order di database
     const order = await prisma.order.findUnique({
       where: { id: order_id },
+      include: { items: true },
     })
 
     if (!order) {
@@ -59,6 +61,64 @@ export async function POST(req: NextRequest) {
     const isFailed = transaction_status === 'deny' || transaction_status === 'failure'
 
     if (isPaid && !isFraud) {
+      if (order.items.length > 0) {
+        await prisma.order.updateMany({
+          where: { id: order_id, paymentStatus: 'UNPAID' },
+          data: { paymentStatus: 'PAID', status: 'PROCESSING' },
+        })
+
+        const statusMap: Record<string, 'SUCCESS' | 'FAILED' | 'PROCESSING'> = {
+          Sukses: 'SUCCESS',
+          Gagal: 'FAILED',
+          Pending: 'PROCESSING',
+        }
+        const appUrl = process.env.AUTH_URL ?? process.env.NEXTAUTH_URL ?? ''
+
+        for (const [index, item] of order.items.entries()) {
+          if (item.status !== 'PENDING' || item.digiflazzRef) continue
+
+          const refId = `${order_id}-${index}-${Date.now()}`
+          const claimedItem = await prisma.orderItem.updateMany({
+            where: { id: item.id, status: 'PENDING', digiflazzRef: null },
+            data: { status: 'PROCESSING', digiflazzRef: refId },
+          })
+          if (claimedItem.count === 0) continue
+
+          try {
+            const txResult = await createTransaction({
+              skuCode: item.productCode,
+              customerNo: order.gameUserId,
+              refId,
+              callbackUrl: appUrl ? `${appUrl}/api/digiflazz/webhook` : undefined,
+            })
+
+            await prisma.orderItem.updateMany({
+              where: { id: item.id, status: 'PROCESSING' },
+              data: {
+                status: statusMap[txResult.status] ?? 'PROCESSING',
+                sn: txResult.sn || null,
+              },
+            })
+          } catch (txError) {
+            console.error(`[WEBHOOK] Digiflazz transaction failed for item ${item.id}:`, txError)
+            await prisma.orderItem.updateMany({
+              where: { id: item.id, status: 'PROCESSING' },
+              data: { status: 'FAILED' },
+            })
+          }
+        }
+
+        const updatedItems = await prisma.orderItem.findMany({
+          where: { orderId: order_id },
+          select: { status: true },
+        })
+        await prisma.order.update({
+          where: { id: order_id },
+          data: { status: getAggregateOrderStatus(updatedItems.map((item) => item.status)) },
+        })
+        return NextResponse.json({ message: 'OK' })
+      }
+
       // Pembayaran berhasil → update paymentStatus, lalu proses top up ke Digiflazz
       await prisma.order.update({
         where: { id: order_id },
@@ -104,11 +164,23 @@ export async function POST(req: NextRequest) {
         where: { id: order_id },
         data: { paymentStatus: 'EXPIRED', status: 'FAILED' },
       })
+      if (order.items.length > 0) {
+        await prisma.orderItem.updateMany({
+          where: { orderId: order_id, status: 'PENDING' },
+          data: { status: 'FAILED' },
+        })
+      }
     } else if (isFailed || isFraud) {
       await prisma.order.update({
         where: { id: order_id },
         data: { status: 'FAILED' },
       })
+      if (order.items.length > 0) {
+        await prisma.orderItem.updateMany({
+          where: { orderId: order_id, status: 'PENDING' },
+          data: { status: 'FAILED' },
+        })
+      }
     }
 
     return NextResponse.json({ message: 'OK' })

@@ -26,6 +26,14 @@ export async function GET(req: NextRequest) {
         paymentStatus: true,
         sn: true,
         createdAt: true,
+        items: {
+          select: {
+            productName: true,
+            amount: true,
+            status: true,
+            sn: true,
+          },
+        },
       },
     })
 

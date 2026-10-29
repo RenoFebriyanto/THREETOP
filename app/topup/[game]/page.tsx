@@ -25,6 +25,12 @@ type OrderResult = {
   status: 'SUCCESS' | 'FAILED' | 'PROCESSING'
   paymentStatus?: string
   sn?: string | null
+  items?: Array<{
+    productName: string
+    amount: number
+    status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED'
+    sn?: string | null
+  }>
 }
 
 function formatCurrency(amount: number) {
@@ -52,7 +58,7 @@ async function pollOrderStatus(orderId: string, accessToken: string | undefined,
       const order = data.order
       if (order.status === 'SUCCESS' || order.status === 'FAILED' || order.paymentStatus === 'EXPIRED') {
         clearInterval(interval)
-        onDone({ id: order.id, productName: order.productName, gameUserId: order.gameUserId, amount: order.amount, status: order.status, paymentStatus: order.paymentStatus, sn: order.sn })
+        onDone({ id: order.id, productName: order.productName, gameUserId: order.gameUserId, amount: order.amount, status: order.status, paymentStatus: order.paymentStatus, sn: order.sn, items: order.items })
       }
     } catch { /* silent */ }
     if (attempts >= MAX_ATTEMPTS) clearInterval(interval)
@@ -70,7 +76,7 @@ export default function GameTopUpPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [step, setStep] = useState<Step>('select')
-  const [selectedProduct, setSelectedProduct] = useState<DigiflazzProduct | null>(null)
+  const [selectedProducts, setSelectedProducts] = useState<DigiflazzProduct[]>([])
   const [gameUserId, setGameUserId] = useState('')
   const [serverId, setServerId] = useState('')
   const [inputError, setInputError] = useState('')
@@ -138,7 +144,14 @@ export default function GameTopUpPage() {
 
   function resetNick() { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null) }
 
-  function handleSelectProduct(product: DigiflazzProduct) { setSelectedProduct(product); setStep('input'); setInputError('') }
+  function toggleProduct(product: DigiflazzProduct) {
+    setSelectedProducts((current) =>
+      current.some((selected) => selected.buyer_sku_code === product.buyer_sku_code)
+        ? current.filter((selected) => selected.buyer_sku_code !== product.buyer_sku_code)
+        : [...current, product]
+    )
+    setInputError('')
+  }
 
   async function handleCopyGameLink() {
     try {
@@ -153,8 +166,11 @@ export default function GameTopUpPage() {
     return product.sell_price ?? product.price
   }
 
+  const selectedTotal = selectedProducts.reduce((total, product) => total + getDisplayPrice(product), 0)
+
   function handleInputSubmit() {
     setInputError('')
+    if (selectedProducts.length === 0) { setInputError('Pilih minimal satu produk.'); return }
     if (!gameUserId.trim()) { setInputError(`${gameInfo.userIdLabel} wajib diisi.`); return }
     if (gameInfo.requireServer && !serverId.trim()) { setInputError('Server ID wajib diisi.'); return }
     if (!nickChecked) { setInputError('Harap tunggu verifikasi ID selesai.'); return }
@@ -162,13 +178,13 @@ export default function GameTopUpPage() {
   }
 
   async function handleConfirm() {
-    if (!selectedProduct) return
+    if (selectedProducts.length === 0) return
     setCreating(true)
     const customerNo = gameInfo.requireServer ? `${gameUserId.trim()}(${serverId.trim()})` : gameUserId.trim()
     try {
       const res = await fetch('/api/payment/create', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ skuCode: selectedProduct.buyer_sku_code, gameUserId: customerNo, gameKey }),
+        body: JSON.stringify({ skuCodes: selectedProducts.map((product) => product.buyer_sku_code), gameUserId: customerNo, gameKey }),
       })
       const data = await res.json()
       if (!res.ok) { setInputError(data.error || 'Gagal membuat pembayaran.'); setStep('confirm'); setCreating(false); return }
@@ -182,10 +198,15 @@ export default function GameTopUpPage() {
           // Langsung set result sukses
           setOrderResult({
             id: data.orderId,
-            productName: selectedProduct.product_name,
+            productName: selectedProducts.length === 1 ? selectedProducts[0].product_name : `${selectedProducts.length} produk`,
             gameUserId: customerNo,
-            amount: getDisplayPrice(selectedProduct),
+            amount: selectedTotal,
             status: 'PROCESSING', // akan diupdate via polling
+            items: selectedProducts.map((product) => ({
+              productName: product.product_name,
+              amount: getDisplayPrice(product),
+              status: 'PROCESSING',
+            })),
           })
           setStep('result')
           // Polling untuk update status final dari Digiflazz
@@ -195,10 +216,15 @@ export default function GameTopUpPage() {
         } else if (snapStatus === 'PENDING') {
           setOrderResult({
             id: data.orderId,
-            productName: selectedProduct.product_name,
+            productName: selectedProducts.length === 1 ? selectedProducts[0].product_name : `${selectedProducts.length} produk`,
             gameUserId: customerNo,
-            amount: getDisplayPrice(selectedProduct),
+            amount: selectedTotal,
             status: 'PROCESSING',
+            items: selectedProducts.map((product) => ({
+              productName: product.product_name,
+              amount: getDisplayPrice(product),
+              status: 'PROCESSING',
+            })),
           })
           setStep('result')
           pollOrderStatus(data.orderId, data.accessToken, (result) => {
@@ -207,10 +233,15 @@ export default function GameTopUpPage() {
         } else if (snapStatus === 'FAILED') {
           setOrderResult({
             id: data.orderId,
-            productName: selectedProduct.product_name,
+            productName: selectedProducts.length === 1 ? selectedProducts[0].product_name : `${selectedProducts.length} produk`,
             gameUserId: customerNo,
-            amount: selectedProduct.price,
+            amount: selectedTotal,
             status: 'FAILED',
+            items: selectedProducts.map((product) => ({
+              productName: product.product_name,
+              amount: getDisplayPrice(product),
+              status: 'FAILED',
+            })),
           })
           setStep('result')
         } else if (snapStatus === 'CLOSED') {
@@ -226,7 +257,7 @@ export default function GameTopUpPage() {
   }
 
   function handleReset() {
-    setStep('select'); setSelectedProduct(null); setGameUserId(''); setServerId('')
+    setStep('select'); setSelectedProducts([]); setGameUserId(''); setServerId('')
     setInputError(''); setOrderResult(null)
     resetNick()
   }
@@ -273,10 +304,20 @@ export default function GameTopUpPage() {
             </h2>
           </div>
           <div className="p-6 space-y-3">
-            {[{ label: 'Produk', value: orderResult.productName }, { label: 'Game ID', value: orderResult.gameUserId }, { label: 'Total', value: formatCurrency(orderResult.amount) }, ...(orderResult.sn ? [{ label: 'Serial Number', value: orderResult.sn }] : [])].map((item) => (
+            {[...(orderResult.items?.length ? [] : [{ label: 'Produk', value: orderResult.productName }]), { label: 'Game ID', value: orderResult.gameUserId }, { label: 'Total', value: formatCurrency(orderResult.amount) }, ...(orderResult.sn ? [{ label: 'Serial Number', value: orderResult.sn }] : [])].map((item) => (
               <div key={item.label} className="flex justify-between items-center py-2 border-b border-[var(--color-border)]/60 last:border-0">
                 <span className="text-[var(--color-muted)] text-sm">{item.label}</span>
                 <span className="text-white text-sm font-medium text-right max-w-[60%] break-all">{item.value}</span>
+              </div>
+            ))}
+            {orderResult.items?.map((item, index) => (
+              <div key={`${item.productName}-${index}`} className="flex items-start justify-between gap-3 border-b border-[var(--color-border)]/60 py-2 last:border-0">
+                <div>
+                  <p className="text-white text-sm">{item.productName}</p>
+                  <p className="text-[var(--color-muted)] text-xs">{item.status === 'SUCCESS' ? 'Berhasil' : item.status === 'FAILED' ? 'Gagal' : 'Diproses'}</p>
+                  {item.sn && <p className="text-[var(--color-success)] text-xs">SN: {item.sn}</p>}
+                </div>
+                <span className="shrink-0 text-sm font-medium text-white">{formatCurrency(item.amount)}</span>
               </div>
             ))}
           </div>
@@ -328,7 +369,7 @@ export default function GameTopUpPage() {
       : [{ id: 'all', label: '', products }]
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 pt-4">
+    <div className="max-w-6xl mx-auto space-y-6 pt-4">
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm">
         <Link href="/" className="text-[var(--color-muted)] hover:text-white transition-colors">Home</Link>
@@ -350,7 +391,7 @@ export default function GameTopUpPage() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">1</span>Pilih Nominal</h2>
-              {step !== 'select' && <button onClick={() => { setStep('select'); setSelectedProduct(null) }} className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">Ubah</button>}
+              {step !== 'select' && <button onClick={() => setStep('select')} className="text-[var(--color-frost)] text-sm hover:text-[var(--color-frost)] transition-colors">Ubah</button>}
             </div>
             {products.length === 0 ? (
               <div className="rounded-xl border border-[var(--color-border)] p-8 text-center" style={{ background: 'var(--color-surface-dark)' }}><p className="text-[var(--color-muted)] text-sm">Tidak ada produk tersedia saat ini.</p></div>
@@ -367,11 +408,11 @@ export default function GameTopUpPage() {
                     )}
                     <div className="flex flex-wrap gap-2">
                       {section.products.map((product) => {
-                        const isSelected = selectedProduct?.buyer_sku_code === product.buyer_sku_code
+                        const isSelected = selectedProducts.some((selected) => selected.buyer_sku_code === product.buyer_sku_code)
                         const productIcon = getProductIcon(product, gameKey)
                         return (
                           <div key={product.buyer_sku_code} className="flex-none basis-[calc(50%-0.5rem)] max-w-[calc(50%-0.5rem)] min-w-[130px] sm:basis-[calc(50%-0.5rem)] sm:max-w-[calc(50%-0.5rem)] md:flex-1 md:basis-[200px] md:min-w-[190px] md:max-w-[280px]">
-                            <button onClick={() => step === 'select' && handleSelectProduct(product)} disabled={step !== 'select'}
+                            <button onClick={() => step === 'select' && toggleProduct(product)} disabled={step !== 'select'} aria-pressed={isSelected}
                               className={`relative rounded-xl border p-3 text-left transition-all duration-150 w-full ${isSelected ? 'border-[var(--color-info-border)] bg-[var(--color-info-bg)]' : step === 'select' ? 'border-[var(--color-border)] hover:border-[var(--color-border)]/60 hover:bg-[var(--color-surface-muted)] cursor-pointer' : 'border-[var(--color-border)] opacity-40 cursor-default'}`}
                               style={{ background: isSelected ? undefined : 'var(--color-surface-dark)' }}>
                               {isSelected && <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-[var(--color-info)] flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg></div>}
@@ -437,19 +478,39 @@ export default function GameTopUpPage() {
               </span>
             </a>
 
-            <section aria-live="polite" className={`rounded-2xl border p-5 ${selectedProduct ? 'border-[var(--color-border)]' : 'border-dashed border-[var(--color-border)]'}`} style={{ background: 'var(--color-surface-strong)' }}>
-              {selectedProduct ? (
-                <div className="flex items-center gap-3">
-                  <GameIcon
-                    {...getProductIcon(selectedProduct, gameKey)}
-                    label={gameInfo.label}
-                    size={48}
-                    className="shrink-0 rounded-md"
-                  />
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white">{formatProductLabel(selectedProduct.product_name)}</p>
-                    <p className="mt-1 text-sm font-bold text-[var(--color-frost)]">{formatCurrency(getDisplayPrice(selectedProduct))}</p>
+            <section aria-live="polite" className={`rounded-2xl border p-5 ${selectedProducts.length > 0 ? 'border-[var(--color-border)]' : 'border-dashed border-[var(--color-border)]'}`} style={{ background: 'var(--color-surface-strong)' }}>
+              {selectedProducts.length > 0 ? (
+                <div className="space-y-4">
+                  <div className="space-y-3">
+                    {selectedProducts.map((product) => (
+                      <div key={product.buyer_sku_code} className="flex items-center gap-3">
+                        <GameIcon
+                          {...getProductIcon(product, gameKey)}
+                          label={gameInfo.label}
+                          size={44}
+                          className="shrink-0 rounded-md"
+                        />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-semibold text-white">{formatProductLabel(product.product_name)}</p>
+                          <p className="mt-1 text-sm font-bold text-[var(--color-frost)]">{formatCurrency(getDisplayPrice(product))}</p>
+                        </div>
+                        {step === 'select' && (
+                          <button type="button" onClick={() => toggleProduct(product)} className="shrink-0 text-xs text-[var(--color-muted)] hover:text-white" aria-label={`Hapus ${formatProductLabel(product.product_name)}`}>
+                            Hapus
+                          </button>
+                        )}
+                      </div>
+                    ))}
                   </div>
+                  <div className="flex items-center justify-between border-t border-[var(--color-border)] pt-3">
+                    <span className="text-sm text-[var(--color-muted)]">{selectedProducts.length} produk</span>
+                    <span className="font-bold text-white">{formatCurrency(selectedTotal)}</span>
+                  </div>
+                  {step === 'select' && (
+                    <button type="button" onClick={() => { setInputError(''); setStep('input') }} className="w-full rounded-xl py-3 text-sm font-semibold text-[var(--color-button-text)]" style={{ background: 'var(--color-button-bg)' }}>
+                      Lanjutkan
+                    </button>
+                  )}
                 </div>
               ) : (
                 <p className="py-6 text-center text-sm text-[var(--color-frost)]">Belum ada item produk yang dipilih.</p>
@@ -460,7 +521,7 @@ export default function GameTopUpPage() {
       )}
 
       {/* Step 2 — Input ID */}
-      {(step === 'input' || step === 'confirm') && selectedProduct && (
+      {(step === 'input' || step === 'confirm') && selectedProducts.length > 0 && (
         <div className="rounded-xl border border-[var(--color-border)] p-6 space-y-4" style={{ background: 'var(--color-surface-dark)' }}>
           <div className="flex items-center justify-between">
             <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">2</span>Masukkan {gameInfo.userIdLabel}</h2>
@@ -538,16 +599,16 @@ export default function GameTopUpPage() {
       )}
 
       {/* Step 3 — Konfirmasi & Bayar */}
-      {step === 'confirm' && selectedProduct && (
+      {step === 'confirm' && selectedProducts.length > 0 && (
         <div className="rounded-xl border border-[var(--color-border)] p-6 space-y-4" style={{ background: 'var(--color-surface-dark)' }}>
           <h2 className="text-white font-semibold"><span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-[var(--color-info)] text-white text-xs font-bold mr-2">3</span>Konfirmasi &amp; Pembayaran</h2>
           <div className="rounded-xl border border-[var(--color-border)] overflow-hidden">
             {[
               { label: 'Game', value: gameInfo.label },
-              { label: 'Produk', value: selectedProduct.product_name },
+              { label: 'Produk', value: selectedProducts.map((product) => formatProductLabel(product.product_name)).join(', ') },
               { label: gameInfo.userIdLabel, value: customerNoDisplay },
               ...(nickname ? [{ label: 'Nickname', value: nickname }] : []),
-              { label: 'Total Bayar', value: formatCurrency(getDisplayPrice(selectedProduct)), highlight: true },
+              { label: 'Total Bayar', value: formatCurrency(selectedTotal), highlight: true },
             ].map((item) => (
               <div key={item.label} className={`flex justify-between items-center px-4 py-3 border-b border-[var(--color-border)]/60 last:border-0 ${'highlight' in item && item.highlight ? 'bg-[var(--color-info-bg)]' : ''}`}>
                 <span className="text-[var(--color-muted)] text-sm">{item.label}</span>
@@ -567,7 +628,7 @@ export default function GameTopUpPage() {
                 <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
                 Memuat Pembayaran...
               </span>
-            ) : `Bayar ${formatCurrency(getDisplayPrice(selectedProduct))}`}
+            ) : `Bayar ${formatCurrency(selectedTotal)}`}
           </button>
         </div>
       )}
