@@ -86,6 +86,21 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
 
   if (gameKey === 'pubg_mobile') {
     const searchableText = `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code}`.toLowerCase()
+    const normalizedText = searchableText.replace(/[^a-z0-9]/g, '')
+    const passIcon = normalizedText.includes('elite') && normalizedText.includes('plus')
+      ? 'royaleeliteplus.jpg'
+      : normalizedText.includes('royalepass') || normalizedText.includes('royalpass')
+        ? 'royalepass.jpg'
+        : undefined
+
+    if (passIcon) {
+      return {
+        image: [`${folder}/${passIcon}`],
+        fallback: gameInfo.icon,
+        fallbackImage: defaultImage,
+      }
+    }
+
     const isUcProduct = /\buc\b/.test(searchableText) || searchableText.includes('unknown cash')
     const nominal = product.product_name.match(/\d{1,3}(?:[.,]\d{3})+|\d+/)?.[0]
     const amount = nominal ? Number(nominal.replace(/[.,]/g, '')) : 0
