@@ -91,7 +91,7 @@ function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; 
   }
 
   return (
-    <span className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-[var(--color-border)] bg-white p-1">
+    <span className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden">
       {!imageFailed ? (
         <Image
           src={iconPath}
@@ -103,7 +103,7 @@ function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; 
           onError={() => setImageFailed(true)}
         />
       ) : (
-        <span className="text-center text-[9px] font-bold leading-tight text-slate-700">{fallbackLabel[category]}</span>
+        <span className="text-center text-[9px] font-bold leading-tight text-[var(--color-muted)]">{fallbackLabel[category]}</span>
       )}
     </span>
   )
