@@ -69,7 +69,18 @@ function getPaymentCategory(method: DuitkuPaymentMethod): PaymentCategory {
 
 function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; category: PaymentCategory }) {
   const [imageFailed, setImageFailed] = useState(false)
-  const iconPath = `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
+  const methodName = method.paymentName.toLowerCase().replace(/[^a-z0-9]/g, '')
+  const ewalletIcons: Record<string, string> = {
+    dana: '/icons/payment/Ewallet/Dana.jpg',
+    ovo: '/icons/payment/Ewallet/Ovo.jpg',
+    shopeepay: '/icons/payment/Ewallet/ShopeePay.jpg',
+    linkaja: '/icons/payment/Ewallet/Linkaja.png',
+    jeniuspay: '/icons/payment/Ewallet/JeniusPay.png',
+  }
+  const ewalletIcon = Object.entries(ewalletIcons).find(([name]) => methodName.includes(name))?.[1]
+  const iconPath = category === 'ewallet' && ewalletIcon
+    ? ewalletIcon
+    : `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
   const fallbackLabel: Record<PaymentCategory, string> = {
     bank: 'BANK',
     ewallet: 'WALLET',
