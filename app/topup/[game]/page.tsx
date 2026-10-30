@@ -91,13 +91,31 @@ function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; 
     bnc: '/icons/payment/Bank/bnc.jpg',
     bsi: '/icons/payment/Bank/bsi.jpg',
   }
+  const qrisIcons: Record<string, string> = {
+    nobu: '/icons/payment/qris/nobuqris.jpg',
+    shopeepay: '/icons/payment/qris/shopeepayqris.jpg',
+  }
+  const retailIcons: Record<string, string> = {
+    indomaret: '/icons/payment/retail/indomaret.jpg',
+  }
   const ewalletIcon = Object.entries(ewalletIcons).find(([name]) => methodName.includes(name))?.[1]
   const bankIcon = Object.entries(bankIcons).find(([name]) => methodName.includes(name))?.[1]
+  const qrisIcon = category === 'qris'
+    ? Object.entries(qrisIcons).find(([name]) => methodName.includes(name))?.[1]
+    : undefined
+  const retailIcon = category === 'retail'
+    ? Object.entries(retailIcons).find(([name]) => methodName.includes(name))?.[1]
+      ?? '/icons/payment/retail/Retail.png'
+    : undefined
   const iconPath = category === 'ewallet' && ewalletIcon
     ? ewalletIcon
     : category === 'bank' && bankIcon
       ? bankIcon
-      : `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
+      : qrisIcon
+        ? qrisIcon
+        : retailIcon
+          ? retailIcon
+          : `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
   const fallbackLabel: Record<PaymentCategory, string> = {
     bank: 'BANK',
     ewallet: 'WALLET',
