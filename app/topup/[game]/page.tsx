@@ -107,6 +107,12 @@ function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; 
     ? Object.entries(retailIcons).find(([name]) => methodName.includes(name))?.[1]
       ?? '/icons/payment/retail/Retail.png'
     : undefined
+  const cardIcon = category === 'card'
+    ? '/icons/payment/creditcard/creditcard.jpg'
+    : undefined
+  const otherIcon = category === 'other' && methodName.includes('indodana')
+    ? '/icons/payment/metodelainnya/indodanapaylater.jpg'
+    : undefined
   const iconPath = category === 'ewallet' && ewalletIcon
     ? ewalletIcon
     : category === 'bank' && bankIcon
@@ -115,7 +121,11 @@ function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; 
         ? qrisIcon
         : retailIcon
           ? retailIcon
-          : `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
+          : cardIcon
+            ? cardIcon
+            : otherIcon
+              ? otherIcon
+              : `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
   const fallbackLabel: Record<PaymentCategory, string> = {
     bank: 'BANK',
     ewallet: 'WALLET',
