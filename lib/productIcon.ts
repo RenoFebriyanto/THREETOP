@@ -24,6 +24,14 @@ const HONOR_OF_KINGS_TOKEN_ICONS = [
   { max: Number.POSITIVE_INFINITY, file: 'token4001-8000.png' },
 ]
 
+const PUBG_MOBILE_UC_ICONS = [
+  { max: 50, file: 'uc1-50.png' },
+  { max: 500, file: 'uc51-500.png' },
+  { max: 800, file: 'uc501-800.png' },
+  { max: 1999, file: 'uc801-2000.png' },
+  { max: Number.POSITIVE_INFINITY, file: 'uc2000-10000.png' },
+]
+
 export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const gameInfo = SUPPORTED_GAMES[gameKey]
   if (!gameInfo) {
@@ -73,6 +81,24 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
       image: [`${folder}/valorant_points.png`],
       fallback: gameInfo.icon,
       fallbackImage: defaultImage,
+    }
+  }
+
+  if (gameKey === 'pubg_mobile') {
+    const searchableText = `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code}`.toLowerCase()
+    const isUcProduct = /\buc\b/.test(searchableText) || searchableText.includes('unknown cash')
+    const nominal = product.product_name.match(/\d{1,3}(?:[.,]\d{3})+|\d+/)?.[0]
+    const amount = nominal ? Number(nominal.replace(/[.,]/g, '')) : 0
+    const icon = isUcProduct && amount > 0
+      ? PUBG_MOBILE_UC_ICONS.find((range) => amount <= range.max)?.file
+      : undefined
+
+    if (icon) {
+      return {
+        image: [`${folder}/${icon}`],
+        fallback: gameInfo.icon,
+        fallbackImage: defaultImage,
+      }
     }
   }
 
