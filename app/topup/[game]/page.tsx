@@ -77,10 +77,27 @@ function PaymentMethodIcon({ method, category }: { method: DuitkuPaymentMethod; 
     linkaja: '/icons/payment/Ewallet/Linkaja.png',
     jeniuspay: '/icons/payment/Ewallet/JeniusPay.png',
   }
+  const bankIcons: Record<string, string> = {
+    maybank: '/icons/payment/Bank/Maybank.jpg',
+    permata: '/icons/payment/Bank/permatabank.jpg',
+    cimbniaga: '/icons/payment/Bank/cimbniaga.jpg',
+    atmbersama: '/icons/payment/Bank/atmbersama.jpg',
+    arthagraha: '/icons/payment/Bank/arthagraha.jpg',
+    sampoerna: '/icons/payment/Bank/sampoerna.jpg',
+    mandiri: '/icons/payment/Bank/mandiri.jpg',
+    bca: '/icons/payment/Bank/bca.jpg',
+    bni: '/icons/payment/Bank/bni.jpg',
+    bri: '/icons/payment/Bank/bri.jpg',
+    bnc: '/icons/payment/Bank/bnc.jpg',
+    bsi: '/icons/payment/Bank/bsi.jpg',
+  }
   const ewalletIcon = Object.entries(ewalletIcons).find(([name]) => methodName.includes(name))?.[1]
+  const bankIcon = Object.entries(bankIcons).find(([name]) => methodName.includes(name))?.[1]
   const iconPath = category === 'ewallet' && ewalletIcon
     ? ewalletIcon
-    : `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
+    : category === 'bank' && bankIcon
+      ? bankIcon
+      : `/icons/payment/${method.paymentMethod.toLowerCase()}.png`
   const fallbackLabel: Record<PaymentCategory, string> = {
     bank: 'BANK',
     ewallet: 'WALLET',
