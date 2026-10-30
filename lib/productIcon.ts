@@ -88,9 +88,9 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
     const searchableText = `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code}`.toLowerCase()
     const normalizedText = searchableText.replace(/[^a-z0-9]/g, '')
     const passIcon = normalizedText.includes('elite') && normalizedText.includes('plus')
-      ? 'royaleeliteplus.jpg'
+      ? 'royaleeliteplus.png'
       : normalizedText.includes('royalepass') || normalizedText.includes('royalpass')
-        ? 'royalepass.jpg'
+        ? 'royalepass.png'
         : undefined
 
     if (passIcon) {
