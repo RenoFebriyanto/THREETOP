@@ -62,6 +62,28 @@ export function getMobileLegendsProductCategory(
   return 'diamond'
 }
 
+export const FREE_FIRE_PRODUCT_CATEGORIES = [
+  { id: 'diamond', label: 'Diamond' },
+  { id: 'membership', label: 'Membership' },
+] as const
+
+export type FreeFireProductCategory =
+  (typeof FREE_FIRE_PRODUCT_CATEGORIES)[number]['id']
+
+export function getFreeFireProductCategory(
+  product: DigiflazzProduct
+): FreeFireProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+  )
+
+  if (/\b(membership|member|weekly|monthly|mingguan|bulanan|pass)\b/.test(searchableText)) {
+    return 'membership'
+  }
+
+  return 'diamond'
+}
+
 export const HONOR_OF_KINGS_PRODUCT_CATEGORIES = [
   { id: 'tokens', label: 'Tokens' },
   { id: 'membership', label: 'Membership' },

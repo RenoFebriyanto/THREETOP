@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
+  FREE_FIRE_PRODUCT_CATEGORIES,
+  getFreeFireProductCategory,
   getHonorOfKingsProductCategory,
   getMobileLegendsProductCategory,
   getPubgMobileProductCategory,
@@ -620,6 +622,13 @@ export default function GameTopUpPage() {
           (product) => getMobileLegendsProductCategory(product) === category.id
         ),
       })).filter((category) => category.products.length > 0)
+    : gameKey === 'free_fire'
+      ? FREE_FIRE_PRODUCT_CATEGORIES.map((category) => ({
+          ...category,
+          products: products.filter(
+            (product) => getFreeFireProductCategory(product) === category.id
+          ),
+        })).filter((category) => category.products.length > 0)
     : gameKey === 'honor_of_kings'
       ? HONOR_OF_KINGS_PRODUCT_CATEGORIES.map((category) => ({
           ...category,
