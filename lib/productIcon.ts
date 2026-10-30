@@ -47,8 +47,8 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
     } else if (searchableText.includes('weekly') || searchableText.includes('membership')) {
       iconFile = searchableText.includes('plus') ? 'Weekly Card Plus.png' : 'Weekly Card.png'
     } else {
-      const tokenCount = product.product_name.match(/\d[\d,]*/)?.[0]
-      const amount = tokenCount ? Number(tokenCount.replace(/,/g, '')) : 0
+      const tokenCount = product.product_name.match(/\d{1,3}(?:[.,]\d{3})+|\d+/)?.[0]
+      const amount = tokenCount ? Number(tokenCount.replace(/[.,]/g, '')) : 0
       iconFile = HONOR_OF_KINGS_TOKEN_ICONS.find((range) => amount <= range.max)?.file
         ?? 'token0-20.png'
     }
