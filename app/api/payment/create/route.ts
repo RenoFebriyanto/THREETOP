@@ -65,9 +65,16 @@ export async function POST(req: NextRequest) {
       (total, product) => total + (product.sell_price ?? product.price),
       0
     )
+    const totalCost = validProducts.reduce((total, product) => total + product.price, 0)
     if (!Number.isSafeInteger(totalAmount) || totalAmount <= 0 || totalAmount > 2_147_483_647) {
       return NextResponse.json(
         { error: 'Total pembayaran tidak valid.' },
+        { status: 400 }
+      )
+    }
+    if (!Number.isSafeInteger(totalCost) || totalCost <= 0 || totalCost > 2_147_483_647) {
+      return NextResponse.json(
+        { error: 'Harga modal produk tidak valid.' },
         { status: 400 }
       )
     }
@@ -93,6 +100,7 @@ export async function POST(req: NextRequest) {
         productCode: primaryProduct.buyer_sku_code,
         gameUserId,
         amount: totalAmount,
+        costAmount: totalCost,
         customerEmail,
         status: 'PENDING',
         paymentStatus: 'UNPAID',

@@ -57,6 +57,7 @@ model Order {
   productCode      String
   gameUserId       String
   amount           Int
+  costAmount       Int?
   customerEmail    String?
   status           OrderStatus   @default(PENDING)
   paymentStatus    PaymentStatus @default(UNPAID)

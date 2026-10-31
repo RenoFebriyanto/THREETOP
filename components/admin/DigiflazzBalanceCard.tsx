@@ -18,7 +18,7 @@ export default async function DigiflazzBalanceCard({
   const balance = await checkBalance().catch(() => null)
 
   return (
-    <div className="contents">
+    <div className="w-full space-y-3">
       {balance !== null && balance < LOW_BALANCE_THRESHOLD && (
         <div className="w-full rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-4">
           <p className="text-sm font-semibold text-[var(--color-error)]">Saldo Digiflazz Hampir Habis</p>
@@ -27,7 +27,7 @@ export default async function DigiflazzBalanceCard({
           </p>
         </div>
       )}
-      <div className="rounded-lg border border-[var(--color-warning-border)] p-3 shadow-lg flex-none basis-[calc(50%-0.5rem)] md:basis-[calc(25%-0.75rem)] max-w-[calc(50%-0.5rem)] md:max-w-[calc(25%-0.75rem)] min-w-[140px]" style={{ background: 'var(--color-surface)' }}>
+      <div className="w-full rounded-2xl border border-[var(--color-warning-border)] p-4 shadow-lg sm:p-5" style={{ background: 'var(--color-surface)' }}>
         <div className="mb-3 flex items-start justify-between">
           <p className="text-xs font-medium text-[var(--color-muted)]">Saldo Digiflazz</p>
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[var(--color-warning-bg)] text-[var(--color-warning)]">
