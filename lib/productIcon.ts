@@ -147,9 +147,22 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
       }
     }
 
-    if (/\b(crystal|primogem)\b/.test(searchableText)) {
-      const nominal = product.product_name.match(/\d{1,3}(?:[.,]\d{3})+|\d+/)?.[0]
-      const amount = nominal ? Number(nominal.replace(/[.,]/g, '')) : 0
+    const isCrystalProduct = searchableText.includes('crystal')
+      || searchableText.includes('primogem')
+      || /gensin\d+p\d+/i.test(product.buyer_sku_code)
+
+    if (isCrystalProduct) {
+      const nominal = product.product_name.match(
+        /(\d{1,3}(?:[.,]\d{3})+|\d+)(?:\s*\+\s*(\d{1,3}(?:[.,]\d{3})+|\d+))?/
+      )
+      const parseAmount = (value: string | undefined) =>
+        value ? Number(value.replace(/[.,]/g, '')) : 0
+      const skuNominal = product.buyer_sku_code.match(/gensin(\d+)p(\d+)/i)
+      const amount = nominal
+        ? parseAmount(nominal[1]) + parseAmount(nominal[2])
+        : skuNominal
+          ? Number(skuNominal[1]) + Number(skuNominal[2])
+          : 0
       const icon = amount > 0
         ? GENSHIN_IMPACT_CRYSTAL_ICONS.find((range) => amount <= range.max)?.file
         : undefined
