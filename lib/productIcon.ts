@@ -41,6 +41,15 @@ const FREE_FIRE_DIAMOND_ICONS = [
   { max: Number.POSITIVE_INFINITY, file: 'dm4501-9000.png' },
 ]
 
+const GENSHIN_IMPACT_CRYSTAL_ICONS = [
+  { max: 60, file: 'crystal1-60.png' },
+  { max: 400, file: 'crystal61-400.png' },
+  { max: 1500, file: 'crystal401-1500.png' },
+  { max: 2500, file: 'crystal1501-2500.png' },
+  { max: 4000, file: 'crystal2501-4000.png' },
+  { max: Number.POSITIVE_INFINITY, file: 'crystal4001-11000.png' },
+]
+
 export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const gameInfo = SUPPORTED_GAMES[gameKey]
   if (!gameInfo) {
@@ -121,6 +130,36 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
         image: [`${folder}/${icon}`],
         fallback: gameInfo.icon,
         fallbackImage: defaultImage,
+      }
+    }
+  }
+
+  if (gameKey === 'genshin_impact') {
+    const searchableText = `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+
+    if (/\b(welkin|blessing|membership)\b/.test(searchableText)) {
+      return {
+        image: [`${folder}/welkinmoon.png`],
+        fallback: gameInfo.icon,
+        fallbackImage: defaultImage,
+      }
+    }
+
+    if (/\b(crystal|primogem)\b/.test(searchableText)) {
+      const nominal = product.product_name.match(/\d{1,3}(?:[.,]\d{3})+|\d+/)?.[0]
+      const amount = nominal ? Number(nominal.replace(/[.,]/g, '')) : 0
+      const icon = amount > 0
+        ? GENSHIN_IMPACT_CRYSTAL_ICONS.find((range) => amount <= range.max)?.file
+        : undefined
+
+      if (icon) {
+        return {
+          image: [`${folder}/${icon}`],
+          fallback: gameInfo.icon,
+          fallbackImage: defaultImage,
+        }
       }
     }
   }
