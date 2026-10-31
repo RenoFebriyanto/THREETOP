@@ -402,4 +402,21 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdHint: 'Temukan UID di pojok kiri atas layar profil in-game',
     productIconDefault: '/icons/games/honkai-star-rail.webp',
   },
+  wuthering_waves: {
+    label: 'Wuthering Waves',
+    image: '/icons/games/wuthering-waves.webp',
+    icon: 'WW',
+    color: 'from-cyan-600 to-slate-900',
+    tag: 'RPG',
+    brands: [
+      'Wuthering Waves',
+      'WUTHERING WAVES',
+      'WutheringWaves',
+      'WUTHERINGWAVES',
+    ],
+    userIdLabel: 'User ID',
+    userIdPlaceholder: '123456789',
+    userIdHint: 'Temukan User ID Wuthering Waves di profil in-game',
+    productIconDefault: '/icons/games/wuthering-waves.webp',
+  },
 }
