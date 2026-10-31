@@ -298,7 +298,7 @@ export default async function AdminDashboardPage() {
 
       <section
         aria-label="Statistik keuangan bulan ini"
-        className="grid grid-cols-2 gap-3"
+        className="grid grid-cols-2 gap-3 md:grid-cols-4"
       >
         <MetricCard
           label="Pendapatan bulan ini"
