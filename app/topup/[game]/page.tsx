@@ -719,7 +719,7 @@ export default function GameTopUpPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
-                                  <p className="text-[var(--color-frost)] font-bold text-sm mt-1">{formatCurrency(getDisplayPrice(product))}</p>
+                                  <p className="mt-1 break-words text-xs font-bold leading-tight text-[var(--color-frost)] sm:text-sm">{formatCurrency(getDisplayPrice(product))}</p>
                                 </div>
                               </div>
                             </button>
