@@ -84,6 +84,21 @@ export function getFreeFireProductCategory(
   return 'diamond'
 }
 
+export function getFreeFireMembershipSortOrder(product: DigiflazzProduct): number {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+  )
+  const isWeekly = /\b(weekly|week|mingguan|minggu)\b/.test(searchableText)
+    || /\b7\s*(hari|day|days)\b/.test(searchableText)
+  const isMonthly = /\b(monthly|month|bulanan|bulan)\b/.test(searchableText)
+    || /\b30\s*(hari|day|days)\b/.test(searchableText)
+  const isFivePack = /\b(x\s*5|5\s*x|5\s*kali)\b/.test(searchableText)
+
+  if (isWeekly) return isFivePack ? 1 : 0
+  if (isMonthly) return isFivePack ? 3 : 2
+  return 4
+}
+
 export const HONOR_OF_KINGS_PRODUCT_CATEGORIES = [
   { id: 'tokens', label: 'Tokens' },
   { id: 'membership', label: 'Membership' },

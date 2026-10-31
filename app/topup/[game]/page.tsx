@@ -7,6 +7,7 @@ import Image from 'next/image'
 import {
   FREE_FIRE_PRODUCT_CATEGORIES,
   getFreeFireProductCategory,
+  getFreeFireMembershipSortOrder,
   getHonorOfKingsProductCategory,
   getMobileLegendsProductCategory,
   getPubgMobileProductCategory,
@@ -627,7 +628,10 @@ export default function GameTopUpPage() {
           ...category,
           products: products.filter(
             (product) => getFreeFireProductCategory(product) === category.id
-          ),
+          ).sort((a, b) => category.id === 'membership'
+            ? getFreeFireMembershipSortOrder(a) - getFreeFireMembershipSortOrder(b)
+              || a.price - b.price
+            : a.price - b.price),
         })).filter((category) => category.products.length > 0)
     : gameKey === 'honor_of_kings'
       ? HONOR_OF_KINGS_PRODUCT_CATEGORIES.map((category) => ({

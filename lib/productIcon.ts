@@ -32,6 +32,15 @@ const PUBG_MOBILE_UC_ICONS = [
   { max: Number.POSITIVE_INFINITY, file: 'uc2000-10000.png' },
 ]
 
+const FREE_FIRE_DIAMOND_ICONS = [
+  { max: 50, file: 'dm1-50.png' },
+  { max: 500, file: 'dm51-500.png' },
+  { max: 1000, file: 'dm501-1000.png' },
+  { max: 2500, file: 'dm1001-2500.png' },
+  { max: 4500, file: 'dm2501-4500.png' },
+  { max: Number.POSITIVE_INFINITY, file: 'dm4501-9000.png' },
+]
+
 export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
   const gameInfo = SUPPORTED_GAMES[gameKey]
   if (!gameInfo) {
@@ -81,6 +90,38 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
       image: [`${folder}/valorant_points.png`],
       fallback: gameInfo.icon,
       fallbackImage: defaultImage,
+    }
+  }
+
+  if (gameKey === 'free_fire') {
+    const searchableText = `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+    const isWeeklyMembership = /\b(weekly|week|mingguan|minggu)\b/.test(searchableText)
+      || /\b7\s*(hari|day|days)\b/.test(searchableText)
+    const isMonthlyMembership = /\b(monthly|month|bulanan|bulan)\b/.test(searchableText)
+      || /\b30\s*(hari|day|days)\b/.test(searchableText)
+
+    if (isWeeklyMembership || isMonthlyMembership) {
+      return {
+        image: [`${folder}/${isWeeklyMembership ? 'ffvipmingguan.png' : 'ffvipbulanan.png'}`],
+        fallback: gameInfo.icon,
+        fallbackImage: defaultImage,
+      }
+    }
+
+    const nominal = product.product_name.match(/\d{1,3}(?:[.,]\d{3})+|\d+/)?.[0]
+    const amount = nominal ? Number(nominal.replace(/[.,]/g, '')) : 0
+    const icon = amount > 0
+      ? FREE_FIRE_DIAMOND_ICONS.find((range) => amount <= range.max)?.file
+      : undefined
+
+    if (icon) {
+      return {
+        image: [`${folder}/${icon}`],
+        fallback: gameInfo.icon,
+        fallbackImage: defaultImage,
+      }
     }
   }
 
