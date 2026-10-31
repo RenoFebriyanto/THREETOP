@@ -9,7 +9,7 @@ import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 const GAME_CATEGORIES = [
   { title: 'Recommend', games: ['mobile_legends', 'genshin_impact'] },
   { title: 'New', games: ['honor_of_kings', 'valorant'] },
-  { title: 'Popular', games: ['free_fire', 'pubg_mobile'] },
+  { title: 'Popular', games: ['free_fire', 'pubg_mobile', 'point_blank'] },
 ] as const
 
 export default async function HomePage() {

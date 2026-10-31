@@ -372,4 +372,16 @@ export const SUPPORTED_GAMES: Record<string, {
     productIconPrefix: 'val-',
     productIconDefault: '/icons/games/valorant.webp',
   },
+  point_blank: {
+    label: 'Point Blank',
+    image: '/icons/games/point-blank.webp',
+    icon: 'PB',
+    color: 'from-slate-600 to-zinc-900',
+    tag: 'FPS',
+    brands: ['Point Blank', 'POINT BLANK', 'PointBlank', 'POINTBLANK'],
+    userIdLabel: 'User ID',
+    userIdPlaceholder: '123456789',
+    userIdHint: 'Masukkan User ID Point Blank kamu',
+    productIconDefault: '/icons/games/point-blank.webp',
+  },
 }
