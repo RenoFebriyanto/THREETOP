@@ -46,7 +46,7 @@ const SECTIONS = [
       'Memproses dan menyelesaikan transaksi top up game Pengguna.',
       'Mengelola akun Pengguna, termasuk autentikasi dan pemulihan akun.',
       'Mengirimkan konfirmasi transaksi dan pembaruan status pesanan.',
-      'Menampilkan sebagian email yang disamarkan bersama detail transaksi berhasil terbaru di halaman Beranda untuk memberi informasi aktivitas transaksi kepada Pengunjung.',
+      'Menampilkan sebagian email yang disamarkan bersama detail dan status transaksi terbaru di halaman Beranda untuk memberi informasi aktivitas transaksi kepada Pengunjung.',
       'Memberikan layanan customer support dan merespons pertanyaan.',
       'Mendeteksi, mencegah, dan menginvestigasi aktivitas penipuan atau pelanggaran syarat layanan.',
       'Meningkatkan kualitas layanan melalui analisis penggunaan platform (menggunakan data yang dianonimkan).',

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
 type RecentTransaction = {
@@ -10,6 +10,37 @@ type RecentTransaction = {
   amount: number
   createdAt: string
   email: string
+  status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' | 'REFUNDED'
+}
+
+const TRANSACTION_STATUS: Record<
+  RecentTransaction['status'],
+  { label: string; className: string }
+> = {
+  PENDING: {
+    label: 'Menunggu pembayaran',
+    className: 'border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] text-[var(--color-warning)]',
+  },
+  PROCESSING: {
+    label: 'Diproses',
+    className: 'border-[var(--color-info-border)] bg-[var(--color-info-bg)] text-[var(--color-info)]',
+  },
+  SUCCESS: {
+    label: 'Berhasil',
+    className: 'border-[var(--color-success-border)] bg-[var(--color-success-bg)] text-[var(--color-success)]',
+  },
+  FAILED: {
+    label: 'Gagal',
+    className: 'border-[var(--color-error-border)] bg-[var(--color-error-bg)] text-[var(--color-error)]',
+  },
+  EXPIRED: {
+    label: 'Kedaluwarsa',
+    className: 'border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-muted)]',
+  },
+  REFUNDED: {
+    label: 'Dikembalikan',
+    className: 'border-[var(--color-violet-border)] bg-[var(--color-violet-bg)] text-[var(--color-violet)]',
+  },
 }
 
 function formatPrice(amount: number) {
@@ -31,53 +62,53 @@ export default function RecentTransactions() {
   const [transactions, setTransactions] = useState<RecentTransaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-
-  const loadTransactions = useCallback(async (signal: AbortSignal) => {
-    try {
-      const response = await fetch('/api/transactions/recent', {
-        cache: 'no-store',
-        signal,
-      })
-      const result = await response.json() as {
-        transactions?: RecentTransaction[]
-        error?: string
-      }
-
-      if (!response.ok) {
-        throw new Error(result.error ?? 'Transaksi terbaru belum dapat dimuat.')
-      }
-      if (!Array.isArray(result.transactions)) {
-        throw new Error('Data transaksi terbaru tidak valid.')
-      }
-
-      setTransactions(result.transactions)
-      setError(null)
-    } catch (loadError) {
-      if (signal.aborted) return
-      console.error('[RECENT_TRANSACTIONS_LOAD_ERROR]', loadError)
-      setError('Transaksi terbaru belum dapat dimuat. Coba lagi sebentar.')
-    } finally {
-      if (!signal.aborted) setIsLoading(false)
-    }
-  }, [])
+  const [isConnected, setIsConnected] = useState(false)
 
   useEffect(() => {
-    const controller = new AbortController()
-    let timeout: ReturnType<typeof setTimeout>
+    const source = new EventSource('/api/transactions/recent')
 
-    const poll = async () => {
-      await loadTransactions(controller.signal)
-      if (!controller.signal.aborted) {
-        timeout = setTimeout(poll, 30_000)
+    source.onopen = () => {
+      setIsConnected(true)
+      setError(null)
+    }
+
+    source.onmessage = (event) => {
+      try {
+        const result = JSON.parse(event.data) as {
+          transactions?: RecentTransaction[]
+        }
+        if (!Array.isArray(result.transactions)) {
+          throw new Error('Data transaksi terbaru tidak valid.')
+        }
+
+        setTransactions(result.transactions)
+        setError(null)
+        setIsLoading(false)
+      } catch (parseError) {
+        console.error('[RECENT_TRANSACTIONS_PARSE_ERROR]', parseError)
+        setError('Data transaksi terbaru tidak dapat dibaca.')
+        setIsLoading(false)
       }
     }
 
-    void poll()
-    return () => {
-      controller.abort()
-      clearTimeout(timeout)
+    source.addEventListener('stream-error', (event) => {
+      const message = event as MessageEvent<{ error?: string }>
+      setError(message.data.error ?? 'Transaksi terbaru belum dapat dimuat.')
+      setIsLoading(false)
+    })
+
+    source.onerror = () => {
+      setIsConnected(false)
+      setIsLoading(false)
+      if (source.readyState === EventSource.CLOSED) {
+        setError('Koneksi transaksi terputus. Muat ulang halaman untuk mencoba kembali.')
+      }
     }
-  }, [loadTransactions])
+
+    return () => {
+      source.close()
+    }
+  }, [])
 
   return (
     <section aria-labelledby="recent-transactions-title" className="mt-14 border-t border-[var(--color-border)] pt-8 sm:mt-16 sm:pt-10">
@@ -93,7 +124,7 @@ export default function RecentTransactions() {
             </h2>
           </div>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            Pesanan berhasil terbaru, diperbarui otomatis setiap 30 detik.
+            Status diperbarui otomatis. {isConnected ? 'Terhubung langsung.' : 'Menyambungkan kembali...'}
           </p>
         </div>
       </div>
@@ -102,16 +133,21 @@ export default function RecentTransactions() {
         <p role="status" className="rounded-xl border border-[var(--color-border)] p-5 text-sm text-[var(--color-muted)]">
           Memuat transaksi terbaru...
         </p>
-      ) : error ? (
+      ) : error && transactions.length === 0 ? (
         <p role="status" className="rounded-xl border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-5 text-sm text-[var(--color-error)]">
           {error}
         </p>
       ) : transactions.length === 0 ? (
         <p className="rounded-xl border border-[var(--color-border)] p-5 text-sm text-[var(--color-muted)]">
-          Belum ada transaksi berhasil untuk ditampilkan.
+          Belum ada transaksi untuk ditampilkan.
         </p>
       ) : (
         <>
+          {error && (
+            <p role="status" className="mb-3 rounded-lg border border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] px-3 py-2 text-xs text-[var(--color-warning)]">
+              {error}
+            </p>
+          )}
           <div className="space-y-3 sm:hidden">
             {transactions.map((transaction) => (
               <article key={transaction.invoice} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
@@ -124,8 +160,8 @@ export default function RecentTransactions() {
                       {SUPPORTED_GAMES[transaction.game]?.label ?? transaction.game}
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-full border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-2.5 py-1 text-xs font-semibold text-[var(--color-success)]">
-                    Berhasil
+                  <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${TRANSACTION_STATUS[transaction.status].className}`}>
+                    {TRANSACTION_STATUS[transaction.status].label}
                   </span>
                 </div>
                 <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2 border-t border-[var(--color-border)] pt-3 text-xs">
@@ -168,8 +204,8 @@ export default function RecentTransactions() {
                     <td className="whitespace-nowrap px-4 py-3 text-white">{transaction.email}</td>
                     <td className="whitespace-nowrap px-4 py-3 font-semibold text-white">{formatPrice(transaction.amount)}</td>
                     <td className="whitespace-nowrap px-4 py-3">
-                      <span className="rounded-full border border-[var(--color-success-border)] bg-[var(--color-success-bg)] px-2.5 py-1 text-xs font-semibold text-[var(--color-success)]">
-                        Berhasil
+                      <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${TRANSACTION_STATUS[transaction.status].className}`}>
+                        {TRANSACTION_STATUS[transaction.status].label}
                       </span>
                     </td>
                   </tr>
