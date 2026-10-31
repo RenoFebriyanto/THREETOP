@@ -128,3 +128,12 @@ model DigiflazzProduct {
   product      Json
   updatedAt    DateTime @updatedAt
 }
+
+model DigiflazzBalanceMonitor {
+  id              String   @id @default("singleton")
+  alertLevel      String   @default("NORMAL")
+  lastBalance     Int?
+  lastCheckedAt   DateTime?
+  lastAlertedAt   DateTime?
+  updatedAt       DateTime @updatedAt
+}

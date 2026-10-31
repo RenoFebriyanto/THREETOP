@@ -1,6 +1,6 @@
-import { checkBalance } from '@/lib/digiflazz-server'
-
-const LOW_BALANCE_THRESHOLD = 50_000
+import { prisma } from '@/lib/db'
+import { DIGIFLAZZ_BALANCE_THRESHOLDS } from '@/lib/digiflazz-balance-monitor'
+import DigiflazzBalanceActions from '@/components/admin/DigiflazzBalanceActions'
 
 function formatCurrency(amount: number) {
   return new Intl.NumberFormat('id-ID', {
@@ -15,15 +15,26 @@ export default async function DigiflazzBalanceCard({
 }: {
   processingOrders: number
 }) {
-  const balance = await checkBalance().catch(() => null)
+  const monitor = await prisma.digiflazzBalanceMonitor.findUnique({
+    where: { id: 'singleton' },
+  })
+  const balance = monitor?.lastBalance ?? null
+  const level = monitor?.alertLevel ?? 'UNKNOWN'
+  const isTelegramConfigured = Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID)
+  const isCritical = balance !== null && balance <= DIGIFLAZZ_BALANCE_THRESHOLDS.critical
+  const isWarning = balance !== null && balance <= DIGIFLAZZ_BALANCE_THRESHOLDS.warning
 
   return (
     <div className="w-full space-y-3">
-      {balance !== null && balance < LOW_BALANCE_THRESHOLD && (
-        <div className="w-full rounded-lg border border-[var(--color-error-border)] bg-[var(--color-error-bg)] p-4">
-          <p className="text-sm font-semibold text-[var(--color-error)]">Saldo Digiflazz Hampir Habis</p>
-          <p className="mt-0.5 text-xs text-[var(--color-error)]/70">
-            Saldo saat ini <span className="font-bold">{formatCurrency(balance)}</span>. Segera deposit agar transaksi tidak terganggu.
+      {isWarning && (
+        <div className={`w-full rounded-lg border p-4 ${isCritical
+          ? 'border-[var(--color-error-border)] bg-[var(--color-error-bg)]'
+          : 'border-[var(--color-warning-border)] bg-[var(--color-warning-bg)]'}`}>
+          <p className={`text-sm font-semibold ${isCritical ? 'text-[var(--color-error)]' : 'text-[var(--color-warning)]'}`}>
+            {isCritical ? 'Saldo Digiflazz Kritis' : 'Saldo Digiflazz Rendah'}
+          </p>
+          <p className={`mt-0.5 text-xs ${isCritical ? 'text-[var(--color-error)]/80' : 'text-[var(--color-warning)]/80'}`}>
+            Saldo {formatCurrency(balance)}. Ambang peringatan {formatCurrency(DIGIFLAZZ_BALANCE_THRESHOLDS.warning)}.
           </p>
         </div>
       )}
@@ -38,9 +49,25 @@ export default async function DigiflazzBalanceCard({
         </div>
         <p className="text-2xl font-bold leading-tight text-white">{balance !== null ? formatCurrency(balance) : '—'}</p>
         <p className="mt-1 text-xs text-[var(--color-muted-strong)]">
-          {balance === null ? 'Saldo tidak dapat dimuat' : processingOrders > 0 ? `${processingOrders} diproses` : 'semua selesai'}
+          {balance === null
+            ? 'Belum ada hasil pemeriksaan otomatis'
+            : `${level === 'NORMAL' ? 'Saldo aman' : level === 'CRITICAL' ? 'Kritis' : 'Perlu deposit'} · ${processingOrders} order aktif`}
         </p>
+        {monitor?.lastCheckedAt && (
+          <p className="mt-1 text-[11px] text-[var(--color-muted-strong)]">
+            Diperiksa {new Intl.DateTimeFormat('id-ID', { dateStyle: 'short', timeStyle: 'short' }).format(monitor.lastCheckedAt)}
+          </p>
+        )}
       </div>
+      {!isTelegramConfigured && (
+        <p className="rounded-lg border border-[var(--color-warning-border)] bg-[var(--color-warning-bg)] p-3 text-xs text-[var(--color-warning)]">
+          Telegram belum dikonfigurasi. Tambahkan TELEGRAM_BOT_TOKEN dan TELEGRAM_CHAT_ID di environment production agar notifikasi berfungsi.
+        </p>
+      )}
+      <p className="text-[11px] text-[var(--color-muted-strong)]">
+        Peringatan {formatCurrency(DIGIFLAZZ_BALANCE_THRESHOLDS.warning)} · Kritis {formatCurrency(DIGIFLAZZ_BALANCE_THRESHOLDS.critical)}
+      </p>
+      <DigiflazzBalanceActions targetDeposit={DIGIFLAZZ_BALANCE_THRESHOLDS.targetDeposit} />
     </div>
   )
 }

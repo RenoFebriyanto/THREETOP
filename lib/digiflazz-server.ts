@@ -331,8 +331,100 @@ export async function checkBalance(): Promise<number> {
     cache: 'no-store',
   })
   if (!res.ok) throw new Error(`Digiflazz balance check error: ${res.status}`)
-  const data = await res.json()
-  return data.data?.deposit ?? 0
+  const response: unknown = await res.json()
+  if (
+    !response ||
+    typeof response !== 'object' ||
+    !('data' in response) ||
+    !response.data ||
+    typeof response.data !== 'object' ||
+    !('deposit' in response.data) ||
+    typeof response.data.deposit !== 'number' ||
+    !Number.isFinite(response.data.deposit) ||
+    response.data.deposit < 0
+  ) {
+    throw new Error('Digiflazz returned an invalid balance response.')
+  }
+  return response.data.deposit
+}
+
+export type DigiflazzDepositTicket = {
+  bank: string
+  paymentMethod: string
+  accountNumber: string
+  notes: string
+  amount: number
+}
+
+export async function createDepositTicket({
+  amount,
+  bank,
+  ownerName,
+}: {
+  amount: number
+  bank: 'ShopeePay'
+  ownerName: string
+}): Promise<DigiflazzDepositTicket> {
+  if (!USERNAME || !API_KEY) {
+    throw new Error('Digiflazz API credentials are not configured.')
+  }
+
+  const res = await fetch(`${BASE_URL}/deposit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username: USERNAME,
+      amount,
+      Bank: bank,
+      owner_name: ownerName,
+      sign: createSignature('deposit'),
+    }),
+    cache: 'no-store',
+    signal: AbortSignal.timeout(15_000),
+  })
+
+  if (!res.ok) {
+    throw new Error(`Digiflazz deposit ticket request failed (${res.status}).`)
+  }
+
+  const response: unknown = await res.json()
+  if (
+    !response ||
+    typeof response !== 'object' ||
+    !('data' in response) ||
+    !response.data ||
+    typeof response.data !== 'object'
+  ) {
+    throw new Error('Digiflazz returned an invalid deposit ticket response.')
+  }
+
+  const data = response.data
+  if (
+    !('rc' in data) ||
+    data.rc !== '00' ||
+    !('bank' in data) ||
+    typeof data.bank !== 'string' ||
+    !('payment_method' in data) ||
+    typeof data.payment_method !== 'string' ||
+    !('account_no' in data) ||
+    typeof data.account_no !== 'string' ||
+    !('notes' in data) ||
+    typeof data.notes !== 'string' ||
+    !('amount' in data) ||
+    typeof data.amount !== 'number' ||
+    !Number.isSafeInteger(data.amount) ||
+    data.amount <= 0
+  ) {
+    throw new Error('Digiflazz could not create the deposit ticket.')
+  }
+
+  return {
+    bank: data.bank,
+    paymentMethod: data.payment_method,
+    accountNumber: data.account_no,
+    notes: data.notes,
+    amount: data.amount,
+  }
 }
 
 export async function createTransaction({

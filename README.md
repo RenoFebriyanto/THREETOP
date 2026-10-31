@@ -35,6 +35,22 @@ Use the sandbox merchant code and API key with `DUITKU_IS_PRODUCTION=false`. Aft
 
 Set the Duitku project callback URL to `https://threetop.my.id/api/payment/webhook`. The application also sends this callback URL with each payment request. Duitku returns customers to the matching game top-up page after checkout.
 
+## Digiflazz Auto Balance Monitor
+
+The admin dashboard stores the latest Digiflazz balance and shows warning/critical states. Checks can run every five minutes through an external scheduler; Telegram alerts are sent when the balance crosses a threshold and when it recovers. The dashboard also lets an admin request a Digiflazz deposit ticket. Ticket creation does not transfer money; follow the returned payment instructions manually.
+
+1. Run the SQL in `prisma/migrations/20261031_add_digiflazz_balance_monitor/migration.sql` in the Supabase SQL Editor.
+2. Set these server-side environment variables in Vercel. The example values start at a Rp200,000 warning threshold, Rp100,000 critical threshold, and Rp200,000 ticket amount. Change them as needed; changing Vercel environment variables requires a redeployment.
+   - `DIGIFLAZZ_BALANCE_WARNING_THRESHOLD`
+   - `DIGIFLAZZ_BALANCE_CRITICAL_THRESHOLD`
+   - `DIGIFLAZZ_DEPOSIT_TARGET_AMOUNT`
+   - `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID`
+   - `CRON_SECRET` — use a long, random value; never expose it in browser code.
+3. Configure an external scheduler such as cron-job.org to send a `GET` request every five minutes to `https://threetop.my.id/api/cron/digiflazz-balance` with the header `Authorization: Bearer <CRON_SECRET>`.
+4. Open the admin dashboard and use **Cek saldo sekarang** to verify connectivity. Use **Minta tiket deposit ShopeePay** when you are ready to request payment instructions.
+
+The scheduled endpoint requires the exact `CRON_SECRET` header and returns `401` if it is missing or incorrect. A failed Digiflazz or Telegram request is logged and returned as an error so the scheduler can retry.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
