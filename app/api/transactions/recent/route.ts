@@ -5,6 +5,7 @@ export const maxDuration = 60
 
 const STREAM_DURATION_MS = 45_000
 const POLL_INTERVAL_MS = 3_000
+const TRANSACTION_DISPLAY_DURATION_MS = 30_000
 const encoder = new TextEncoder()
 
 function maskEmail(email: string | null): string {
@@ -29,7 +30,13 @@ function getDisplayStatus(
 }
 
 async function getRecentTransactions() {
+  const serverTime = Date.now()
   const orders = await prisma.order.findMany({
+    where: {
+      createdAt: {
+        gte: new Date(serverTime - TRANSACTION_DISPLAY_DURATION_MS),
+      },
+    },
     orderBy: { createdAt: 'desc' },
     take: 10,
     select: {
@@ -45,15 +52,18 @@ async function getRecentTransactions() {
     },
   })
 
-  return orders.map((order) => ({
+  const transactions = orders.map((order) => ({
     invoice: `***${order.id.slice(-5)}`,
     game: order.game,
     productName: order.productName,
     amount: order.amount,
     createdAt: order.createdAt,
+    expiresAt: order.createdAt.getTime() + TRANSACTION_DISPLAY_DURATION_MS,
     status: getDisplayStatus(order.status, order.paymentStatus),
     email: maskEmail(order.customerEmail ?? order.user?.email ?? null),
-  }))
+  })).filter((transaction) => transaction.expiresAt > serverTime)
+
+  return { transactions, serverTime }
 }
 
 export async function GET(request: Request) {
@@ -66,10 +76,10 @@ export async function GET(request: Request) {
       try {
         while (!cancelled && !request.signal.aborted && Date.now() - startedAt < STREAM_DURATION_MS) {
           try {
-            const transactions = await getRecentTransactions()
+            const result = await getRecentTransactions()
             if (cancelled || request.signal.aborted) break
             controller.enqueue(
-              encoder.encode(`data: ${JSON.stringify({ transactions })}\n\n`)
+              encoder.encode(`data: ${JSON.stringify(result)}\n\n`)
             )
           } catch (error) {
             if (cancelled || request.signal.aborted) break

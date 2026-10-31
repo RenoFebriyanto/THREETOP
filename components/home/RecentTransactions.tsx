@@ -3,10 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
-const TRANSACTION_DISPLAY_DURATION_MS = 30_000
 const TRANSACTION_EXPIRY_CHECK_MS = 1_000
-const TRANSACTION_FIRST_SEEN_STORAGE_KEY = 'threetop:recent-transactions:first-seen:v1'
-const MAX_STORED_TRANSACTION_KEYS = 500
 
 type RecentTransaction = {
   invoice: string
@@ -14,6 +11,7 @@ type RecentTransaction = {
   productName: string
   amount: number
   createdAt: string
+  expiresAt: number
   email: string
   status: 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED' | 'EXPIRED' | 'REFUNDED'
 }
@@ -67,61 +65,25 @@ function getTransactionKey(transaction: RecentTransaction) {
   return `${transaction.invoice}:${transaction.createdAt}`
 }
 
-function readStoredFirstSeenAt() {
-  const firstSeenAt = new Map<string, number>()
-
-  try {
-    const storedValue = window.localStorage.getItem(TRANSACTION_FIRST_SEEN_STORAGE_KEY)
-    if (!storedValue) return firstSeenAt
-
-    const parsed: unknown = JSON.parse(storedValue)
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new Error('Stored transaction visibility data has an invalid format.')
-    }
-
-    for (const [key, value] of Object.entries(parsed)) {
-      if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
-        firstSeenAt.set(key, value)
-      }
-    }
-  } catch (storageError) {
-    console.error('[RECENT_TRANSACTIONS_STORAGE_READ_ERROR]', storageError)
-  }
-
-  return firstSeenAt
-}
-
-function persistFirstSeenAt(firstSeenAt: Map<string, number>) {
-  const entries = [...firstSeenAt.entries()]
-    .sort((left, right) => left[1] - right[1])
-    .slice(-MAX_STORED_TRANSACTION_KEYS)
-
-  try {
-    window.localStorage.setItem(
-      TRANSACTION_FIRST_SEEN_STORAGE_KEY,
-      JSON.stringify(Object.fromEntries(entries))
-    )
-  } catch (storageError) {
-    console.error('[RECENT_TRANSACTIONS_STORAGE_WRITE_ERROR]', storageError)
-  }
-}
-
 export default function RecentTransactions() {
   const [transactions, setTransactions] = useState<RecentTransaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(false)
-  const firstSeenAt = useRef(new Map<string, number>())
+  const expiresAt = useRef(new Map<string, number>())
 
   useEffect(() => {
-    firstSeenAt.current = readStoredFirstSeenAt()
     const source = new EventSource('/api/transactions/recent')
     const expiryTimer = setInterval(() => {
       const now = Date.now()
       setTransactions((current) => {
         const visible = current.filter((transaction) => {
-          const shownAt = firstSeenAt.current.get(getTransactionKey(transaction))
-          return shownAt !== undefined && now - shownAt < TRANSACTION_DISPLAY_DURATION_MS
+          const expiresOn = expiresAt.current.get(getTransactionKey(transaction))
+          if (expiresOn === undefined || now >= expiresOn) {
+            expiresAt.current.delete(getTransactionKey(transaction))
+            return false
+          }
+          return true
         })
         return visible.length === current.length ? current : visible
       })
@@ -136,26 +98,30 @@ export default function RecentTransactions() {
       try {
         const result = JSON.parse(event.data) as {
           transactions?: RecentTransaction[]
+          serverTime?: number
         }
-        if (!Array.isArray(result.transactions)) {
+        if (
+          !Array.isArray(result.transactions) ||
+          typeof result.serverTime !== 'number' ||
+          !Number.isFinite(result.serverTime)
+        ) {
           throw new Error('Data transaksi terbaru tidak valid.')
         }
 
         const receivedAt = Date.now()
-        let hasNewTransactions = false
-
+        const serverTime = result.serverTime
         const visibleTransactions = result.transactions.filter((transaction) => {
           const key = getTransactionKey(transaction)
-          let shownAt = firstSeenAt.current.get(key)
-          if (shownAt === undefined) {
-            shownAt = receivedAt
-            firstSeenAt.current.set(key, shownAt)
-            hasNewTransactions = true
+          if (!Number.isFinite(transaction.expiresAt)) {
+            throw new Error('Waktu kedaluwarsa transaksi tidak valid.')
           }
-          return receivedAt - shownAt < TRANSACTION_DISPLAY_DURATION_MS
+
+          const expiresOn = expiresAt.current.get(key)
+            ?? receivedAt + Math.max(0, transaction.expiresAt - serverTime)
+          expiresAt.current.set(key, expiresOn)
+          return receivedAt < expiresOn
         })
 
-        if (hasNewTransactions) persistFirstSeenAt(firstSeenAt.current)
         setTransactions(visibleTransactions)
         setError(null)
         setIsLoading(false)
@@ -200,7 +166,7 @@ export default function RecentTransactions() {
             </h2>
           </div>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            Pantau status pesanan terbaru. Transaksi disembunyikan setelah 30 detik; riwayat tetap tersimpan. {isConnected ? 'Diperbarui otomatis.' : 'Menyambungkan kembali...'}
+            Transaksi terbaru di semua perangkat, ditampilkan selama 30 detik sejak dibuat. {isConnected ? 'Diperbarui otomatis.' : 'Menyambungkan kembali...'}
           </p>
         </div>
       </div>
