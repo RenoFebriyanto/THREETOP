@@ -166,7 +166,7 @@ export default function RecentTransactions() {
             </h2>
           </div>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            Transaksi terbaru di semua perangkat, ditampilkan selama 30 detik sejak dibuat. {isConnected ? 'Diperbarui otomatis.' : 'Menyambungkan kembali...'}
+            Berikut Transaksi Terbaru Realtime Pada THREETOP. {isConnected ? 'Diperbarui otomatis.' : 'Menyambungkan kembali...'}
           </p>
         </div>
       </div>
