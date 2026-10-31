@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
         productCode: skuCode,
         gameUserId,
         amount: product.price,
+        customerEmail: session.user.email,
         status: 'PENDING',
         paymentStatus: 'PAID',
       },

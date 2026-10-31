@@ -93,6 +93,7 @@ export async function POST(req: NextRequest) {
         productCode: primaryProduct.buyer_sku_code,
         gameUserId,
         amount: totalAmount,
+        customerEmail,
         status: 'PENDING',
         paymentStatus: 'UNPAID',
         items: {

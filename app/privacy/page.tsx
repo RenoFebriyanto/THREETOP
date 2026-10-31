@@ -34,7 +34,7 @@ const SECTIONS = [
     content: [
       'Data Identitas: nama lengkap, alamat email, foto profil (jika login melalui Google).',
       'Data Akun: password terenkripsi (tidak pernah disimpan dalam bentuk teks biasa), provider login (email/Google), waktu pendaftaran.',
-      'Data Transaksi: riwayat pembelian, produk yang dibeli, User ID game yang dimasukkan, status transaksi, jumlah pembayaran, metode pembayaran.',
+      'Data Transaksi: riwayat pembelian, email kontak transaksi, produk yang dibeli, User ID game yang dimasukkan, status transaksi, jumlah pembayaran, metode pembayaran.',
       'Data Teknis: alamat IP, jenis browser, sistem operasi, waktu akses, dan halaman yang dikunjungi. Data ini dikumpulkan secara otomatis melalui cookie dan log server.',
       'Data yang TIDAK kami kumpulkan: nomor kartu kredit, data rekening bank, nomor KTP, atau informasi sensitif lainnya. Pembayaran diproses langsung oleh Duitku.',
     ],
@@ -46,6 +46,7 @@ const SECTIONS = [
       'Memproses dan menyelesaikan transaksi top up game Pengguna.',
       'Mengelola akun Pengguna, termasuk autentikasi dan pemulihan akun.',
       'Mengirimkan konfirmasi transaksi dan pembaruan status pesanan.',
+      'Menampilkan sebagian email yang disamarkan bersama detail transaksi berhasil terbaru di halaman Beranda untuk memberi informasi aktivitas transaksi kepada Pengunjung.',
       'Memberikan layanan customer support dan merespons pertanyaan.',
       'Mendeteksi, mencegah, dan menginvestigasi aktivitas penipuan atau pelanggaran syarat layanan.',
       'Meningkatkan kualitas layanan melalui analisis penggunaan platform (menggunakan data yang dianonimkan).',
