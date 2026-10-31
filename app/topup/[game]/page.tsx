@@ -8,6 +8,8 @@ import {
   FREE_FIRE_PRODUCT_CATEGORIES,
   getFreeFireProductCategory,
   getFreeFireMembershipSortOrder,
+  GENSHIN_IMPACT_PRODUCT_CATEGORIES,
+  getGenshinImpactProductCategory,
   getHonorOfKingsProductCategory,
   getMobileLegendsProductCategory,
   getPubgMobileProductCategory,
@@ -632,6 +634,13 @@ export default function GameTopUpPage() {
             ? getFreeFireMembershipSortOrder(a) - getFreeFireMembershipSortOrder(b)
               || a.price - b.price
             : a.price - b.price),
+        })).filter((category) => category.products.length > 0)
+    : gameKey === 'genshin_impact'
+      ? GENSHIN_IMPACT_PRODUCT_CATEGORIES.map((category) => ({
+          ...category,
+          products: products.filter(
+            (product) => getGenshinImpactProductCategory(product) === category.id
+          ).sort((a, b) => a.price - b.price),
         })).filter((category) => category.products.length > 0)
     : gameKey === 'honor_of_kings'
       ? HONOR_OF_KINGS_PRODUCT_CATEGORIES.map((category) => ({

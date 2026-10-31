@@ -180,6 +180,50 @@ export function getPubgMobileProductCategory(
   return 'special-item'
 }
 
+export const GENSHIN_IMPACT_PRODUCT_CATEGORIES = [
+  { id: 'genesis-crystals', label: 'Genesis Crystals' },
+  { id: 'welkin-moon', label: 'Blessing of the Welkin Moon' },
+  { id: 'battle-pass', label: 'Battle Pass' },
+  { id: 'other', label: 'Item Lainnya' },
+] as const
+
+export type GenshinImpactProductCategory =
+  (typeof GENSHIN_IMPACT_PRODUCT_CATEGORIES)[number]['id']
+
+export function getGenshinImpactProductCategory(
+  product: DigiflazzProduct
+): GenshinImpactProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+  )
+
+  if (
+    searchableText.includes('welkin') ||
+    searchableText.includes('blessing') ||
+    searchableText.includes('membership')
+  ) {
+    return 'welkin-moon'
+  }
+
+  if (
+    searchableText.includes('battle pass') ||
+    searchableText.includes('gnostic hymn') ||
+    searchableText.includes('gnostic chorus')
+  ) {
+    return 'battle-pass'
+  }
+
+  if (
+    searchableText.includes('genesis crystal') ||
+    searchableText.includes('crystal') ||
+    searchableText.includes('primogem')
+  ) {
+    return 'genesis-crystals'
+  }
+
+  return 'other'
+}
+
 function normalizeText(value: string | undefined): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
