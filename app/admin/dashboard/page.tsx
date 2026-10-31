@@ -159,7 +159,7 @@ function MetricCard({
 
   return (
     <article
-      className="w-[42vw] max-w-[220px] min-w-[140px] shrink-0 snap-start rounded-2xl border border-[var(--color-border)] p-3 sm:w-auto sm:min-w-0 sm:max-w-none sm:p-4"
+      className="min-w-0 rounded-2xl border border-[var(--color-border)] p-3 sm:p-4"
       style={{ background: 'var(--color-surface)' }}
     >
       <div className="flex items-start justify-between gap-3">
@@ -298,7 +298,7 @@ export default async function AdminDashboardPage() {
 
       <section
         aria-label="Statistik keuangan bulan ini"
-        className="flex snap-x snap-mandatory gap-3 overflow-x-auto pb-2 sm:grid sm:grid-cols-2 sm:overflow-visible sm:pb-0 xl:grid-cols-4"
+        className="grid grid-cols-2 gap-3"
       >
         <MetricCard
           label="Pendapatan bulan ini"
