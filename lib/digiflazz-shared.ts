@@ -419,4 +419,23 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdHint: 'Temukan User ID Wuthering Waves di profil in-game',
     productIconDefault: '/icons/games/wuthering-waves.webp',
   },
+  honkai_impact_3: {
+    label: 'Honkai Impact 3',
+    image: '/icons/games/honkai-impact-3.webp',
+    icon: 'HI3',
+    color: 'from-sky-500 to-indigo-800',
+    tag: 'Action RPG',
+    brands: [
+      'Honkai Impact 3',
+      'HONKAI IMPACT 3',
+      'Honkai Impact 3rd',
+      'HONKAI IMPACT 3RD',
+      'HonkaiImpact3',
+      'HI3',
+    ],
+    userIdLabel: 'UID',
+    userIdPlaceholder: '123456789',
+    userIdHint: 'Temukan UID di profil atau pengaturan akun in-game',
+    productIconDefault: '/icons/games/honkai-impact-3.webp',
+  },
 }
