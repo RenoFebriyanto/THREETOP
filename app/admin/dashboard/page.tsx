@@ -5,6 +5,7 @@ import { Suspense } from 'react'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz-server'
 import AdminExportButton from '@/components/admin/ExportButton'
 import DigiflazzBalanceCard from '@/components/admin/DigiflazzBalanceCard'
+import DashboardLiveRefresh from '@/components/admin/DashboardLiveRefresh'
 import GameIcon from '@/components/ui/GameIcon'
 
 export const dynamic = 'force-dynamic'
@@ -158,17 +159,17 @@ function MetricCard({
 
   return (
     <article
-      className="min-w-0 rounded-2xl border border-[var(--color-border)] p-4 sm:p-5"
+      className="min-w-0 rounded-2xl border border-[var(--color-border)] p-3 sm:p-4"
       style={{ background: 'var(--color-surface)' }}
     >
       <div className="flex items-start justify-between gap-3">
-        <p className="text-sm font-medium text-[var(--color-muted)]">{label}</p>
-        <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border ${tones[tone]}`}>
+        <p className="text-xs font-medium text-[var(--color-muted)] sm:text-sm">{label}</p>
+        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border ${tones[tone]}`}>
           {icon}
         </span>
       </div>
-      <p className="mt-4 break-words text-xl font-bold leading-tight text-white sm:text-2xl">{value}</p>
-      <p className="mt-2 text-xs leading-relaxed text-[var(--color-muted-strong)]">{description}</p>
+      <p className="mt-3 break-words text-lg font-bold leading-tight text-white sm:text-xl">{value}</p>
+      <p className="mt-1.5 text-[11px] leading-relaxed text-[var(--color-muted-strong)] sm:text-xs">{description}</p>
     </article>
   )
 }
@@ -289,7 +290,10 @@ export default async function AdminDashboardPage() {
             Pantau kinerja ThreeTop dan transaksi yang perlu perhatian.
           </p>
         </div>
-        <AdminExportButton />
+        <div className="flex flex-wrap items-center gap-4">
+          <DashboardLiveRefresh />
+          <AdminExportButton />
+        </div>
       </section>
 
       <section aria-label="Statistik keuangan bulan ini" className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
