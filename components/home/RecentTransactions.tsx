@@ -1,7 +1,10 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
+
+const TRANSACTION_DISPLAY_DURATION_MS = 30_000
+const TRANSACTION_EXPIRY_CHECK_MS = 1_000
 
 type RecentTransaction = {
   invoice: string
@@ -58,14 +61,29 @@ function formatDate(value: string) {
   }).format(new Date(value))
 }
 
+function getTransactionKey(transaction: RecentTransaction) {
+  return `${transaction.invoice}:${transaction.createdAt}`
+}
+
 export default function RecentTransactions() {
   const [transactions, setTransactions] = useState<RecentTransaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [isConnected, setIsConnected] = useState(false)
+  const firstSeenAt = useRef(new Map<string, number>())
 
   useEffect(() => {
     const source = new EventSource('/api/transactions/recent')
+    const expiryTimer = setInterval(() => {
+      const now = Date.now()
+      setTransactions((current) => {
+        const visible = current.filter((transaction) => {
+          const shownAt = firstSeenAt.current.get(getTransactionKey(transaction))
+          return shownAt !== undefined && now - shownAt < TRANSACTION_DISPLAY_DURATION_MS
+        })
+        return visible.length === current.length ? current : visible
+      })
+    }, TRANSACTION_EXPIRY_CHECK_MS)
 
     source.onopen = () => {
       setIsConnected(true)
@@ -81,7 +99,20 @@ export default function RecentTransactions() {
           throw new Error('Data transaksi terbaru tidak valid.')
         }
 
-        setTransactions(result.transactions)
+        const receivedAt = Date.now()
+        const incomingKeys = new Set(result.transactions.map(getTransactionKey))
+        for (const key of firstSeenAt.current.keys()) {
+          if (!incomingKeys.has(key)) firstSeenAt.current.delete(key)
+        }
+
+        const visibleTransactions = result.transactions.filter((transaction) => {
+          const key = getTransactionKey(transaction)
+          const shownAt = firstSeenAt.current.get(key) ?? receivedAt
+          firstSeenAt.current.set(key, shownAt)
+          return receivedAt - shownAt < TRANSACTION_DISPLAY_DURATION_MS
+        })
+
+        setTransactions(visibleTransactions)
         setError(null)
         setIsLoading(false)
       } catch (parseError) {
@@ -107,6 +138,7 @@ export default function RecentTransactions() {
 
     return () => {
       source.close()
+      clearInterval(expiryTimer)
     }
   }, [])
 
@@ -124,7 +156,7 @@ export default function RecentTransactions() {
             </h2>
           </div>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            Pantau pesanan terbaru beserta status pembayaran dan proses top up. {isConnected ? 'Diperbarui otomatis.' : 'Menyambungkan kembali...'}
+            Pantau status pesanan terbaru. Transaksi disembunyikan setelah 30 detik; riwayat tetap tersimpan. {isConnected ? 'Diperbarui otomatis.' : 'Menyambungkan kembali...'}
           </p>
         </div>
       </div>
