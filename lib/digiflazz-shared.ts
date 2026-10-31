@@ -384,4 +384,22 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdHint: 'Masukkan User ID Point Blank kamu',
     productIconDefault: '/icons/games/point-blank.webp',
   },
+  honkai_star_rail: {
+    label: 'Honkai: Star Rail',
+    image: '/icons/games/honkai-star-rail.webp',
+    icon: 'HSR',
+    color: 'from-violet-600 to-amber-700',
+    tag: 'RPG',
+    brands: [
+      'Honkai Star Rail',
+      'HONKAI STAR RAIL',
+      'Honkai: Star Rail',
+      'HONKAI: STAR RAIL',
+      'HonkaiImpactStarRail',
+    ],
+    userIdLabel: 'UID',
+    userIdPlaceholder: '800000000',
+    userIdHint: 'Temukan UID di pojok kiri atas layar profil in-game',
+    productIconDefault: '/icons/games/honkai-star-rail.webp',
+  },
 }
