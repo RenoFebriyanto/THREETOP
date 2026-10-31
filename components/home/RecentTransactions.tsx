@@ -5,6 +5,8 @@ import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
 const TRANSACTION_DISPLAY_DURATION_MS = 30_000
 const TRANSACTION_EXPIRY_CHECK_MS = 1_000
+const TRANSACTION_FIRST_SEEN_STORAGE_KEY = 'threetop:recent-transactions:first-seen:v1'
+const MAX_STORED_TRANSACTION_KEYS = 500
 
 type RecentTransaction = {
   invoice: string
@@ -65,6 +67,45 @@ function getTransactionKey(transaction: RecentTransaction) {
   return `${transaction.invoice}:${transaction.createdAt}`
 }
 
+function readStoredFirstSeenAt() {
+  const firstSeenAt = new Map<string, number>()
+
+  try {
+    const storedValue = window.localStorage.getItem(TRANSACTION_FIRST_SEEN_STORAGE_KEY)
+    if (!storedValue) return firstSeenAt
+
+    const parsed: unknown = JSON.parse(storedValue)
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('Stored transaction visibility data has an invalid format.')
+    }
+
+    for (const [key, value] of Object.entries(parsed)) {
+      if (typeof value === 'number' && Number.isFinite(value) && value >= 0) {
+        firstSeenAt.set(key, value)
+      }
+    }
+  } catch (storageError) {
+    console.error('[RECENT_TRANSACTIONS_STORAGE_READ_ERROR]', storageError)
+  }
+
+  return firstSeenAt
+}
+
+function persistFirstSeenAt(firstSeenAt: Map<string, number>) {
+  const entries = [...firstSeenAt.entries()]
+    .sort((left, right) => left[1] - right[1])
+    .slice(-MAX_STORED_TRANSACTION_KEYS)
+
+  try {
+    window.localStorage.setItem(
+      TRANSACTION_FIRST_SEEN_STORAGE_KEY,
+      JSON.stringify(Object.fromEntries(entries))
+    )
+  } catch (storageError) {
+    console.error('[RECENT_TRANSACTIONS_STORAGE_WRITE_ERROR]', storageError)
+  }
+}
+
 export default function RecentTransactions() {
   const [transactions, setTransactions] = useState<RecentTransaction[]>([])
   const [isLoading, setIsLoading] = useState(true)
@@ -73,6 +114,7 @@ export default function RecentTransactions() {
   const firstSeenAt = useRef(new Map<string, number>())
 
   useEffect(() => {
+    firstSeenAt.current = readStoredFirstSeenAt()
     const source = new EventSource('/api/transactions/recent')
     const expiryTimer = setInterval(() => {
       const now = Date.now()
@@ -100,18 +142,20 @@ export default function RecentTransactions() {
         }
 
         const receivedAt = Date.now()
-        const incomingKeys = new Set(result.transactions.map(getTransactionKey))
-        for (const key of firstSeenAt.current.keys()) {
-          if (!incomingKeys.has(key)) firstSeenAt.current.delete(key)
-        }
+        let hasNewTransactions = false
 
         const visibleTransactions = result.transactions.filter((transaction) => {
           const key = getTransactionKey(transaction)
-          const shownAt = firstSeenAt.current.get(key) ?? receivedAt
-          firstSeenAt.current.set(key, shownAt)
+          let shownAt = firstSeenAt.current.get(key)
+          if (shownAt === undefined) {
+            shownAt = receivedAt
+            firstSeenAt.current.set(key, shownAt)
+            hasNewTransactions = true
+          }
           return receivedAt - shownAt < TRANSACTION_DISPLAY_DURATION_MS
         })
 
+        if (hasNewTransactions) persistFirstSeenAt(firstSeenAt.current)
         setTransactions(visibleTransactions)
         setError(null)
         setIsLoading(false)
