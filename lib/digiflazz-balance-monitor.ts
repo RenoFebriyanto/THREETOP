@@ -93,6 +93,13 @@ async function notifyBalanceLevel(
 }
 
 export async function runDigiflazzBalanceCheck() {
+  if (!process.env.DIGIFLAZZ_USERNAME?.trim()) {
+    throw new Error('DIGIFLAZZ_USERNAME is not configured.')
+  }
+  if (!process.env.DIGIFLAZZ_API_KEY?.trim()) {
+    throw new Error('DIGIFLAZZ_API_KEY is not configured.')
+  }
+
   const balance = await checkBalance()
   if (!Number.isFinite(balance) || balance < 0 || balance > Number.MAX_SAFE_INTEGER) {
     throw new Error('Digiflazz returned an invalid balance.')

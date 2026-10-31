@@ -20,6 +20,15 @@ export async function POST() {
     })
   } catch (error) {
     console.error('[ADMIN_DIGIFLAZZ_BALANCE_CHECK_ERROR]', error)
+    if (error instanceof Error && (
+      error.message === 'DIGIFLAZZ_USERNAME is not configured.' ||
+      error.message === 'DIGIFLAZZ_API_KEY is not configured.'
+    )) {
+      return Response.json(
+        { error: 'Kredensial Digiflazz belum dikonfigurasi di environment Production Vercel.' },
+        { status: 502 }
+      )
+    }
     return Response.json(
       { error: 'Pengecekan saldo Digiflazz gagal. Periksa konfigurasi dan coba lagi.' },
       { status: 502 }
