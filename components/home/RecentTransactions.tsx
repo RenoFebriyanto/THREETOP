@@ -124,7 +124,7 @@ export default function RecentTransactions() {
             </h2>
           </div>
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            Status diperbarui otomatis. {isConnected ? 'Terhubung langsung.' : 'Menyambungkan kembali...'}
+            Pantau pesanan terbaru beserta status pembayaran dan proses top up. {isConnected ? 'Diperbarui otomatis.' : 'Menyambungkan kembali...'}
           </p>
         </div>
       </div>
