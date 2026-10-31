@@ -238,8 +238,12 @@ function formatCurrency(amount: number) {
   }).format(amount)
 }
 
-function formatProductLabel(productName: string) {
-  const cleaned = productName.replace(/^.*?-\s*/, '').trim()
+function formatProductLabel(productName: string, gameKey: string) {
+  const gameLabel = SUPPORTED_GAMES[gameKey]?.label
+  const withoutGameName = gameLabel
+    ? productName.replace(new RegExp(gameLabel.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'ig'), '')
+    : productName
+  const cleaned = withoutGameName.replace(/^.*?-\s*/, '').replace(/\s+/g, ' ').trim()
   return cleaned || productName
 }
 
@@ -718,7 +722,7 @@ export default function GameTopUpPage() {
                                   />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name)}</p>
+                                  <p className="text-white font-semibold text-xs md:text-sm leading-tight break-words">{formatProductLabel(product.product_name, gameKey)}</p>
                                   <p className="mt-1 break-words text-xs font-bold leading-tight text-[var(--color-frost)] sm:text-sm">{formatCurrency(getDisplayPrice(product))}</p>
                                 </div>
                               </div>
@@ -749,11 +753,11 @@ export default function GameTopUpPage() {
                           className="shrink-0 rounded-md"
                         />
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-semibold text-white">{formatProductLabel(product.product_name)}</p>
+                          <p className="text-sm font-semibold text-white">{formatProductLabel(product.product_name, gameKey)}</p>
                           <p className="mt-1 text-sm font-bold text-[var(--color-frost)]">{formatCurrency(getDisplayPrice(product))}</p>
                         </div>
                         {step !== 'confirm' && (
-                          <button type="button" onClick={() => toggleProduct(product)} className="shrink-0 text-xs text-[var(--color-muted)] hover:text-white" aria-label={`Hapus ${formatProductLabel(product.product_name)}`}>
+                          <button type="button" onClick={() => toggleProduct(product)} className="shrink-0 text-xs text-[var(--color-muted)] hover:text-white" aria-label={`Hapus ${formatProductLabel(product.product_name, gameKey)}`}>
                             Hapus
                           </button>
                         )}
@@ -875,7 +879,7 @@ export default function GameTopUpPage() {
           <div className="rounded-xl border border-[var(--color-border)] overflow-hidden">
             {[
               { label: 'Game', value: gameInfo.label },
-              { label: 'Produk', value: selectedProducts.map((product) => formatProductLabel(product.product_name)).join(', ') },
+              { label: 'Produk', value: selectedProducts.map((product) => formatProductLabel(product.product_name, gameKey)).join(', ') },
               { label: gameInfo.userIdLabel, value: customerNoDisplay },
               ...(nickname ? [{ label: 'Nickname', value: nickname }] : []),
               { label: 'Total Bayar', value: formatCurrency(selectedTotal), highlight: true },
