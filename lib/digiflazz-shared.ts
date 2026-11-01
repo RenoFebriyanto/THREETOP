@@ -247,6 +247,11 @@ function matchesGameBrand(product: DigiflazzProduct, gameInfo: (typeof SUPPORTED
   )
 }
 
+export type GameNicknameLookup =
+  | { provider: 'isan'; endpoint: string; serverParameter?: 'server' }
+  | { provider: 'enka' }
+  | null
+
 export function groupProductsByGame(
   products: DigiflazzProduct[]
 ): Record<string, DigiflazzProduct[]> {
@@ -272,6 +277,7 @@ export const SUPPORTED_GAMES: Record<string, {
   userIdLabel: string
   userIdPlaceholder: string
   userIdHint: string
+  nicknameLookup: GameNicknameLookup
   requireServer?: boolean
   productIconFolder?: string
   productIconPrefix?: string
@@ -288,6 +294,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'User ID',
     userIdPlaceholder: '123456789',
     userIdHint: 'Temukan ID kamu di pojok kiri atas profil in-game',
+    nicknameLookup: { provider: 'isan', endpoint: 'ml', serverParameter: 'server' },
     requireServer: true,
     productIconFolder: '/icons/products/mobile-legends',
     productIconPrefix: 'ml-',
@@ -312,6 +319,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'Player ID',
     userIdPlaceholder: '123456789',
     userIdHint: 'Temukan Player ID di profil in-game',
+    nicknameLookup: { provider: 'isan', endpoint: 'ff' },
     productIconFolder: '/icons/products/free-fire',
     productIconPrefix: 'ff-',
     productIconDefault: '/icons/games/free-fire.webp',
@@ -326,6 +334,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'Player ID',
     userIdPlaceholder: '5123456789',
     userIdHint: 'Temukan Player ID di bagian profil in-game',
+    nicknameLookup: null,
     productIconFolder: '/icons/products/pubg-mobile',
     productIconPrefix: 'pubg-',
     productIconDefault: '/icons/games/pubg-mobile.webp',
@@ -340,6 +349,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'UID',
     userIdPlaceholder: '800000000',
     userIdHint: 'Temukan UID di pojok kanan bawah layar in-game',
+    nicknameLookup: { provider: 'enka' },
     productIconFolder: '/icons/products/genshin-impact',
     productIconPrefix: 'gi-',
     productIconDefault: '/icons/games/genshin-impact.webp',
@@ -354,6 +364,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'Player ID',
     userIdPlaceholder: '123456789',
     userIdHint: 'Temukan Player ID di halaman profil in-game',
+    nicknameLookup: null,
     productIconFolder: '/icons/products/honor-of-kings',
     productIconPrefix: 'hok-',
     productIconDefault: '/icons/games/honor-of-kings.webp',
@@ -368,6 +379,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'Riot ID',
     userIdPlaceholder: 'Username#TAG',
     userIdHint: 'Masukkan Riot ID lengkap dengan tag (contoh: PlayerName#1234)',
+    nicknameLookup: { provider: 'isan', endpoint: 'valo' },
     productIconFolder: '/icons/products/valorant',
     productIconPrefix: 'val-',
     productIconDefault: '/icons/games/valorant.webp',
@@ -382,6 +394,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'User ID',
     userIdPlaceholder: '123456789',
     userIdHint: 'Masukkan User ID Point Blank kamu',
+    nicknameLookup: { provider: 'isan', endpoint: 'pb' },
     productIconDefault: '/icons/games/point-blank.webp',
   },
   honkai_star_rail: {
@@ -400,6 +413,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'UID',
     userIdPlaceholder: '800000000',
     userIdHint: 'Temukan UID di pojok kiri atas layar profil in-game',
+    nicknameLookup: { provider: 'isan', endpoint: 'hsr' },
     productIconDefault: '/icons/games/honkai-star-rail.webp',
   },
   wuthering_waves: {
@@ -417,6 +431,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'User ID',
     userIdPlaceholder: '123456789',
     userIdHint: 'Temukan User ID Wuthering Waves di profil in-game',
+    nicknameLookup: null,
     productIconDefault: '/icons/games/wuthering-waves.webp',
   },
   honkai_impact_3: {
@@ -436,6 +451,7 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdLabel: 'UID',
     userIdPlaceholder: '123456789',
     userIdHint: 'Temukan UID di profil atau pengaturan akun in-game',
+    nicknameLookup: { provider: 'isan', endpoint: 'hi' },
     productIconDefault: '/icons/games/honkai-impact-3.webp',
   },
 }

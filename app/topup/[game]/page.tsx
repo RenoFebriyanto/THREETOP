@@ -364,7 +364,6 @@ export default function GameTopUpPage() {
         setNickCountry(data.country ?? null)
         setNickChecked(true)
       } else if (data.supported === false) {
-        setNickChecked(true)
         setNickNotice(data.message ?? 'Pengecekan ID otomatis belum tersedia untuk game ini.')
       } else {
         setNickError(data.error ?? 'ID tidak ditemukan.')
