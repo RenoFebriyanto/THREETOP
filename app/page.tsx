@@ -51,7 +51,7 @@ export default async function HomePage() {
                     <Link
                       key={key}
                       href={`/topup/${key}`}
-                      className="group flex min-h-24 items-center gap-3 rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 transition hover:border-[var(--color-info-border)] hover:bg-[var(--color-surface-strong)] sm:gap-4 sm:p-4"
+                      className="group flex min-h-24 items-center gap-3 rounded-lg bg-[var(--color-surface)] p-3 transition hover:bg-[var(--color-surface-strong)] sm:gap-4 sm:p-4"
                     >
                       <div className={`flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md bg-gradient-to-br ${game.color} p-1`}>
                         <GameIcon image={game.image} fallback={game.icon} label={game.label} size={40} className="rounded" />
