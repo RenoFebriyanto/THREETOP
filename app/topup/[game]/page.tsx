@@ -331,12 +331,15 @@ export default function GameTopUpPage() {
   const [nickCountry, setNickCountry] = useState<string | null>(null)
   const [nickLoading, setNickLoading] = useState(false)
   const [nickError, setNickError] = useState('')
+  const [nickNotice, setNickNotice] = useState('')
   const [nickChecked, setNickChecked] = useState(false)
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const nicknameRequestRef = useRef(0)
 
   const autoCheckNickname = useCallback(async (uid: string, sid: string) => {
-    if (!uid.trim()) { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null); return }
-    if (gameInfo?.requireServer && !sid.trim()) { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null); return }
+    const requestId = ++nicknameRequestRef.current
+    if (!uid.trim()) { setNickname(null); setNickChecked(false); setNickError(''); setNickNotice(''); setNickCountry(null); return }
+    if (gameInfo?.requireServer && !sid.trim()) { setNickname(null); setNickChecked(false); setNickError(''); setNickNotice(''); setNickCountry(null); return }
     if (gameKey === 'valorant') {
       const separator = uid.lastIndexOf('#')
       if (separator <= 0 || uid.slice(separator + 1).trim().length < 3) {
@@ -344,27 +347,34 @@ export default function GameTopUpPage() {
         setNickChecked(false)
         setNickCountry(null)
         setNickError('Masukkan Riot ID lengkap dengan format Nama#Tag.')
+        setNickNotice('')
         return
       }
     }
-    setNickLoading(true); setNickError(''); setNickname(null); setNickChecked(false); setNickCountry(null)
+    setNickLoading(true); setNickError(''); setNickNotice(''); setNickname(null); setNickChecked(false); setNickCountry(null)
     try {
       const res = await fetch('/api/digiflazz/check-nickname', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ gameKey, userId: uid.trim(), serverId: sid.trim() || undefined }),
       })
       const data = await res.json()
+      if (requestId !== nicknameRequestRef.current) return
       if (res.ok && data.success) {
         setNickname(data.nickname ?? 'Ditemukan')
         setNickCountry(data.country ?? null)
         setNickChecked(true)
       } else if (data.supported === false) {
         setNickChecked(true)
+        setNickNotice(data.message ?? 'Pengecekan ID otomatis belum tersedia untuk game ini.')
       } else {
         setNickError(data.error ?? 'ID tidak ditemukan.')
       }
-    } catch { setNickError('Gagal terhubung ke server.') }
-    finally { setNickLoading(false) }
+    } catch {
+      if (requestId === nicknameRequestRef.current) setNickError('Gagal terhubung ke server.')
+    }
+    finally {
+      if (requestId === nicknameRequestRef.current) setNickLoading(false)
+    }
   }, [gameKey, gameInfo])
 
   const fetchProducts = useCallback(async () => {
@@ -451,7 +461,15 @@ export default function GameTopUpPage() {
     }
   }, [])
 
-  function resetNick() { setNickname(null); setNickChecked(false); setNickError(''); setNickCountry(null) }
+  function resetNick() {
+    nicknameRequestRef.current += 1
+    setNickname(null)
+    setNickChecked(false)
+    setNickError('')
+    setNickNotice('')
+    setNickCountry(null)
+    setNickLoading(false)
+  }
 
   function toggleProduct(product: DigiflazzProduct) {
     setSelectedProducts((current) =>
@@ -837,6 +855,9 @@ export default function GameTopUpPage() {
                           <p className="text-xs font-medium text-[var(--color-success)]">Akun ditemukan</p>
                           <p className="text-sm font-bold text-white">{nickname}{nickCountry ? ` (${nickCountry})` : ''}</p>
                         </div>
+                      )}
+                      {nickNotice && !nickLoading && (
+                        <p role="status" className="text-sm text-[var(--color-warning)]">{nickNotice}</p>
                       )}
                       {nickError && !nickLoading && <p className="text-sm text-[var(--color-error)]">{nickError}</p>}
                       {inputError && <p className="text-sm text-[var(--color-error)]">{inputError}</p>}

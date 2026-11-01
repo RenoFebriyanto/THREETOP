@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Semua endpoint menggunakan api.isan.eu.org — terbukti support ALL region
-// Format: GET https://api.isan.eu.org/nickname/{game}?id={userId}&zone={zoneId}
+// Endpoint nickname berbeda untuk setiap game. Parameter `server` dipakai oleh
+// Mobile Legends; game lain yang tercantum di bawah hanya memerlukan player ID.
 
 const ISAN_BASE = 'https://api.isan.eu.org/nickname'
 const RIOT_API_KEY = process.env.RIOT_API_KEY
@@ -55,7 +55,7 @@ function getClientIp(req: NextRequest) {
 async function findValorantAccount(riotId: string) {
   if (!RIOT_API_KEY) {
     return NextResponse.json({
-      error: 'Verifikasi Riot ID belum dikonfigurasi. Admin perlu menambahkan RIOT_API_KEY.',
+      error: 'Verifikasi Riot ID belum dikonfigurasi.',
     }, { status: 503 })
   }
 
@@ -137,22 +137,26 @@ async function findValorantAccount(riotId: string) {
   }, { status: 503 })
 }
 
-// Map gameKey → endpoint path di api.isan.eu.org
-const GAME_ENDPOINTS: Record<string, string> = {
-  mobile_legends: 'ml',
-  free_fire:      'ff',
-  pubg_mobile:    'pubg',
-  genshin_impact: 'genshin',
-  honor_of_kings: 'hok',
-  valorant:       'valorant',
+const GAME_LOOKUPS: Record<string, { endpoint: string; serverParameter?: 'server' }> = {
+  mobile_legends: { endpoint: 'ml', serverParameter: 'server' },
+  free_fire: { endpoint: 'ff' },
+  genshin_impact: { endpoint: 'gi' },
+  valorant: { endpoint: 'valo' },
+  point_blank: { endpoint: 'pb' },
+  honkai_star_rail: { endpoint: 'hsr' },
+  honkai_impact_3: { endpoint: 'hi' },
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json()
-    const { gameKey, userId, serverId } = body
+    const body: unknown = await req.json()
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Data pencarian ID tidak valid.' }, { status: 400 })
+    }
 
-    if (!gameKey || !userId) {
+    const { gameKey, userId, serverId } = body as Record<string, unknown>
+
+    if (typeof gameKey !== 'string' || typeof userId !== 'string' || !userId.trim()) {
       return NextResponse.json({ error: 'gameKey dan userId wajib diisi.' }, { status: 400 })
     }
 
@@ -163,8 +167,10 @@ export async function POST(req: NextRequest) {
       }, { status: 429 })
     }
 
-    const uid = String(userId).trim()
-    const sid = serverId ? String(serverId).trim() : ''
+    const uid = userId.trim()
+    const sid = typeof serverId === 'string' || typeof serverId === 'number'
+      ? String(serverId).trim()
+      : ''
 
     if (gameKey === 'valorant') {
       if (!checkLookupLimit(ip, valorantLookupLimits, VALORANT_LOOKUP_LIMIT, VALORANT_LOOKUP_WINDOW_MS)) {
@@ -172,23 +178,26 @@ export async function POST(req: NextRequest) {
           error: 'Terlalu banyak percobaan cek Riot ID. Coba lagi dalam 1 menit.',
         }, { status: 429 })
       }
-      return findValorantAccount(uid)
+      if (RIOT_API_KEY) return findValorantAccount(uid)
     }
 
-    const endpointPath = GAME_ENDPOINTS[gameKey]
-    if (!endpointPath) {
+    const lookup = GAME_LOOKUPS[gameKey]
+    if (!lookup) {
       return NextResponse.json({
         success: false,
         supported: false,
-        message: 'Cek nickname belum tersedia untuk game ini.',
+        message: 'Pengecekan ID otomatis belum tersedia untuk game ini. Pastikan ID benar sebelum melanjutkan.',
       })
     }
 
-    // Bangun URL — zone hanya untuk game yang requireServer (ML)
-    const params = new URLSearchParams({ id: uid })
-    if (sid) params.set('zone', sid)
+    if (lookup.serverParameter && !sid) {
+      return NextResponse.json({ error: 'Server ID wajib diisi.' }, { status: 400 })
+    }
 
-    const url = `${ISAN_BASE}/${endpointPath}?${params.toString()}`
+    const params = new URLSearchParams({ id: uid })
+    if (lookup.serverParameter) params.set(lookup.serverParameter, sid)
+
+    const url = `${ISAN_BASE}/${lookup.endpoint}?${params.toString()}`
 
     const res = await fetch(url, {
       headers: {
@@ -199,6 +208,16 @@ export async function POST(req: NextRequest) {
       cache: 'no-store',
     })
 
+    let data: unknown
+    try {
+      data = await res.json()
+    } catch {
+      console.error(`[CHECK_NICKNAME_UPSTREAM_ERROR] game=${gameKey} invalid-json`)
+      return NextResponse.json({
+        error: 'Layanan cek nickname mengirim respons yang tidak valid. Coba lagi.',
+      }, { status: 502 })
+    }
+
     if (!res.ok) {
       console.error(`[CHECK_NICKNAME_UPSTREAM_ERROR] game=${gameKey} status=${res.status}`)
       if (res.status === 429) {
@@ -206,23 +225,43 @@ export async function POST(req: NextRequest) {
           error: 'Layanan cek nickname sedang sibuk. Coba lagi sebentar.',
         }, { status: 503 })
       }
+      if (res.status === 404) {
+        return NextResponse.json({
+          error: 'ID tidak ditemukan. Pastikan ID sudah benar.',
+        }, { status: 404 })
+      }
+      if (res.status === 400) {
+        return NextResponse.json({
+          error: 'Format ID tidak sesuai atau layanan belum mendukung game ini.',
+        }, { status: 400 })
+      }
       return NextResponse.json({
         error: 'Layanan cek nickname sedang tidak tersedia. Coba lagi.',
       }, { status: 502 })
     }
 
-    const data = await res.json()
+    if (!data || typeof data !== 'object' || Array.isArray(data)) {
+      return NextResponse.json({
+        error: 'Layanan cek nickname mengirim respons yang tidak valid. Coba lagi.',
+      }, { status: 502 })
+    }
 
     // API mengembalikan success: false jika ID tidak ditemukan
-    if (!data?.success) {
+    const result = data as Record<string, unknown>
+    if (result.success !== true) {
       return NextResponse.json({
-        error: 'ID tidak ditemukan. Pastikan User ID' + (sid ? ' dan Server ID' : '') + ' sudah benar.',
+        error: typeof result.message === 'string' && result.message.trim()
+          ? result.message
+          : `ID tidak ditemukan. Pastikan ${lookup.serverParameter ? 'User ID dan Server ID' : 'ID'} sudah benar.`,
       }, { status: 404 })
     }
 
-    // Ambil nickname dari berbagai field yang mungkin ada
-    const nickname = data.name ?? data.nickname ?? data.username ?? null
-    const country  = data.country ?? data.region ?? null
+    const nickname = [result.name, result.nickname, result.username]
+      .find((value): value is string => typeof value === 'string' && Boolean(value.trim()))
+      ?? null
+    const country = [result.country, result.region]
+      .find((value): value is string => typeof value === 'string' && Boolean(value.trim()))
+      ?? null
 
     return NextResponse.json({
       success: true,
