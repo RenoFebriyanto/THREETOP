@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import GameIcon from '@/components/ui/GameIcon'
 import PromoCarousel from '@/components/ui/PromoCarousel'
 import StorefrontLayout from '@/components/layout/StorefrontLayout'
+import GameSearch from '@/components/home/GameSearch'
 import RecentTransactions from '@/components/home/RecentTransactions'
 import { SUPPORTED_GAMES } from '@/lib/digiflazz'
 
@@ -33,6 +34,16 @@ export default async function HomePage() {
             Lihat game <span aria-hidden="true">↓</span>
           </Link>
         </section>
+
+        <GameSearch
+          games={Object.entries(SUPPORTED_GAMES).map(([key, game]) => ({
+            key,
+            label: game.label,
+            image: game.image,
+            icon: game.icon,
+            tag: game.tag,
+          }))}
+        />
 
         <div id="games" className="space-y-10">
           {GAME_CATEGORIES.map((category) => {
