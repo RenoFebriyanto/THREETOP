@@ -194,7 +194,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Server ID wajib diisi.' }, { status: 400 })
     }
 
-    const params = new URLSearchParams({ id: uid })
+    const params = new URLSearchParams({ id: uid, decode: 'false' })
     if (lookup.serverParameter) params.set(lookup.serverParameter, sid)
 
     const url = `${ISAN_BASE}/${lookup.endpoint}?${params.toString()}`
@@ -259,6 +259,13 @@ export async function POST(req: NextRequest) {
     const nickname = [result.name, result.nickname, result.username]
       .find((value): value is string => typeof value === 'string' && Boolean(value.trim()))
       ?? null
+    if (!nickname) {
+      console.error(`[CHECK_NICKNAME_UPSTREAM_ERROR] game=${gameKey} missing-nickname`)
+      return NextResponse.json({
+        error: 'ID belum bisa diverifikasi oleh layanan. Pastikan ID benar lalu coba lagi.',
+      }, { status: 502 })
+    }
+
     const country = [result.country, result.region]
       .find((value): value is string => typeof value === 'string' && Boolean(value.trim()))
       ?? null

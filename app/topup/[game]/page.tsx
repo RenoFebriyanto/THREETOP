@@ -359,8 +359,8 @@ export default function GameTopUpPage() {
       })
       const data = await res.json()
       if (requestId !== nicknameRequestRef.current) return
-      if (res.ok && data.success) {
-        setNickname(data.nickname ?? 'Ditemukan')
+      if (res.ok && data.success && typeof data.nickname === 'string' && data.nickname.trim()) {
+        setNickname(data.nickname.trim())
         setNickCountry(data.country ?? null)
         setNickChecked(true)
       } else if (data.supported === false) {
