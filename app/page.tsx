@@ -22,7 +22,7 @@ export default async function HomePage() {
           <PromoCarousel />
         </div>
 
-        <section className="mb-10 flex flex-col justify-between gap-5 border-b border-[var(--color-border)] pb-8 sm:flex-row sm:items-end">
+        <section className="relative z-20 mb-10 flex flex-col justify-between gap-5 border-b border-[var(--color-border)] pb-8 sm:flex-row sm:items-end">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-[var(--color-muted-strong)]">Top up game favoritmu</p>
             <h1 className="text-3xl font-bold leading-tight sm:text-4xl">Pilih game untuk top up</h1>
@@ -30,20 +30,21 @@ export default async function HomePage() {
               Pilih game dan lanjutkan top up tanpa membuat akun. Masuk atau daftar tetap opsional untuk promo dan program poin saat tersedia.
             </p>
           </div>
-          <Link href="#games" className="w-fit rounded-md border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium transition hover:bg-[var(--color-surface)]">
-            Lihat game <span aria-hidden="true">↓</span>
-          </Link>
+          <div className="flex w-full items-start gap-2 sm:w-auto sm:items-center">
+            <GameSearch
+              games={Object.entries(SUPPORTED_GAMES).map(([key, game]) => ({
+                key,
+                label: game.label,
+                image: game.image,
+                icon: game.icon,
+                tag: game.tag,
+              }))}
+            />
+            <Link href="#games" className="shrink-0 rounded-md border border-[var(--color-border)] px-4 py-2.5 text-sm font-medium transition hover:bg-[var(--color-surface)]">
+              Lihat game <span aria-hidden="true">↓</span>
+            </Link>
+          </div>
         </section>
-
-        <GameSearch
-          games={Object.entries(SUPPORTED_GAMES).map(([key, game]) => ({
-            key,
-            label: game.label,
-            image: game.image,
-            icon: game.icon,
-            tag: game.tag,
-          }))}
-        />
 
         <div id="games" className="space-y-10">
           {GAME_CATEGORIES.map((category) => {

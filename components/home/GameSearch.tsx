@@ -17,16 +17,13 @@ export default function GameSearch({ games }: { games: SearchGame[] }) {
   const normalizedQuery = query.trim().toLocaleLowerCase('id-ID')
   const matches = useMemo(
     () => normalizedQuery
-      ? games.filter((game) => game.label.toLocaleLowerCase('id-ID').includes(normalizedQuery))
+      ? games.filter((game) => game.label.toLocaleLowerCase('id-ID').startsWith(normalizedQuery))
       : [],
     [games, normalizedQuery],
   )
 
   return (
-    <div className="relative z-10 mb-8">
-      <label htmlFor="game-search" className="mb-2 block text-sm font-medium text-[var(--color-muted)]">
-        Cari game
-      </label>
+    <div className="relative z-30 min-w-0 flex-1 sm:w-64 sm:flex-none">
       <div className="relative">
         <svg
           className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[var(--color-muted-strong)]"
@@ -44,17 +41,17 @@ export default function GameSearch({ games }: { games: SearchGame[] }) {
           type="search"
           value={query}
           onChange={(event) => setQuery(event.target.value)}
-          placeholder="Ketik nama game..."
+          placeholder="Cari game..."
           autoComplete="off"
           aria-controls={normalizedQuery ? 'game-search-results' : undefined}
-          className="w-full rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] py-3 pl-12 pr-4 text-sm text-white outline-none transition placeholder:text-[var(--color-muted-strong)] focus:border-[var(--color-info-border)]"
+          className="w-full rounded-md border border-[var(--color-border)] bg-[var(--color-abyss)] py-2.5 pl-11 pr-3 text-sm text-white outline-none transition placeholder:text-[var(--color-muted-strong)] focus:border-[var(--color-info-border)]"
         />
       </div>
 
       {normalizedQuery && (
         <div
           id="game-search-results"
-          className="absolute left-0 right-0 top-full mt-2 max-h-[min(70vh,40rem)] overflow-y-auto overscroll-contain rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] shadow-2xl"
+          className="absolute left-0 right-0 top-full mt-2 max-h-[min(70vh,35rem)] overflow-y-auto overscroll-contain rounded-lg border border-[var(--color-border)] bg-[var(--color-abyss)] shadow-2xl"
         >
           {matches.length > 0 ? (
             <ul className="divide-y divide-[var(--color-border)]">
