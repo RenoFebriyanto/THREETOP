@@ -690,8 +690,8 @@ export default function GameTopUpPage() {
 
       {/* Game header */}
       <div className="rounded-xl border border-[var(--color-border)] p-6 flex items-center gap-4" style={{ background: 'var(--color-surface-dark)' }}>
-        <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${gameInfo.color} flex items-center justify-center shrink-0 overflow-hidden`}>
-          <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={48} className="rounded-xl" />
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center">
+          <GameIcon image={gameInfo.image} fallback={gameInfo.icon} label={gameInfo.label} size={56} />
         </div>
         <div><h1 className="text-white font-bold text-xl">{gameInfo.label}</h1><span className="text-[var(--color-muted)] text-sm">{gameInfo.tag}</span></div>
       </div>
