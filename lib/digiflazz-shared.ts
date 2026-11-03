@@ -180,6 +180,53 @@ export function getPubgMobileProductCategory(
   return 'special-item'
 }
 
+export const POINT_BLANK_PRODUCT_CATEGORIES = [
+  { id: 'pb-cash', label: 'PB Cash' },
+  { id: 'cash-package', label: 'Paket PB Cash' },
+  { id: 'voucher', label: 'Voucher' },
+  { id: 'other', label: 'Item Lainnya' },
+] as const
+
+export type PointBlankProductCategory =
+  (typeof POINT_BLANK_PRODUCT_CATEGORIES)[number]['id']
+
+export function getPointBlankProductCategory(
+  product: DigiflazzProduct
+): PointBlankProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+  )
+
+  if (
+    searchableText.includes('voucher') ||
+    searchableText.includes('gift card') ||
+    searchableText.includes('giftcard')
+  ) {
+    return 'voucher'
+  }
+
+  if (
+    searchableText.includes('kombinasi') ||
+    searchableText.includes('combination') ||
+    searchableText.includes('combo') ||
+    searchableText.includes('bundle') ||
+    searchableText.includes('package') ||
+    searchableText.includes('paket')
+  ) {
+    return 'cash-package'
+  }
+
+  if (
+    searchableText.includes('pb cash') ||
+    searchableText.includes('pbcash') ||
+    /\bpb\b/.test(searchableText)
+  ) {
+    return 'pb-cash'
+  }
+
+  return 'other'
+}
+
 export const GENSHIN_IMPACT_PRODUCT_CATEGORIES = [
   { id: 'genesis-crystals', label: 'Genesis Crystals' },
   { id: 'welkin-moon', label: 'Blessing of the Welkin Moon' },

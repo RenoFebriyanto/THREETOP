@@ -13,8 +13,10 @@ import {
   getHonorOfKingsProductCategory,
   getMobileLegendsProductCategory,
   getPubgMobileProductCategory,
+  getPointBlankProductCategory,
   HONOR_OF_KINGS_PRODUCT_CATEGORIES,
   MOBILE_LEGENDS_PRODUCT_CATEGORIES,
+  POINT_BLANK_PRODUCT_CATEGORIES,
   PUBG_MOBILE_PRODUCT_CATEGORIES,
   SUPPORTED_GAMES,
   type DigiflazzProduct,
@@ -676,6 +678,13 @@ export default function GameTopUpPage() {
           products: products.filter(
             (product) => getPubgMobileProductCategory(product) === category.id
           ),
+        })).filter((category) => category.products.length > 0)
+    : gameKey === 'point_blank'
+      ? POINT_BLANK_PRODUCT_CATEGORIES.map((category) => ({
+          ...category,
+          products: products.filter(
+            (product) => getPointBlankProductCategory(product) === category.id
+          ).sort((a, b) => a.price - b.price),
         })).filter((category) => category.products.length > 0)
       : [{ id: 'all', label: '', products }]
 
