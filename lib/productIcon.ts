@@ -210,6 +210,14 @@ export function getProductIcon(product: DigiflazzProduct, gameKey: string) {
     }
   }
 
+  if (gameKey === 'point_blank') {
+    return {
+      image: [`${folder}/cashpb.png`],
+      fallback: gameInfo.icon,
+      fallbackImage: defaultImage,
+    }
+  }
+
   const normalizeKey = (value: string) =>
     value
       .toLowerCase()

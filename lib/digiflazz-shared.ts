@@ -442,6 +442,8 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdPlaceholder: '123456789',
     userIdHint: 'Masukkan User ID Point Blank kamu',
     nicknameLookup: { provider: 'isan', endpoint: 'pb' },
+    productIconFolder: '/icons/products/pointblank',
+    productIconPrefix: 'pb-',
     productIconDefault: '/icons/games/pointblank.jpg',
   },
   honkai_star_rail: {
