@@ -23,6 +23,14 @@ export default function SiteFooter() {
             <p className="mt-4 text-sm leading-6 text-[var(--color-muted)]">
               Top up game favorit dengan alur yang sederhana dan informasi pesanan yang jelas.
             </p>
+            <address className="mt-4 not-italic text-sm leading-6 text-[var(--color-muted)]">
+              JL. Kapten Ilyas No. 17, Indonesia
+              <br />
+              Email:{' '}
+              <a href="mailto:threetopsupport@gmail.com" className="hover:text-white">
+                threetopsupport@gmail.com
+              </a>
+            </address>
           </div>
 
           <nav aria-label="Jelajahi ThreeTop">
@@ -44,6 +52,16 @@ export default function SiteFooter() {
                   className={FOOTER_LINK_CLASS}
                 >
                   Hubungi dukungan
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/6285176951067"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={FOOTER_LINK_CLASS}
+                >
+                  WhatsApp: +62 851-7695-1067
                 </a>
               </li>
             </ul>

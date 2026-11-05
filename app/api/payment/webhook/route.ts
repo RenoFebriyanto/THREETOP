@@ -46,8 +46,27 @@ export async function POST(req: NextRequest) {
     }
 
     if (!isDuitkuProduction()) {
-      console.info('[DUITKU_WEBHOOK] Sandbox callback acknowledged without processing order:', orderId)
-      return callbackOk('Sandbox callback acknowledged; order not processed')
+      if (resultCode === '00') {
+        await prisma.order.updateMany({
+          where: { id: orderId, paymentStatus: 'UNPAID' },
+          data: { paymentStatus: 'PAID', status: 'PROCESSING' },
+        })
+        await prisma.orderItem.updateMany({
+          where: { orderId, status: 'PENDING' },
+          data: { status: 'PROCESSING' },
+        })
+      } else {
+        await prisma.order.updateMany({
+          where: { id: orderId, paymentStatus: 'UNPAID' },
+          data: { status: 'FAILED' },
+        })
+        await prisma.orderItem.updateMany({
+          where: { orderId, status: 'PENDING' },
+          data: { status: 'FAILED' },
+        })
+      }
+      console.info('[DUITKU_WEBHOOK] Sandbox callback acknowledged without Digiflazz fulfillment:', orderId)
+      return callbackOk('Sandbox callback acknowledged; Digiflazz fulfillment skipped')
     }
 
     if (order.status === 'SUCCESS') {
