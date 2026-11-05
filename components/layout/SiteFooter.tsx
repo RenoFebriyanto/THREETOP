@@ -23,14 +23,12 @@ export default function SiteFooter() {
             <p className="mt-4 text-sm leading-6 text-[var(--color-muted)]">
               Top up game favorit dengan alur yang sederhana dan informasi pesanan yang jelas.
             </p>
-            <address className="mt-4 not-italic text-sm leading-6 text-[var(--color-muted)]">
-              JL. Kapten Ilyas No. 17, Indonesia
-              <br />
+            <p className="mt-4 text-sm leading-6 text-[var(--color-muted)]">
               Email:{' '}
               <a href="mailto:threetopsupport@gmail.com" className="hover:text-white">
                 threetopsupport@gmail.com
               </a>
-            </address>
+            </p>
           </div>
 
           <nav aria-label="Jelajahi ThreeTop">
