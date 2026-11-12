@@ -395,6 +395,48 @@ export function getWutheringWavesProductCategory(
   return 'other'
 }
 
+export const ZENLESS_ZONE_ZERO_PRODUCT_CATEGORIES = [
+  { id: 'monochrome', label: 'Monochrome' },
+  { id: 'inter-knot-membership', label: 'Inter-Knot Membership' },
+  { id: 'new-eridu-city-fund', label: 'New Eridu City Fund' },
+  { id: 'other', label: 'Item Lainnya' },
+] as const
+
+export type ZenlessZoneZeroProductCategory =
+  (typeof ZENLESS_ZONE_ZERO_PRODUCT_CATEGORIES)[number]['id']
+
+export function getZenlessZoneZeroProductCategory(
+  product: DigiflazzProduct
+): ZenlessZoneZeroProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+  )
+
+  if (
+    searchableText.includes('inter knot membership') ||
+    searchableText.includes('monthly pass') ||
+    searchableText.includes('monthly card')
+  ) {
+    return 'inter-knot-membership'
+  }
+
+  if (
+    searchableText.includes('new eridu city fund') ||
+    searchableText.includes('growth plan') ||
+    searchableText.includes('elite plan') ||
+    searchableText.includes('battle pass') ||
+    searchableText.includes('battlepass')
+  ) {
+    return 'new-eridu-city-fund'
+  }
+
+  if (searchableText.includes('monochrome')) {
+    return 'monochrome'
+  }
+
+  return 'other'
+}
+
 function normalizeText(value: string | undefined): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
@@ -626,5 +668,24 @@ export const SUPPORTED_GAMES: Record<string, {
     userIdHint: 'Temukan UID di profil atau pengaturan akun in-game',
     nicknameLookup: { provider: 'isan', endpoint: 'hi' },
     productIconDefault: '/icons/games/honkaiimpact3.jpg',
+  },
+  zenless_zone_zero: {
+    label: 'Zenless Zone Zero',
+    image: '/icons/games/zenless-zone-zero.jpg',
+    icon: 'ZZZ',
+    color: 'from-amber-500 to-red-800',
+    tag: 'Action RPG',
+    brands: [
+      'Zenless Zone Zero',
+      'ZENLESS ZONE ZERO',
+      'ZenlessZoneZero',
+      'ZENLESSZONEZERO',
+      'ZZZ',
+    ],
+    userIdLabel: 'UID',
+    userIdPlaceholder: '123456789',
+    userIdHint: 'Temukan UID di profil atau pengaturan akun in-game',
+    nicknameLookup: null,
+    productIconDefault: '/icons/games/zenless-zone-zero.jpg',
   },
 }

@@ -17,6 +17,7 @@ import {
   getPubgMobileProductCategory,
   getPointBlankProductCategory,
   getWutheringWavesProductCategory,
+  getZenlessZoneZeroProductCategory,
   HONOR_OF_KINGS_PRODUCT_CATEGORIES,
   HONKAI_IMPACT_3_PRODUCT_CATEGORIES,
   HONKAI_STAR_RAIL_PRODUCT_CATEGORIES,
@@ -25,6 +26,7 @@ import {
   PUBG_MOBILE_PRODUCT_CATEGORIES,
   SUPPORTED_GAMES,
   WUTHERING_WAVES_PRODUCT_CATEGORIES,
+  ZENLESS_ZONE_ZERO_PRODUCT_CATEGORIES,
   type DigiflazzProduct,
 } from '@/lib/digiflazz'
 import { getProductIcon } from '@/lib/productIcon'
@@ -690,6 +692,13 @@ export default function GameTopUpPage() {
           ...category,
           products: products.filter(
             (product) => getWutheringWavesProductCategory(product) === category.id
+          ).sort((a, b) => a.price - b.price),
+        })).filter((category) => category.products.length > 0)
+    : gameKey === 'zenless_zone_zero'
+      ? ZENLESS_ZONE_ZERO_PRODUCT_CATEGORIES.map((category) => ({
+          ...category,
+          products: products.filter(
+            (product) => getZenlessZoneZeroProductCategory(product) === category.id
           ).sort((a, b) => a.price - b.price),
         })).filter((category) => category.products.length > 0)
     : gameKey === 'honor_of_kings'
