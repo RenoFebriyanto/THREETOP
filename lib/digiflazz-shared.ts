@@ -353,6 +353,48 @@ export function getHonkaiStarRailProductCategory(
   return 'other'
 }
 
+export const WUTHERING_WAVES_PRODUCT_CATEGORIES = [
+  { id: 'lunite', label: 'Lunite' },
+  { id: 'subscription', label: 'Lunite Subscription' },
+  { id: 'battle-pass', label: 'Pioneer Podcast' },
+  { id: 'other', label: 'Item Lainnya' },
+] as const
+
+export type WutheringWavesProductCategory =
+  (typeof WUTHERING_WAVES_PRODUCT_CATEGORIES)[number]['id']
+
+export function getWutheringWavesProductCategory(
+  product: DigiflazzProduct
+): WutheringWavesProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+  )
+
+  if (
+    searchableText.includes('subscription') ||
+    searchableText.includes('monthly pass') ||
+    searchableText.includes('monthly card')
+  ) {
+    return 'subscription'
+  }
+
+  if (
+    searchableText.includes('pioneer podcast') ||
+    searchableText.includes('insider channel') ||
+    searchableText.includes('connoisseur channel') ||
+    searchableText.includes('battle pass') ||
+    searchableText.includes('battlepass')
+  ) {
+    return 'battle-pass'
+  }
+
+  if (searchableText.includes('lunite')) {
+    return 'lunite'
+  }
+
+  return 'other'
+}
+
 function normalizeText(value: string | undefined): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }

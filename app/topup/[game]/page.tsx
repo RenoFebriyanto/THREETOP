@@ -16,6 +16,7 @@ import {
   getMobileLegendsProductCategory,
   getPubgMobileProductCategory,
   getPointBlankProductCategory,
+  getWutheringWavesProductCategory,
   HONOR_OF_KINGS_PRODUCT_CATEGORIES,
   HONKAI_IMPACT_3_PRODUCT_CATEGORIES,
   HONKAI_STAR_RAIL_PRODUCT_CATEGORIES,
@@ -23,6 +24,7 @@ import {
   POINT_BLANK_PRODUCT_CATEGORIES,
   PUBG_MOBILE_PRODUCT_CATEGORIES,
   SUPPORTED_GAMES,
+  WUTHERING_WAVES_PRODUCT_CATEGORIES,
   type DigiflazzProduct,
 } from '@/lib/digiflazz'
 import { getProductIcon } from '@/lib/productIcon'
@@ -681,6 +683,13 @@ export default function GameTopUpPage() {
           ...category,
           products: products.filter(
             (product) => getHonkaiStarRailProductCategory(product) === category.id
+          ).sort((a, b) => a.price - b.price),
+        })).filter((category) => category.products.length > 0)
+    : gameKey === 'wuthering_waves'
+      ? WUTHERING_WAVES_PRODUCT_CATEGORIES.map((category) => ({
+          ...category,
+          products: products.filter(
+            (product) => getWutheringWavesProductCategory(product) === category.id
           ).sort((a, b) => a.price - b.price),
         })).filter((category) => category.products.length > 0)
     : gameKey === 'honor_of_kings'
