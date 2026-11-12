@@ -311,6 +311,48 @@ export function getHonkaiImpact3ProductCategory(
   return 'other'
 }
 
+export const HONKAI_STAR_RAIL_PRODUCT_CATEGORIES = [
+  { id: 'oneiric-shards', label: 'Oneiric Shards' },
+  { id: 'express-supply-pass', label: 'Express Supply Pass' },
+  { id: 'nameless-honor', label: 'Nameless Honor' },
+  { id: 'other', label: 'Item Lainnya' },
+] as const
+
+export type HonkaiStarRailProductCategory =
+  (typeof HONKAI_STAR_RAIL_PRODUCT_CATEGORIES)[number]['id']
+
+export function getHonkaiStarRailProductCategory(
+  product: DigiflazzProduct
+): HonkaiStarRailProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+  )
+
+  if (
+    searchableText.includes('nameless honor') ||
+    searchableText.includes('nameless glory') ||
+    searchableText.includes('nameless medal') ||
+    searchableText.includes('battle pass') ||
+    searchableText.includes('battlepass')
+  ) {
+    return 'nameless-honor'
+  }
+
+  if (
+    searchableText.includes('express supply pass') ||
+    searchableText.includes('supply pass') ||
+    searchableText.includes('monthly card')
+  ) {
+    return 'express-supply-pass'
+  }
+
+  if (searchableText.includes('oneiric shard') || searchableText.includes('oneiric')) {
+    return 'oneiric-shards'
+  }
+
+  return 'other'
+}
+
 function normalizeText(value: string | undefined): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }
