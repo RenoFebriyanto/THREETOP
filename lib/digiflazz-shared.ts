@@ -271,6 +271,46 @@ export function getGenshinImpactProductCategory(
   return 'other'
 }
 
+export const HONKAI_IMPACT_3_PRODUCT_CATEGORIES = [
+  { id: 'crystal', label: 'Kristal' },
+  { id: 'monthly-card', label: 'Kartu Bulanan' },
+  { id: 'battle-pass', label: 'Battle Pass' },
+  { id: 'other', label: 'Item Lainnya' },
+] as const
+
+export type HonkaiImpact3ProductCategory =
+  (typeof HONKAI_IMPACT_3_PRODUCT_CATEGORIES)[number]['id']
+
+export function getHonkaiImpact3ProductCategory(
+  product: DigiflazzProduct
+): HonkaiImpact3ProductCategory {
+  const searchableText = normalizeText(
+    `${product.product_name} ${product.type} ${product.category} ${product.buyer_sku_code} ${product.desc}`
+  )
+
+  if (
+    searchableText.includes('battle pass') ||
+    searchableText.includes('battlepass') ||
+    /\b(knight|paladin|rover)\b/.test(searchableText)
+  ) {
+    return 'battle-pass'
+  }
+
+  if (
+    searchableText.includes('monthly card') ||
+    searchableText.includes('monthly pass') ||
+    searchableText.includes('monthly')
+  ) {
+    return 'monthly-card'
+  }
+
+  if (searchableText.includes('crystal')) {
+    return 'crystal'
+  }
+
+  return 'other'
+}
+
 function normalizeText(value: string | undefined): string {
   return (value ?? '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim()
 }

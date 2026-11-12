@@ -10,11 +10,13 @@ import {
   getFreeFireMembershipSortOrder,
   GENSHIN_IMPACT_PRODUCT_CATEGORIES,
   getGenshinImpactProductCategory,
+  getHonkaiImpact3ProductCategory,
   getHonorOfKingsProductCategory,
   getMobileLegendsProductCategory,
   getPubgMobileProductCategory,
   getPointBlankProductCategory,
   HONOR_OF_KINGS_PRODUCT_CATEGORIES,
+  HONKAI_IMPACT_3_PRODUCT_CATEGORIES,
   MOBILE_LEGENDS_PRODUCT_CATEGORIES,
   POINT_BLANK_PRODUCT_CATEGORIES,
   PUBG_MOBILE_PRODUCT_CATEGORIES,
@@ -663,6 +665,13 @@ export default function GameTopUpPage() {
           ...category,
           products: products.filter(
             (product) => getGenshinImpactProductCategory(product) === category.id
+          ).sort((a, b) => a.price - b.price),
+        })).filter((category) => category.products.length > 0)
+    : gameKey === 'honkai_impact_3'
+      ? HONKAI_IMPACT_3_PRODUCT_CATEGORIES.map((category) => ({
+          ...category,
+          products: products.filter(
+            (product) => getHonkaiImpact3ProductCategory(product) === category.id
           ).sort((a, b) => a.price - b.price),
         })).filter((category) => category.products.length > 0)
     : gameKey === 'honor_of_kings'
